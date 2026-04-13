@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eBay Statistics – Data Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            padding: 24px;
+        }
+        h1 {
+            text-align: center;
+            color: #e53238;
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #e53238;
+            margin: 36px 0 16px;
+            border-left: 4px solid #e53238;
+            padding-left: 12px;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .kpi {
+            background: white;
+            border-radius: 8px;
+            padding: 20px 16px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .kpi-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #e53238;
+        }
+        .kpi-label {
+            font-size: 13px;
+            color: #666;
+            margin-top: 6px;
+        }
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 24px;
+        }
+        .chart-box {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .chart-box.full {
+            grid-column: 1 / -1;
+        }
+        .chart-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        canvas { max-height: 350px; }
+        .source-note {
+            font-size: 11px;
+            color: #aaa;
+            text-align: right;
+            margin-top: 8px;
+        }
+        .stat-list {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+        }
+        .stat-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .stat-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        .stat-list li:last-child {
+            border-bottom: none;
+        }
+        .stat-list strong {
+            color: #e53238;
+        }
+    </style>
+</head>
+<body>
+
+<h1>eBay Statistics</h1>
+<p class="subtitle">Data from eBay Investor Relations · Capital One Shopping · ElectroIQ · Statista</p>
+
+<!-- Key Metrics -->
+<div class="section-title">Key Metrics at a Glance (2024)</div>
+<div class="kpi-grid">
+    <div class="kpi"><div class="kpi-value">$10.28B</div><div class="kpi-label">Revenue 2024</div></div>
+    <div class="kpi"><div class="kpi-value">$74.7B</div><div class="kpi-label">GMV 2024</div></div>
+    <div class="kpi"><div class="kpi-value">134M</div><div class="kpi-label">Active Buyers Q4 2024</div></div>
+    <div class="kpi"><div class="kpi-value">18-20M</div><div class="kpi-label">Active Sellers (Est.)</div></div>
+    <div class="kpi"><div class="kpi-value">$1.98B</div><div class="kpi-label">Net Income 2024</div></div>
+    <div class="kpi"><div class="kpi-value">$2.0B</div><div class="kpi-label">Free Cash Flow 2024</div></div>
+    <div class="kpi"><div class="kpi-value">1.4B</div><div class="kpi-label">Active Listings</div></div>
+    <div class="kpi"><div class="kpi-value">190+</div><div class="kpi-label">Countries</div></div>
+    <div class="kpi"><div class="kpi-value">28.1%</div><div class="kpi-label">Operating Margin 2024</div></div>
+    <div class="kpi"><div class="kpi-value">$192M</div><div class="kpi-label">Charity 2024</div></div>
+</div>
+
+<!-- Revenue & GMV -->
+<div class="section-title">Revenue & GMV Performance</div>
+<div class="chart-grid">
+    <div class="chart-box">
+        <div class="chart-title">Annual Revenue ($B)</div>
+        <canvas id="revenueChart"></canvas>
+        <div class="source-note">Source: eBay Investor Relations</div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">Gross Merchandise Volume ($B)</div>
+        <canvas id="gmvChart"></canvas>
+        <div class="source-note">Source: eBay Investor Relations</div>
+    </div>
+</div>
+
+<!-- Quarterly Performance -->
+<div class="section-title">Quarterly Performance (2024)</div>
+<div class="chart-grid">
+    <div class="chart-box">
+        <div class="chart-title">Quarterly Revenue 2024 ($B)</div>
+        <canvas id="quarterlyRevenueChart"></canvas>
+        <div class="source-note">Source: eBay Investor Relations</div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">Quarterly GMV 2024 ($B)</div>
+        <canvas id="quarterlyGMVChart"></canvas>
+        <div class="source-note">Source: eBay Investor Relations</div>
+    </div>
+</div>
+
+<!-- Profitability -->
+<div class="section-title">Profitability Metrics</div>
+<div class="chart-grid">
+    <div class="chart-box">
+        <div class="chart-title">Net Income 2024 ($B)</div>
+        <canvas id="netIncomeChart"></canvas>
+        <div class="source-note">Source: eBay Investor Relations</div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">Operating Margin Comparison (%)</div>
+        <canvas id="operatingMarginChart"></canvas>
+        <div class="source-note">Source: eBay Investor Relations</div>
+    </div>
+</div>
+
+<!-- Active Buyers -->
+<div class="section-title">Active Buyers Growth</div>
+<div class="chart-grid">
+    <div class="chart-box full">
+        <div class="chart-title">Active Buyers (Millions)</div>
+        <canvas id="activeBuyersChart"></canvas>
+        <div class="source-note">Source: ElectroIQ, eBay Investor Relations</div>
+    </div>
+</div>
+
+<!-- Sellers & Listings -->
+<div class="section-title">Sellers & Listings</div>
+<div class="chart-grid">
+    <div class="chart-box">
+        <div class="chart-title">Active Sellers by Region (Millions)</div>
+        <canvas id="sellersRegionChart"></canvas>
+        <div class="source-note">Source: ElectroIQ</div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">Active Listings Over Time (Billions)</div>
+        <canvas id="listingsChart"></canvas>
+        <div class="source-note">Source: ElectroIQ</div>
+    </div>
+</div>
+
+<!-- Categories -->
+<div class="section-title">Top Categories by GMV</div>
+<div class="chart-grid">
+    <div class="chart-box full">
+        <div class="chart-title">Category Distribution</div>
+        <canvas id="categoriesChart"></canvas>
+        <div class="source-note">Source: ElectroIQ</div>
+    </div>
+</div>
+
+<!-- Mobile & Traffic -->
+<div class="section-title">Mobile & Traffic</div>
+<div class="chart-grid">
+    <div class="chart-box">
+        <div class="chart-title">Traffic Source Distribution</div>
+        <canvas id="trafficChart"></canvas>
+        <div class="source-note">Source: ElectroIQ</div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">Mobile App Downloads (Millions)</div>
+        <canvas id="downloadsChart"></canvas>
+        <div class="source-note">Source: ElectroIQ</div>
+    </div>
+</div>
+
+<!-- Advertising -->
+<div class="section-title">Advertising Revenue</div>
+<div class="chart-grid">
+    <div class="chart-box">
+        <div class="chart-title">Q4 2024 Advertising Revenue ($M)</div>
+        <canvas id="advertisingChart"></canvas>
+        <div class="source-note">Source: eBay Investor Relations</div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">Advertising as % of GMV</div>
+        <canvas id="adPercentChart"></canvas>
+        <div class="source-note">Source: eBay Investor Relations</div>
+    </div>
+</div>
+
+<!-- Cash Flow & Returns -->
+<div class="section-title">Cash Flow & Capital Returns (2024)</div>
+<div class="chart-grid">
+    <div class="chart-box">
+        <div class="chart-title">Cash Flow 2024 ($B)</div>
+        <canvas id="cashFlowChart"></canvas>
+        <div class="source-note">Source: eBay Investor Relations</div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">Capital Returns 2024 ($B)</div>
+        <canvas id="capitalReturnsChart"></canvas>
+        <div class="source-note">Source: eBay Investor Relations</div>
+    </div>
+</div>
+
+<!-- Key Facts -->
+<div class="section-title">Key Facts & Statistics</div>
+<div class="stat-list">
+    <ul>
+        <li><strong>Founded:</strong> September 1995 (San Jose, California)</li>
+        <li><strong>Global Reach:</strong> 190+ countries, 1.4 billion active listings</li>
+        <li><strong>Active Sellers:</strong> 18-20 million globally (estimated)</li>
+        <li><strong>US Sellers:</strong> 25 million registered (4 million active)</li>
+        <li><strong>UK Sellers:</strong> 300,000+ active sellers</li>
+        <li><strong>Germany Sellers:</strong> 200,000+ active sellers</li>
+        <li><strong>Monthly Visitors:</strong> 1.3 billion globally</li>
+        <li><strong>Mobile GMV:</strong> 60% of total GMV from mobile</li>
+        <li><strong>App Downloads:</strong> 500+ million (iOS & Android combined)</li>
+        <li><strong>Payment Methods:</strong> 100+ payment options</li>
+        <li><strong>Shipping:</strong> 80% of items ship within 4 business days</li>
+        <li><strong>International Shipping:</strong> 70% of sellers offer international shipping</li>
+        <li><strong>Seller Success Rate:</strong> 89% of sellers make first sale within 90 days</li>
+        <li><strong>Average Seller Revenue:</strong> $50,000-$100,000 annually</li>
+        <li><strong>Top 1% Sellers:</strong> Generate $1M+ annually</li>
+        <li><strong>Charity Contributions 2024:</strong> $192 million (up 18% YoY)</li>
+        <li><strong>eBay Foundation Grants 2024:</strong> $18 million</li>
+        <li><strong>Pre-loved/Refurbished Impact:</strong> $25B economic value (5-year cumulative)</li>
+        <li><strong>Carbon Emissions Prevented:</strong> 8.2 million metric tons</li>
+        <li><strong>Waste Prevented:</strong> 360,000+ metric tons from landfills</li>
+    </ul>
+</div>
+
+<!-- Seller Demographics -->
+<div class="section-title">Seller Demographics & Characteristics</div>
+<div class="stat-list">
+    <ul>
+        <li><strong>Business Type:</strong> 80% small businesses, 15% medium, 5% large enterprises</li>
+        <li><strong>Full-time Sellers:</strong> 35% operate eBay as full-time business</li>
+        <li><strong>Part-time Sellers:</strong> 65% use eBay as supplemental income</li>
+        <li><strong>Home-based:</strong> 70% operate from home</li>
+        <li><strong>Multi-channel:</strong> 60% sell on multiple platforms</li>
+        <li><strong>Average Time Investment:</strong> 20-30 hours per week</li>
+        <li><strong>Seller Retention:</strong> 75% still active after 1 year</li>
+        <li><strong>Top Seller Categories:</strong> Electronics (22%), Fashion (18%), Home & Garden (15%), Collectibles (12%), Motors (10%)</li>
+    </ul>
+</div>
+
+<!-- Q1 2025 Guidance -->
+<div class="section-title">Q1 2025 Guidance</div>
+<div class="stat-list">
+    <ul>
+        <li><strong>Revenue:</strong> $2.52-$2.56 billion (FX-neutral growth: -1% to 1%)</li>
+        <li><strong>GMV:</strong> $18.3-$18.6 billion (FX-neutral growth: 0% to 1%)</li>
+        <li><strong>GAAP Diluted EPS:</strong> $0.98-$1.02</li>
+        <li><strong>Non-GAAP Diluted EPS:</strong> $1.32-$1.36</li>
+    </ul>
+</div>
+
+<script>
+    const ebayRed = '#e53238';
+    const ebayBlue = '#0064d2';
+    const ebayYellow = '#f5af02';
+    const ebayGreen = '#86b817';
+
+    // Revenue Chart
+    new Chart(document.getElementById('revenueChart'), {
+        type: 'line',
+        data: {
+            labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+            datasets: [{
+                label: 'Revenue ($B)',
+                data: [10.8, 10.3, 10.4, 9.8, 10.1, 10.28],
+                borderColor: ebayRed,
+                backgroundColor: 'rgba(229, 50, 56, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // GMV Chart
+    new Chart(document.getElementById('gmvChart'), {
+        type: 'line',
+        data: {
+            labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+            datasets: [{
+                label: 'GMV ($B)',
+                data: [90.8, 100.0, 87.4, 73.8, 73.0, 74.7],
+                borderColor: ebayBlue,
+                backgroundColor: 'rgba(0, 100, 210, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Quarterly Revenue 2024
+    new Chart(document.getElementById('quarterlyRevenueChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024'],
+            datasets: [{
+                label: 'Revenue ($B)',
+                data: [2.56, 2.57, 2.58, 2.58],
+                backgroundColor: ebayRed
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Quarterly GMV 2024
+    new Chart(document.getElementById('quarterlyGMVChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024'],
+            datasets: [{
+                label: 'GMV ($B)',
+                data: [18.5, 18.5, 18.4, 19.3],
+                backgroundColor: ebayBlue
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Net Income
+    new Chart(document.getElementById('netIncomeChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+            datasets: [{
+                label: 'GAAP Net Income ($M)',
+                data: [467, 241, 593, 680],
+                backgroundColor: ebayGreen
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: true } }
+        }
+    });
+
+    // Operating Margin
+    new Chart(document.getElementById('operatingMarginChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Q4 2024 GAAP', 'Q4 2024 Non-GAAP', 'FY 2024 GAAP', 'FY 2024 Non-GAAP'],
+            datasets: [{
+                label: 'Operating Margin (%)',
+                data: [21.1, 27.0, 22.5, 28.1],
+                backgroundColor: [ebayRed, ebayBlue, ebayRed, ebayBlue]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Active Buyers
+    new Chart(document.getElementById('activeBuyersChart'), {
+        type: 'line',
+        data: {
+            labels: ['2019', '2020', '2021', '2022', '2023', 'Q4 2024'],
+            datasets: [{
+                label: 'Active Buyers (M)',
+                data: [183, 185, 154, 134, 132, 134],
+                borderColor: ebayYellow,
+                backgroundColor: 'rgba(245, 175, 2, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Sellers by Region
+    new Chart(document.getElementById('sellersRegionChart'), {
+        type: 'bar',
+        data: {
+            labels: ['United States', 'United Kingdom', 'Germany', 'Other'],
+            datasets: [{
+                label: 'Active Sellers (M)',
+                data: [4, 0.3, 0.2, 13.5],
+                backgroundColor: ebayRed
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            indexAxis: 'y'
+        }
+    });
+
+    // Active Listings
+    new Chart(document.getElementById('listingsChart'), {
+        type: 'line',
+        data: {
+            labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+            datasets: [{
+                label: 'Active Listings (B)',
+                data: [1.3, 1.5, 1.5, 1.4, 1.4, 1.4],
+                borderColor: ebayBlue,
+                backgroundColor: 'rgba(0, 100, 210, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Categories
+    new Chart(document.getElementById('categoriesChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Electronics', 'Fashion', 'Home & Garden', 'Collectibles', 'Motors', 'Toys', 'Sports', 'Other'],
+            datasets: [{
+                label: 'GMV Share (%)',
+                data: [22, 18, 15, 12, 10, 8, 7, 8],
+                backgroundColor: [ebayRed, ebayBlue, ebayYellow, ebayGreen, ebayRed, ebayBlue, ebayYellow, ebayGreen]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            indexAxis: 'y'
+        }
+    });
+
+    // Traffic Source
+    new Chart(document.getElementById('trafficChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Mobile', 'Desktop'],
+            datasets: [{
+                data: [60, 40],
+                backgroundColor: [ebayRed, ebayBlue]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    // App Downloads
+    new Chart(document.getElementById('downloadsChart'), {
+        type: 'bar',
+        data: {
+            labels: ['iOS', 'Android', 'Total'],
+            datasets: [{
+                label: 'Downloads (M)',
+                data: [200, 300, 500],
+                backgroundColor: [ebayBlue, ebayGreen, ebayRed]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Advertising Revenue
+    new Chart(document.getElementById('advertisingChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Total Advertising', 'First-Party Products'],
+            datasets: [{
+                label: 'Revenue ($M)',
+                data: [445, 434],
+                backgroundColor: [ebayRed, ebayBlue]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Ad Percent
+    new Chart(document.getElementById('adPercentChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Advertising', 'Other Revenue'],
+            datasets: [{
+                data: [2.3, 97.7],
+                backgroundColor: [ebayYellow, '#ddd']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    // Cash Flow
+    new Chart(document.getElementById('cashFlowChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Operating Cash Flow', 'Free Cash Flow'],
+            datasets: [{
+                label: 'Cash Flow ($B)',
+                data: [2.4, 2.0],
+                backgroundColor: [ebayGreen, ebayBlue]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Capital Returns
+    new Chart(document.getElementById('capitalReturnsChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Share Repurchases', 'Dividends'],
+            datasets: [{
+                label: 'Capital Returns ($B)',
+                data: [3.1, 0.533],
+                backgroundColor: [ebayRed, ebayYellow]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>
+
+</body>
+</html>

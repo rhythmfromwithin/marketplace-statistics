@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopify Statistics – Data Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            color: #333;
+            padding: 24px;
+        }
+        h1 {
+            text-align: center;
+            color: #5c2d91;
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+        .section-title {
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #5c2d91;
+            margin: 32px 0 12px;
+            border-left: 4px solid #5c2d91;
+            padding-left: 10px;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+        .kpi {
+            background: white;
+            border-radius: 8px;
+            padding: 18px 14px;
+            text-align: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .kpi-value {
+            font-size: 26px;
+            font-weight: bold;
+            color: #5c2d91;
+        }
+        .kpi-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 20px;
+        }
+        .chart-box {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .chart-box.full {
+            grid-column: 1 / -1;
+        }
+        .chart-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 14px;
+        }
+        canvas { max-height: 320px; }
+        .table-wrap { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th {
+            background: #5c2d91;
+            color: white;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+        }
+        tr:nth-child(even) td { background: #faf7ff; }
+        .source-note {
+            font-size: 11px;
+            color: #aaa;
+            text-align: right;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Shopify Statistics</h1>
+<p class="subtitle">Data from RedStagFulfillment · Backlinko · Yaguara · Chargeflow — 2024/2025</p>
+
+<!-- KPIs -->
+<div class="section-title">Key Numbers at a Glance</div>
+<div class="kpi-grid">
+    <div class="kpi"><div class="kpi-value">6.9M</div><div class="kpi-label">Total Merchants</div></div>
+    <div class="kpi"><div class="kpi-value">4.8M</div><div class="kpi-label">Active Stores (2025)</div></div>
+    <div class="kpi"><div class="kpi-value">$8.88B</div><div class="kpi-label">Shopify Revenue 2024</div></div>
+    <div class="kpi"><div class="kpi-value">$300B</div><div class="kpi-label">GMV 2024</div></div>
+    <div class="kpi"><div class="kpi-value">$1T</div><div class="kpi-label">Cumulative Sales</div></div>
+    <div class="kpi"><div class="kpi-value">875M</div><div class="kpi-label">Unique Shoppers 2024</div></div>
+    <div class="kpi"><div class="kpi-value">200M</div><div class="kpi-label">Shop Pay Users</div></div>
+    <div class="kpi"><div class="kpi-value">175+</div><div class="kpi-label">Countries</div></div>
+    <div class="kpi"><div class="kpi-value">10.32%</div><div class="kpi-label">Global Platform Share</div></div>
+    <div class="kpi"><div class="kpi-value">29%</div><div class="kpi-label">US eCommerce Share</div></div>
+</div>
+
+<!-- Store Growth -->
+<div class="section-title">Store & Market Share Growth (2020–2025)</div>
+<div class="chart-grid">
+    <div class="chart-box">
+        <div class="chart-title">Active Shopify Stores (Millions)</div>
+        <canvas id="storeGrowth"></canvas>
+        <div class="source-note">Source: RedStagFulfillment</div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">Global Platform Market Share (%)</div>
+        <canvas id="marketShareGrowth"></canvas>
+        <div class="source-note">Source: RedStagFulfillment</div>
+    </div>
+</div>
+
+<!-- Revenue -->
+<div class="section-title">Shopify Revenue Breakdown (2024)</div>
+<div class="chart-grid">
+    <div class="chart-box">
+        <div class="chart-title">Revenue by Segment (2024)</div>
+        <canvas id="revenueSegment"></canvas>
+        <div class="source-note">Source: Chargeflow</div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">GMV Growth: 2020 vs 2024</div>
+        <canvas id="gmvGrowth"></canvas>
+        <div class="source-note">Source: Chargeflow</div>
+    </div>
+</div>
+
+<!-- Market Share Competitive -->
+<div class="section-title">Competitive Market Share</div>
+<div class="chart-grid">
+    <div class="chart-box">
+        <div class="chart-title">eCommerce Platform Market Share (Global)</div>
+        <canvas id="competitorShare"></canvas>
+        <div class="source-note">Source: RedStagFulfillment</div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">Shopify Share by Website Traffic Tier</div>
+        <canvas id="trafficTier"></canvas>
+        <div class="source-note">Source: RedStagFulfillment</div>
+    </div>
+</div>
+
+<!-- Geography -->
+<div class="section-title">Geographic Distribution</div>
+<div class="chart-grid">
+    <div class="chart-box">
+        <div class="chart-title">Shopify Stores by Region</div>
+        <canvas id="regionStores"></canvas>
+        <div class="source-note">Source: RedStagFulfillment, Yaguara</div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">Shopify Plus Stores by Country</div>
+        <canvas id="plusCountry"></canvas>
+        <div class="source-note">Source: Chargeflow</div>
+    </div>
+</div>
+
+<!-- Mobile vs Desktop -->
+<div class="section-title">Mobile vs Desktop</div>
+<div class="chart-grid">
+    <div class="chart-box">
+        <div class="chart-title">Traffic Source</div>
+        <canvas id="mobileTraffic"></canvas>
+        <div class="source-note">Source: Yaguara</div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">Conversion Rate: Mobile vs Desktop (%)</div>
+        <canvas id="conversionRate"></canvas>
+        <div class="source-note">Source: Yaguara</div>
+    </div>
+</div>
+
+<!-- Shop Pay -->
+<div class="section-title">Shop Pay</div>
+<div class="chart-grid">
+    <div class="chart-box">
+        <div class="chart-title">Shop Pay User Growth</div>
+        <canvas id="shopPayGrowth"></canvas>
+        <div class="source-note">Source: Chargeflow</div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">Shop Pay vs Guest Checkout Conversion Lift</div>
+        <canvas id="shopPayConversion"></canvas>
+        <div class="source-note">Source: Chargeflow</div>
+    </div>
+</div>
+
+<!-- Shipping -->
+<div class="section-title">Shipping Carrier Usage</div>
+<div class="chart-grid">
+    <div class="chart-box full">
+        <div class="chart-title">Stores Using Each Carrier</div>
+        <canvas id="shippingCarriers"></canvas>
+        <div class="source-note">Source: Chargeflow</div>
+    </div>
+</div>
+
+<!-- Shopify Plus -->
+<div class="section-title">Shopify Plus Breakdown</div>
+<div class="chart-grid">
+    <div class="chart-box">
+        <div class="chart-title">Plus Merchant Business Size</div>
+        <canvas id="plusSize"></canvas>
+        <div class="source-note">Source: Chargeflow</div>
+    </div>
+    <div class="chart-box">
+        <div class="chart-title">Plus Merchant Industry</div>
+        <canvas id="plusIndustry"></canvas>
+        <div class="source-note">Source: Chargeflow</div>
+    </div>
+</div>
+
+<!-- BFCM -->
+<div class="section-title">Black Friday / Cyber Monday</div>
+<div class="chart-grid">
+    <div class="chart-box full">
+        <div class="chart-title">BFCM Sales (Billions)</div>
+        <canvas id="bfcm"></canvas>
+        <div class="source-note">Source: Chargeflow, Backlinko</div>
+    </div>
+</div>
+
+<!-- Funding -->
+<div class="section-title">Shopify Funding History</div>
+<div class="chart-grid">
+    <div class="chart-box full">
+        <div class="chart-title">Funding Rounds (USD)</div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Date</th><th>Round</th><th>Amount</th></tr></thead>
+                <tbody>
+                    <tr><td>January 2007</td><td>Seed</td><td>$250,000</td></tr>
+                    <tr><td>December 2010</td><td>Series A</td><td>$7 million</td></tr>
+                    <tr><td>October 2011</td><td>Series B</td><td>$15 million</td></tr>
+                    <tr><td>December 2013</td><td>Series C</td><td>$100 million</td></tr>
+                    <tr><td>September 2018</td><td>Convertible Notes</td><td>$600 million</td></tr>
+                    <tr><td>September 2020</td><td>Convertible Notes</td><td>$920 million</td></tr>
+                    <tr><td>February 2021</td><td>Convertible Notes</td><td>$2.15 billion</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="source-note">Source: Chargeflow</div>
+    </div>
+</div>
+
+<!-- Global Economic Impact -->
+<div class="section-title">Global Economic Impact (2022)</div>
+<div class="chart-grid">
+    <div class="chart-box full">
+        <div class="chart-title">Shopify's Economic Footprint</div>
+        <canvas id="economicImpact"></canvas>
+        <div class="source-note">Source: Chargeflow</div>
+    </div>
+</div>
+
+<script>
+const purple = '#5c2d91';
+const purpleLight = 'rgba(92,45,145,0.15)';
+const green = '#00a86b';
+const orange = '#f5a623';
+const blue = '#2d7dd2';
+const gray = '#aaa';
+
+// 1. Store Growth
+new Chart(document.getElementById('storeGrowth'), {
+    type: 'line',
+    data: {
+        labels: ['2020','2021','2022','2023','2024','2025'],
+        datasets: [{
+            label: 'Active Stores (M)',
+            data: [1.7, 2.1, 2.9, 4.4, 4.6, 4.8],
+            borderColor: purple, backgroundColor: purpleLight, fill: true, tension: 0.4, pointRadius: 5
+        }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Millions' } } } }
+});
+
+// 2. Market Share Growth
+new Chart(document.getElementById('marketShareGrowth'), {
+    type: 'line',
+    data: {
+        labels: ['2020','2021','2022','2023','2024','2025'],
+        datasets: [{
+            label: 'Market Share (%)',
+            data: [8.6, 9.1, 9.8, 10.1, 10.2, 10.32],
+            borderColor: green, backgroundColor: 'rgba(0,168,107,0.1)', fill: true, tension: 0.4, pointRadius: 5
+        }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { min: 7, title: { display: true, text: '%' } } } }
+});
+
+// 3. Revenue Segment
+new Chart(document.getElementById('revenueSegment'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Merchant Solutions ($6.53B)', 'Subscription Solutions ($2.35B)'],
+        datasets: [{ data: [6.53, 2.35], backgroundColor: [purple, orange] }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+// 4. GMV Growth
+new Chart(document.getElementById('gmvGrowth'), {
+    type: 'bar',
+    data: {
+        labels: ['2020', '2024'],
+        datasets: [{ label: 'GMV ($ Billions)', data: [120, 300], backgroundColor: [gray, purple] }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: '$ Billions' } } } }
+});
+
+// 5. Competitor Share
+new Chart(document.getElementById('competitorShare'), {
+    type: 'bar',
+    data: {
+        labels: ['Shopify', 'WooCommerce', 'Custom/Other', 'Wix', 'Squarespace'],
+        datasets: [{ label: 'Market Share (%)', data: [26.2, 20.1, 16.5, 9, 5], backgroundColor: [purple, blue, gray, orange, green] }]
+    },
+    options: { responsive: true, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, title: { display: true, text: '%' } } } }
+});
+
+// 6. Traffic Tier
+new Chart(document.getElementById('trafficTier'), {
+    type: 'bar',
+    data: {
+        labels: ['All eCommerce', 'Top 1M Sites', 'Top 100K Sites', 'Top 10K Sites'],
+        datasets: [{ label: 'Shopify Share (%)', data: [26.2, 28.8, 19, 15], backgroundColor: purple }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: '%' } } } }
+});
+
+// 7. Region Stores
+new Chart(document.getElementById('regionStores'), {
+    type: 'bar',
+    data: {
+        labels: ['United States', 'Europe (EMEA)', 'Asia-Pacific', 'Latin America'],
+        datasets: [{ label: 'Share of Merchants (%)', data: [62, 26, 14, 5], backgroundColor: [purple, blue, orange, green] }]
+    },
+    options: { responsive: true, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, title: { display: true, text: '%' } } } }
+});
+
+// 8. Plus Country
+new Chart(document.getElementById('plusCountry'), {
+    type: 'doughnut',
+    data: {
+        labels: ['United States (55%)', 'UK (7%)', 'Australia (7%)', 'Other (31%)'],
+        datasets: [{ data: [55, 7, 7, 31], backgroundColor: [purple, blue, orange, gray] }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+// 9. Mobile Traffic
+new Chart(document.getElementById('mobileTraffic'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Mobile (74–78%)', 'Desktop (22–26%)'],
+        datasets: [{ data: [76, 24], backgroundColor: [purple, gray] }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+// 10. Conversion Rate
+new Chart(document.getElementById('conversionRate'), {
+    type: 'bar',
+    data: {
+        labels: ['Mobile', 'Desktop'],
+        datasets: [{ label: 'Conversion Rate (%)', data: [1.7, 3.65], backgroundColor: [purple, green] }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: '%' } } } }
+});
+
+// 11. Shop Pay Growth
+new Chart(document.getElementById('shopPayGrowth'), {
+    type: 'bar',
+    data: {
+        labels: ['Early 2024', 'Q4 2024'],
+        datasets: [{ label: 'Shop Pay Users (Millions)', data: [150, 200], backgroundColor: [gray, purple] }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Millions' } } } }
+});
+
+// 12. Shop Pay Conversion
+new Chart(document.getElementById('shopPayConversion'), {
+    type: 'bar',
+    data: {
+        labels: ['Guest Checkout', 'Shop Pay'],
+        datasets: [{ label: 'Relative Conversion', data: [100, 150], backgroundColor: [gray, purple] }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, title: { display: true, text: 'Index (Guest = 100)' } } }
+    }
+});
+
+// 13. Shipping Carriers
+new Chart(document.getElementById('shippingCarriers'), {
+    type: 'bar',
+    data: {
+        labels: ['USPS', 'UPS', 'FedEx'],
+        datasets: [{ label: 'Stores Using Carrier', data: [264000, 201464, 152146], backgroundColor: [purple, blue, orange] }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Number of Stores' } } } }
+});
+
+// 14. Plus Size
+new Chart(document.getElementById('plusSize'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Small Business (74%)', 'Medium (14%)', 'Large Enterprise (6%)', 'Other (6%)'],
+        datasets: [{ data: [74, 14, 6, 6], backgroundColor: [purple, blue, orange, gray] }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+// 15. Plus Industry
+new Chart(document.getElementById('plusIndustry'), {
+    type: 'doughnut',
+    data: {
+        labels: ['General Retail (17%)', 'Apparel/Fashion (11%)', 'Manufacturing (9%)', 'Other (63%)'],
+        datasets: [{ data: [17, 11, 9, 63], backgroundColor: [purple, blue, orange, gray] }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+// 16. BFCM
+new Chart(document.getElementById('bfcm'), {
+    type: 'bar',
+    data: {
+        labels: ['BFCM 2024', 'BFCM 2025'],
+        datasets: [{ label: 'Sales ($ Billions)', data: [11.5, 14.6], backgroundColor: [blue, purple] }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, title: { display: true, text: '$ Billions' } } } }
+});
+
+// 17. Economic Impact
+new Chart(document.getElementById('economicImpact'), {
+    type: 'bar',
+    data: {
+        labels: ['Jobs Created', 'Exports ($B)', 'GDP Impact ($B)', 'Economic Activity ($B)'],
+        datasets: [{
+            label: 'Value',
+            data: [5200000, 28, 229, 490],
+            backgroundColor: [purple, blue, orange, green],
+            yAxisID: 'y'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false }, tooltip: {
+            callbacks: {
+                label: function(ctx) {
+                    const labels = ['5.2M jobs', '$28B', '$229B', '$490B'];
+                    return labels[ctx.dataIndex];
+                }
+            }
+        }},
+        scales: { y: { display: false } }
+    }
+});
+</script>
+</body>
+</html>

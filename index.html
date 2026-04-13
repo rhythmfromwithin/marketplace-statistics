@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace Statistics Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 48px;
+            margin-bottom: 16px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 18px;
+            margin-bottom: 60px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        .card-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .card-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+        .amazon { border-top: 4px solid #ff9900; }
+        .amazon .card-title { color: #ff9900; }
+        .shopify { border-top: 4px solid #5c2d91; }
+        .shopify .card-title { color: #5c2d91; }
+        .etsy { border-top: 4px solid #f56400; }
+        .etsy .card-title { color: #f56400; }
+        .ebay { border-top: 4px solid #e53238; }
+        .ebay .card-title { color: #e53238; }
+        footer {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            margin-top: 60px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Marketplace Statistics</h1>
+        <p class="subtitle">Comprehensive data visualizations for major e-commerce platforms</p>
+
+        <div class="grid">
+            <a href="amazon.html" class="card amazon">
+                <div class="card-icon">📦</div>
+                <div class="card-title">Amazon</div>
+                <div class="card-desc">Seller statistics, GMV, active sellers by region, million-dollar sellers, and market trends</div>
+            </a>
+
+            <a href="shopify.html" class="card shopify">
+                <div class="card-icon">🛍️</div>
+                <div class="card-title">Shopify</div>
+                <div class="card-desc">Store growth, revenue breakdown, market share, Shop Pay metrics, and global distribution</div>
+            </a>
+
+            <a href="etsy.html" class="card etsy">
+                <div class="card-icon">🎨</div>
+                <div class="card-title">Etsy</div>
+                <div class="card-desc">Seller demographics, revenue trends, buyer behavior, product categories, and sustainability impact</div>
+            </a>
+
+            <a href="ebay.html" class="card ebay">
+                <div class="card-icon">🏷️</div>
+                <div class="card-title">eBay</div>
+                <div class="card-desc">GMV performance, active buyers, quarterly results, category distribution, and mobile metrics</div>
+            </a>
+        </div>
+
+        <footer>
+            <p>Data sources: Official company reports, Capital One Shopping, Printful, ElectroIQ, Business of Apps, and more</p>
+            <p style="margin-top: 8px;">Last updated: April 2026</p>
+        </footer>
+    </div>
+</body>
+</html>
