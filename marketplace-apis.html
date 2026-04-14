@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace APIs – Developer Capability Guide</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #333;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 42px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+        }
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.75);
+            font-size: 16px;
+            margin-bottom: 48px;
+        }
+        /* Quick Comparison */
+        .comparison-card {
+            background: white;
+            border-radius: 14px;
+            padding: 32px;
+            margin-bottom: 36px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        }
+        .comparison-card h2 {
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #444;
+            margin-bottom: 20px;
+            border-left: 4px solid #555;
+            padding-left: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th {
+            background: #f0f0f0;
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: bold;
+            color: #444;
+            border-bottom: 2px solid #ddd;
+        }
+        td {
+            padding: 11px 14px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafafa; }
+        /* Platform sections */
+        .platform-section {
+            background: white;
+            border-radius: 14px;
+            padding: 36px;
+            margin-bottom: 36px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        }
+        .platform-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .platform-icon { font-size: 40px; }
+        .platform-title { font-size: 28px; font-weight: bold; }
+        .platform-docs { font-size: 13px; color: #888; margin-top: 4px; }
+        .platform-docs a { color: #888; text-decoration: none; }
+        .platform-docs a:hover { text-decoration: underline; }
+        .section-label {
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 24px 0 12px;
+            padding-left: 10px;
+            border-left: 3px solid currentColor;
+        }
+        .tag-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .tag {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .api-group { margin-bottom: 16px; }
+        .api-group-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .api-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .api-list li {
+            font-size: 13px;
+            background: #f5f5f5;
+            padding: 4px 10px;
+            border-radius: 4px;
+            color: #444;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+        .info-box {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .info-box-label {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+            margin-bottom: 6px;
+        }
+        .info-box-value {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+        .limitations-list {
+            list-style: none;
+            padding: 0;
+        }
+        .limitations-list li {
+            font-size: 14px;
+            padding: 7px 0;
+            border-bottom: 1px solid #f0f0f0;
+            color: #555;
+            padding-left: 18px;
+            position: relative;
+        }
+        .limitations-list li::before {
+            content: '•';
+            position: absolute;
+            left: 4px;
+            color: #bbb;
+        }
+        .limitations-list li:last-child { border-bottom: none; }
+        /* Platform colors */
+        .amazon .platform-title { color: #ff9900; }
+        .amazon .section-label { color: #ff9900; }
+        .amazon .tag { background: #fff3e0; color: #e65100; }
+        .amazon th { border-top: 3px solid #ff9900; }
+        .shopify .platform-title { color: #5c2d91; }
+        .shopify .section-label { color: #5c2d91; }
+        .shopify .tag { background: #f3e5f5; color: #4a148c; }
+        .shopify th { border-top: 3px solid #5c2d91; }
+        .etsy .platform-title { color: #f56400; }
+        .etsy .section-label { color: #f56400; }
+        .etsy .tag { background: #fff3e0; color: #bf360c; }
+        .etsy th { border-top: 3px solid #f56400; }
+        .ebay .platform-title { color: #e53238; }
+        .ebay .section-label { color: #e53238; }
+        .ebay .tag { background: #ffebee; color: #b71c1c; }
+        .ebay th { border-top: 3px solid #e53238; }
+        /* Summary */
+        .summary-card {
+            background: white;
+            border-radius: 14px;
+            padding: 32px;
+            margin-bottom: 36px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        }
+        .summary-card h2 {
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #444;
+            margin-bottom: 20px;
+            border-left: 4px solid #555;
+            padding-left: 12px;
+        }
+        .use-case-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .use-case-item {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #444;
+            font-weight: 500;
+        }
+        .summary-note {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.7;
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 16px 20px;
+        }
+        footer {
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+            font-size: 13px;
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-free { background: #e8f5e9; color: #2e7d32; }
+        .badge-paid { background: #fff3e0; color: #e65100; }
+        .badge-high { background: #e3f2fd; color: #1565c0; }
+        .badge-medium { background: #f3e5f5; color: #6a1b9a; }
+        .badge-low { background: #f1f8e9; color: #33691e; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Marketplace APIs</h1>
+    <p class="subtitle">Developer Capability Guide — Amazon · Shopify · Etsy · eBay</p>
+
+    <!-- Quick Comparison -->
+    <div class="comparison-card">
+        <h2>Quick Comparison</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Platform</th>
+                    <th>Best For</th>
+                    <th>API Maturity</th>
+                    <th>Complexity</th>
+                    <th>Pricing</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong style="color:#ff9900">Amazon SP-API</strong></td>
+                    <td>Enterprise sellers, complex fulfillment</td>
+                    <td><span class="badge badge-high">High</span></td>
+                    <td><span class="badge badge-paid">High</span></td>
+                    <td>$1,400/yr + usage (delayed to 2026)</td>
+                </tr>
+                <tr>
+                    <td><strong style="color:#5c2d91">Shopify</strong></td>
+                    <td>E-commerce apps, headless commerce</td>
+                    <td><span class="badge badge-high">Very High</span></td>
+                    <td><span class="badge badge-medium">Medium</span></td>
+                    <td><span class="badge badge-free">Free</span></td>
+                </tr>
+                <tr>
+                    <td><strong style="color:#f56400">Etsy</strong></td>
+                    <td>Handmade/vintage marketplace tools</td>
+                    <td><span class="badge badge-medium">Medium</span></td>
+                    <td><span class="badge badge-low">Low–Medium</span></td>
+                    <td><span class="badge badge-free">Free</span></td>
+                </tr>
+                <tr>
+                    <td><strong style="color:#e53238">eBay</strong></td>
+                    <td>Auction/marketplace integrations</td>
+                    <td><span class="badge badge-high">High</span></td>
+                    <td><span class="badge badge-medium">Medium–High</span></td>
+                    <td><span class="badge badge-free">Free</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Amazon -->
+    <div class="platform-section amazon">
+        <div class="platform-header">
+            <div class="platform-icon">📦</div>
+            <div>
+                <div class="platform-title">Amazon – Selling Partner API (SP-API)</div>
+                <div class="platform-docs">Official Docs: <a href="https://developer-docs.amazon.com/sp-api/" target="_blank">developer-docs.amazon.com/sp-api</a></div>
+            </div>
+        </div>
+
+        <div class="section-label">What You Can Build</div>
+        <div class="tag-grid">
+            <span class="tag">Order management & fulfillment automation</span>
+            <span class="tag">Inventory sync across regions (FBA + seller-fulfilled)</span>
+            <span class="tag">Dynamic repricing tools</span>
+            <span class="tag">Product listing creation & optimization</span>
+            <span class="tag">Financial reporting & analytics dashboards</span>
+            <span class="tag">Multi-channel fulfillment apps</span>
+            <span class="tag">Vendor procurement automation</span>
+            <span class="tag">Warehouse management integrations</span>
+            <span class="tag">Customer service & messaging tools</span>
+            <span class="tag">Business intelligence dashboards</span>
+            <span class="tag">Review solicitation automation</span>
+            <span class="tag">Supply chain & warehousing integrations</span>
+            <span class="tag">A+ content management</span>
+            <span class="tag">Fee calculators</span>
+        </div>
+
+        <div class="section-label">API Categories</div>
+        <div class="api-group">
+            <div class="api-group-title">Core Marketplace</div>
+            <ul class="api-list">
+                <li>Orders API</li><li>Listings Items API</li><li>Catalog Items API</li>
+                <li>Product Pricing API</li><li>Product Fees API</li><li>Reports API</li>
+                <li>Feeds API</li><li>Notifications API</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Fulfillment</div>
+            <ul class="api-list">
+                <li>FBA Inventory API</li><li>Fulfillment Inbound API</li><li>Fulfillment Outbound API</li>
+                <li>Easy Ship API</li><li>Merchant Fulfillment API</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Financial</div>
+            <ul class="api-list">
+                <li>Finances API</li><li>Transfers API</li><li>Seller Wallet API</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Content & Marketing</div>
+            <ul class="api-list">
+                <li>A+ Content API</li><li>Solicitations API</li><li>Messaging API</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Advanced</div>
+            <ul class="api-list">
+                <li>Data Kiosk (GraphQL)</li><li>Tokens API (PII/RDT)</li><li>Uploads API</li><li>Supply Sources API</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Vendor-Specific</div>
+            <ul class="api-list">
+                <li>Vendor Direct Fulfillment APIs</li><li>Vendor Retail Procurement APIs (Orders, Shipments, Invoices, Payments)</li>
+            </ul>
+        </div>
+
+        <div class="section-label">Authentication</div>
+        <div class="info-grid">
+            <div class="info-box"><div class="info-box-label">Method</div><div class="info-box-value">OAuth 2.0 via Login with Amazon (LWA)</div></div>
+            <div class="info-box"><div class="info-box-label">Public Apps</div><div class="info-box-value">Authorization code flow</div></div>
+            <div class="info-box"><div class="info-box-label">Private Apps</div><div class="info-box-value">Self-authorization through Seller/Vendor Central</div></div>
+            <div class="info-box"><div class="info-box-label">PII Access</div><div class="info-box-value">Requires Restricted Data Token (RDT)</div></div>
+        </div>
+
+        <div class="section-label">Rate Limits</div>
+        <div class="info-grid">
+            <div class="info-box"><div class="info-box-label">Model</div><div class="info-box-value">Token bucket algorithm</div></div>
+            <div class="info-box"><div class="info-box-label">Varies By</div><div class="info-box-value">API operation, selling partner, and marketplace</div></div>
+            <div class="info-box"><div class="info-box-label">Header</div><div class="info-box-value"><code>x-amzn-RateLimit-Limit</code></div></div>
+            <div class="info-box"><div class="info-box-label">429 Errors</div><div class="info-box-value">Retryable with exponential backoff</div></div>
+        </div>
+
+        <div class="section-label">Pricing</div>
+        <table>
+            <thead><tr><th>Tier</th><th>Monthly Fee</th><th>Included GET Calls</th><th>Overage</th></tr></thead>
+            <tbody>
+                <tr><td>Basic</td><td>$0</td><td>2.5M</td><td>$0.40 / 1K</td></tr>
+                <tr><td>Pro</td><td>$1,000</td><td>25M</td><td>$0.40 / 1K</td></tr>
+                <tr><td>Advanced</td><td>$5,000</td><td>125M</td><td>$0.40 / 1K</td></tr>
+                <tr><td>Plus</td><td>$10,000</td><td>250M</td><td>$0.40 / 1K</td></tr>
+                <tr><td>Enterprise</td><td>Custom</td><td>Custom</td><td>Custom</td></tr>
+            </tbody>
+        </table>
+        <p style="font-size:13px;color:#888;margin-top:10px;">Annual fee of $1,400 also applies. Currently delayed — new timeline announced fall 2026. PUT/PATCH/POST calls are unlimited and unmetered across all tiers.</p>
+
+        <div class="section-label">Notable Limitations</div>
+        <ul class="limitations-list">
+            <li>Rate limits vary by endpoint and are not fully transparent</li>
+            <li>Restricted data requires additional authorization (RDT)</li>
+            <li>Annual subscription required for third-party apps (when fees take effect)</li>
+        </ul>
+    </div>
+
+    <!-- Shopify -->
+    <div class="platform-section shopify">
+        <div class="platform-header">
+            <div class="platform-icon">🛍️</div>
+            <div>
+                <div class="platform-title">Shopify – Admin & Storefront APIs</div>
+                <div class="platform-docs">Official Docs: <a href="https://shopify.dev/docs/api" target="_blank">shopify.dev/docs/api</a></div>
+            </div>
+        </div>
+
+        <div class="section-label">What You Can Build</div>
+        <div class="tag-grid">
+            <span class="tag">Custom storefronts (headless commerce)</span>
+            <span class="tag">Order & fulfillment automation</span>
+            <span class="tag">Inventory & product management apps</span>
+            <span class="tag">Checkout extensions & custom UI</span>
+            <span class="tag">Subscription & recurring billing tools</span>
+            <span class="tag">Multi-channel sales integrations</span>
+            <span class="tag">Analytics & reporting dashboards</span>
+            <span class="tag">Customer loyalty & marketing apps</span>
+            <span class="tag">B2B / wholesale portals</span>
+            <span class="tag">POS integrations</span>
+            <span class="tag">Dropshipping automation</span>
+            <span class="tag">Accounting / ERP connectors</span>
+            <span class="tag">Custom payment gateways</span>
+            <span class="tag">Blockchain / NFT / tokengating apps</span>
+            <span class="tag">Post-purchase upsell apps</span>
+            <span class="tag">Product recommendation engines</span>
+            <span class="tag">Donation and charity apps</span>
+        </div>
+
+        <div class="section-label">API Categories</div>
+        <div class="api-group">
+            <div class="api-group-title">GraphQL Admin API (Primary)</div>
+            <ul class="api-list">
+                <li>Products & Variants</li><li>Orders & Fulfillments</li><li>Customers</li>
+                <li>Inventory</li><li>Discounts & Marketing</li><li>Metafields</li>
+                <li>B2B Functionality</li><li>Billing & Payments</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Storefront API</div>
+            <ul class="api-list">
+                <li>Cart & Checkout</li><li>Product Catalog</li><li>Customer Accounts</li>
+                <li>Collections</li><li>Predictive Search</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Partner & Payments</div>
+            <ul class="api-list">
+                <li>Partner API</li><li>Payments Apps API</li>
+                <li>Customer Account API</li><li>Customer Privacy API</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Extensions & Customization</div>
+            <ul class="api-list">
+                <li>Shopify Functions</li><li>UI Extensions</li><li>Hydrogen Framework</li>
+                <li>Webhooks</li><li>ShopifyQL</li>
+            </ul>
+        </div>
+
+        <div class="section-label">Authentication</div>
+        <div class="info-grid">
+            <div class="info-box"><div class="info-box-label">Embedded Apps</div><div class="info-box-value">Shopify-managed token exchange</div></div>
+            <div class="info-box"><div class="info-box-label">External Apps</div><div class="info-box-value">OAuth 2.0 authorization code grant</div></div>
+            <div class="info-box"><div class="info-box-label">Internal Apps</div><div class="info-box-value">Client credentials grant</div></div>
+            <div class="info-box"><div class="info-box-label">Header</div><div class="info-box-value"><code>X-Shopify-Access-Token</code></div></div>
+        </div>
+
+        <div class="section-label">Rate Limits (GraphQL – Leaky Bucket)</div>
+        <table>
+            <thead><tr><th>Plan</th><th>Points / Second</th><th>Max Per Query</th></tr></thead>
+            <tbody>
+                <tr><td>Standard</td><td>100</td><td>1,000</td></tr>
+                <tr><td>Advanced</td><td>200</td><td>1,000</td></tr>
+                <tr><td>Shopify Plus</td><td>1,000</td><td>1,000</td></tr>
+                <tr><td>Enterprise</td><td>2,000</td><td>1,000</td></tr>
+            </tbody>
+        </table>
+        <p style="font-size:13px;color:#888;margin-top:10px;">Storefront API has no rate limits. Bulk operations also have no rate limits.</p>
+
+        <div class="section-label">Pricing</div>
+        <div class="info-grid">
+            <div class="info-box"><div class="info-box-label">API Access</div><div class="info-box-value">Free</div></div>
+            <div class="info-box"><div class="info-box-label">Partner Program</div><div class="info-box-value">Free to join</div></div>
+            <div class="info-box"><div class="info-box-label">App Monetization</div><div class="info-box-value">Free, subscription, one-time, or usage-based billing</div></div>
+        </div>
+
+        <div class="section-label">Notable Limitations</div>
+        <ul class="limitations-list">
+            <li>Rate limits scale with store plan tier</li>
+            <li>Array inputs limited to 250 items</li>
+            <li>Pagination capped at 25,000 objects</li>
+            <li>REST Admin API is legacy and being phased out</li>
+        </ul>
+    </div>
+
+    <!-- Etsy -->
+    <div class="platform-section etsy">
+        <div class="platform-header">
+            <div class="platform-icon">🎨</div>
+            <div>
+                <div class="platform-title">Etsy – Open API v3</div>
+                <div class="platform-docs">Official Docs: <a href="https://developers.etsy.com/documentation" target="_blank">developers.etsy.com/documentation</a></div>
+            </div>
+        </div>
+
+        <div class="section-label">What You Can Build</div>
+        <div class="tag-grid">
+            <span class="tag">Listing creation & bulk editing tools</span>
+            <span class="tag">Inventory management & sync tools</span>
+            <span class="tag">Order processing & fulfillment automation</span>
+            <span class="tag">Shop analytics dashboards</span>
+            <span class="tag">Multi-shop management platforms</span>
+            <span class="tag">Shipping & tracking integrations (200+ carriers)</span>
+            <span class="tag">Customer communication tools</span>
+            <span class="tag">Pricing optimization tools</span>
+            <span class="tag">SEO & listing optimization tools</span>
+            <span class="tag">Sales reporting & analytics</span>
+            <span class="tag">Tax calculation tools</span>
+            <span class="tag">Review management tools</span>
+            <span class="tag">Digital product delivery tools</span>
+        </div>
+
+        <div class="section-label">API Categories</div>
+        <div class="api-group">
+            <div class="api-group-title">Listings Management</div>
+            <ul class="api-list">
+                <li>Listings API</li><li>Listing Images API</li><li>Listing Inventory API</li>
+                <li>Digital Files API</li><li>Variations & SKUs</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Shop Management</div>
+            <ul class="api-list">
+                <li>Shop API</li><li>Shop Sections API</li><li>Shop Customization</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Orders & Fulfillment</div>
+            <ul class="api-list">
+                <li>Receipts (Orders) API</li><li>Transactions API</li><li>Shipment API</li>
+                <li>Shipping Profiles API</li><li>Processing Profiles API</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Additional</div>
+            <ul class="api-list">
+                <li>Taxonomy & Categories API</li><li>Payments API</li><li>Users API</li>
+                <li>Reviews API</li><li>Webhooks</li><li>Personalization API</li>
+            </ul>
+        </div>
+
+        <div class="section-label">Authentication</div>
+        <div class="info-grid">
+            <div class="info-box"><div class="info-box-label">Method</div><div class="info-box-value">OAuth 2.0 with PKCE</div></div>
+            <div class="info-box"><div class="info-box-label">Authorization URL</div><div class="info-box-value">etsy.com/oauth/connect</div></div>
+            <div class="info-box"><div class="info-box-label">Token Expiry</div><div class="info-box-value">Access token: 1 hour; refresh tokens supported</div></div>
+            <div class="info-box"><div class="info-box-label">Redirect URIs</div><div class="info-box-value">Must use HTTPS and match exactly</div></div>
+        </div>
+        <div class="section-label" style="margin-top:16px;">OAuth Scopes</div>
+        <table>
+            <thead><tr><th>Scope</th><th>Access</th></tr></thead>
+            <tbody>
+                <tr><td><code>listings_r/w/d</code></td><td>Read, write, delete listings</td></tr>
+                <tr><td><code>shops_r/w</code></td><td>Read and write shop data</td></tr>
+                <tr><td><code>transactions_r/w</code></td><td>Transaction access</td></tr>
+                <tr><td><code>billing_r</code></td><td>Billing access</td></tr>
+                <tr><td><code>profile_r/w</code></td><td>Profile management</td></tr>
+                <tr><td><code>favorites_r/w</code></td><td>Favorites management</td></tr>
+                <tr><td><code>cart_r/w</code></td><td>Cart operations</td></tr>
+                <tr><td><code>email_r</code></td><td>Email access</td></tr>
+            </tbody>
+        </table>
+
+        <div class="section-label">Rate Limits</div>
+        <div class="info-grid">
+            <div class="info-box"><div class="info-box-label">Model</div><div class="info-box-value">QPD + QPS (sliding 24-hour window), app-specific</div></div>
+            <div class="info-box"><div class="info-box-label">Headers</div><div class="info-box-value"><code>x-limit-per-day</code>, <code>x-remaining-today</code>, <code>x-limit-per-second</code></div></div>
+            <div class="info-box"><div class="info-box-label">Higher Limits</div><div class="info-box-value">Available on request via developer@etsy.com</div></div>
+        </div>
+        <div class="section-label" style="margin-top:16px;">Access Levels</div>
+        <table>
+            <thead><tr><th>Level</th><th>Scope</th><th>Approval</th></tr></thead>
+            <tbody>
+                <tr><td>Personal</td><td>Up to 5 shops</td><td>No review needed</td></tr>
+                <tr><td>Commercial</td><td>Multiple shops</td><td>Etsy review required</td></tr>
+            </tbody>
+        </table>
+
+        <div class="section-label">Pricing</div>
+        <div class="info-grid">
+            <div class="info-box"><div class="info-box-label">API Access</div><div class="info-box-value">Free, no usage fees</div></div>
+            <div class="info-box"><div class="info-box-label">Commercial Access</div><div class="info-box-value">Requires Etsy review (free)</div></div>
+        </div>
+
+        <div class="section-label">Notable Limitations</div>
+        <ul class="limitations-list">
+            <li>Rate limits are app-specific and not publicly disclosed</li>
+            <li>Personal access capped at 5 shops</li>
+            <li>Commercial access requires Etsy approval</li>
+            <li>No API for purchasing shipping labels</li>
+            <li>Digital orders don't support all fulfillment features</li>
+        </ul>
+    </div>
+
+    <!-- eBay -->
+    <div class="platform-section ebay">
+        <div class="platform-header">
+            <div class="platform-icon">🏷️</div>
+            <div>
+                <div class="platform-title">eBay – Developer APIs</div>
+                <div class="platform-docs">Official Docs: <a href="https://developer.ebay.com/docs" target="_blank">developer.ebay.com/docs</a></div>
+            </div>
+        </div>
+
+        <div class="section-label">What You Can Build</div>
+        <div class="tag-grid">
+            <span class="tag">Listing creation & management tools</span>
+            <span class="tag">Auction monitoring & automation</span>
+            <span class="tag">Inventory synchronization systems</span>
+            <span class="tag">Order fulfillment automation</span>
+            <span class="tag">Shipping & tracking integrations</span>
+            <span class="tag">Dynamic repricing tools</span>
+            <span class="tag">Product research & analytics</span>
+            <span class="tag">Multi-channel selling platforms</span>
+            <span class="tag">Deal finders & price comparison tools</span>
+            <span class="tag">Marketing campaign managers</span>
+            <span class="tag">Financial reporting systems</span>
+            <span class="tag">Compliance monitoring tools</span>
+            <span class="tag">Feedback & review management</span>
+            <span class="tag">Returns processing tools</span>
+            <span class="tag">Buyer shopping applications</span>
+            <span class="tag">Promotional campaign managers</span>
+        </div>
+
+        <div class="section-label">API Categories</div>
+        <div class="api-group">
+            <div class="api-group-title">Sell APIs</div>
+            <ul class="api-list">
+                <li>Fulfillment API</li><li>Inventory API</li><li>Account API</li>
+                <li>Marketing API</li><li>Analytics API</li><li>Compliance API</li>
+                <li>Feed API</li><li>Finances API</li><li>Logistics API</li>
+                <li>Metadata API</li><li>Negotiation API</li><li>Recommendation API</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Buy APIs</div>
+            <ul class="api-list">
+                <li>Browse API</li><li>Feed API</li><li>Marketing API</li>
+                <li>Offer API</li><li>Order API</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Commerce APIs</div>
+            <ul class="api-list">
+                <li>Catalog API</li><li>Charity API</li><li>Identity API</li>
+                <li>Media API</li><li>Notification API</li><li>Taxonomy API</li><li>Translation API</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Developer APIs</div>
+            <ul class="api-list">
+                <li>Analytics API (usage & rate limit monitoring)</li><li>Key Management API</li>
+            </ul>
+        </div>
+        <div class="api-group">
+            <div class="api-group-title">Legacy APIs (still supported)</div>
+            <ul class="api-list">
+                <li>Trading API</li><li>Finding API</li><li>Shopping API</li>
+            </ul>
+        </div>
+
+        <div class="section-label">Authentication</div>
+        <div class="info-grid">
+            <div class="info-box"><div class="info-box-label">Method</div><div class="info-box-value">OAuth 2.0</div></div>
+            <div class="info-box"><div class="info-box-label">Application Tokens</div><div class="info-box-value">Client credentials grant (public data)</div></div>
+            <div class="info-box"><div class="info-box-label">User Tokens</div><div class="info-box-value">Authorization code grant</div></div>
+            <div class="info-box"><div class="info-box-label">Legacy APIs</div><div class="info-box-value">OAuth tokens supported (migrated from older auth)</div></div>
+        </div>
+
+        <div class="section-label">Rate Limits</div>
+        <div class="info-grid">
+            <div class="info-box"><div class="info-box-label">Model</div><div class="info-box-value">Per-application and per-user limits</div></div>
+            <div class="info-box"><div class="info-box-label">Monitoring</div><div class="info-box-value">Via Analytics API: <code>getRateLimits</code>, <code>getUserRateLimits</code></div></div>
+            <div class="info-box"><div class="info-box-label">Headers</div><div class="info-box-value">Limit, remaining, and time window info included</div></div>
+            <div class="info-box"><div class="info-box-label">Note</div><div class="info-box-value">Specific limits vary by API and endpoint</div></div>
+        </div>
+
+        <div class="section-label">Pricing</div>
+        <div class="info-grid">
+            <div class="info-box"><div class="info-box-label">API Access</div><div class="info-box-value">Free, no usage fees</div></div>
+            <div class="info-box"><div class="info-box-label">Developer Program</div><div class="info-box-value">Free to join; tiered call limits</div></div>
+            <div class="info-box"><div class="info-box-label">Transactions</div><div class="info-box-value">Standard eBay selling fees apply</div></div>
+        </div>
+
+        <div class="section-label">Notable Limitations</div>
+        <ul class="limitations-list">
+            <li>Rate limits vary by API and are not fully transparent</li>
+            <li>Multiple API families (REST vs Legacy) with different capabilities</li>
+            <li>Some legacy APIs being phased out</li>
+            <li>OAuth token requests have separate rate limits</li>
+        </ul>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-card">
+        <h2>Summary</h2>
+        <p style="font-size:14px;color:#555;margin-bottom:20px;">All four platforms support OAuth 2.0 and can be used to build:</p>
+        <div class="use-case-grid">
+            <div class="use-case-item">SaaS tools for sellers</div>
+            <div class="use-case-item">Mobile apps for buyers and sellers</div>
+            <div class="use-case-item">Browser extensions for price comparison</div>
+            <div class="use-case-item">ERP / accounting integrations</div>
+            <div class="use-case-item">Analytics and BI platforms</div>
+            <div class="use-case-item">Multi-channel management dashboards</div>
+            <div class="use-case-item">Automated fulfillment & inventory systems</div>
+        </div>
+        <div class="summary-note">
+            Amazon is the most powerful but most complex and soon costly. Shopify has the most mature developer ecosystem. Etsy and eBay are free and straightforward to get started with.
+        </div>
+    </div>
+
+    <footer>Marketplace APIs – Developer Capability Guide &nbsp;·&nbsp; Data current as of 2025</footer>
+</div>
+</body>
+</html>
