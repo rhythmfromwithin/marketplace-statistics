@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Research Report: E-Commerce Trend Intelligence Tools</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #6c8ef5;
+    --accent2: #a78bfa;
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #8892b0;
+    --code-bg: #141720;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+  header {
+    background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 24px 40px;
+    text-align: center;
+  }
+  header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  header p {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+  nav {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 40px;
+  }
+  nav h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 16px; }
+  nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  nav ul li a {
+    display: inline-block;
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  nav ul li a:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  section { margin-bottom: 56px; }
+  h2.section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h2.section-title .layer-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--surface2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 20px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .card-header h3 { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+  .card-header .meta { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .badge-green { background: rgba(52,211,153,0.15); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+  .badge-yellow { background: rgba(251,191,36,0.15); color: var(--yellow); border: 1px solid rgba(251,191,36,0.3); }
+  .badge-red { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+  .badge-blue { background: rgba(108,142,245,0.15); color: var(--accent); border: 1px solid rgba(108,142,245,0.3); }
+  .badge-purple { background: rgba(167,139,250,0.15); color: var(--accent2); border: 1px solid rgba(167,139,250,0.3); }
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .info-item { background: var(--surface2); border-radius: 8px; padding: 12px 16px; }
+  .info-item .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 4px; }
+  .info-item .value { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+  .card p { color: var(--muted); font-size: 0.9rem; margin-bottom: 12px; }
+  .card ul { list-style: none; padding: 0; }
+  .card ul li {
+    padding: 6px 0 6px 20px;
+    position: relative;
+    color: var(--muted);
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(46,51,80,0.5);
+  }
+  .card ul li:last-child { border-bottom: none; }
+  .card ul li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-size: 0.8rem; }
+  .card h4 { font-size: 0.85rem; font-weight: 700; color: var(--accent2); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .verdict {
+    margin-top: 20px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    border-left: 3px solid;
+  }
+  .verdict-yes { background: rgba(52,211,153,0.08); border-color: var(--green); color: #a7f3d0; }
+  .verdict-warn { background: rgba(251,191,36,0.08); border-color: var(--yellow); color: #fde68a; }
+  .verdict-no { background: rgba(248,113,113,0.08); border-color: var(--red); color: #fecaca; }
+  .verdict strong { display: block; margin-bottom: 4px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th {
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+  }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+  tr:hover td { background: rgba(108,142,245,0.04); }
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 32px; }
+  code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.82rem;
+    background: var(--code-bg);
+    color: #a5f3fc;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    overflow-x: auto;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.82rem;
+    color: #a5f3fc;
+    line-height: 1.6;
+    margin: 16px 0;
+  }
+  .tier-section { margin-bottom: 32px; }
+  .tier-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tier-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .findings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+  .finding-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .finding-card .num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--border);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .finding-card p { color: var(--muted); font-size: 0.88rem; margin: 0; }
+  .finding-card strong { color: var(--text); }
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>API Research Report</h1>
+  <p>E-Commerce Trend Intelligence Tools &nbsp;·&nbsp; Last updated: 2026-04-14</p>
+  <p style="margin-top:8px; font-size:0.8rem;">All information sourced from official documentation only.</p>
+</header>
+
+<div class="container">
+
+  <nav>
+    <h2>Jump to Layer</h2>
+    <ul>
+      <li><a href="#summary">Executive Summary</a></li>
+      <li><a href="#layer1">Search Intent</a></li>
+      <li><a href="#layer2">Marketplace Signals</a></li>
+      <li><a href="#layer3">Content & Attention</a></li>
+      <li><a href="#layer4">Seller & Operator</a></li>
+      <li><a href="#layer5">Paid Ads</a></li>
+      <li><a href="#recommendations">Recommendations</a></li>
+      <li><a href="#findings">Key Findings</a></li>
+    </ul>
+  </nav>
+
+  <!-- EXECUTIVE SUMMARY -->
+  <section id="summary">
+    <h2 class="section-title">Executive Summary</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tool</th><th>Layer</th><th>API Access</th><th>Data Richness</th><th>Build Complexity</th><th>Cost</th><th>Viable?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Google Trends</td><td>Search Intent</td><td>Alpha (invite-only)</td><td>Medium</td><td>Low</td><td>Free (unofficial)</td><td><span class="badge badge-yellow">⚠️ Risky</span></td></tr>
+          <tr><td>Ahrefs</td><td>Search Intent</td><td>Yes (v3)</td><td>High</td><td>Medium</td><td>$129+/mo</td><td><span class="badge badge-green">✅ Yes</span></td></tr>
+          <tr><td>Semrush</td><td>Search Intent</td><td>Yes</td><td>High</td><td>Medium</td><td>$499.95+/mo</td><td><span class="badge badge-yellow">⚠️ Expensive</span></td></tr>
+          <tr><td>Keyword Tool</td><td>Search Intent</td><td>Yes (Pro)</td><td>Medium</td><td>Low</td><td>Paid plans</td><td><span class="badge badge-green">✅ Yes</span></td></tr>
+          <tr><td>Amazon SP-API</td><td>Marketplace</td><td>Yes</td><td>High</td><td>High</td><td>$1,400/yr + usage</td><td><span class="badge badge-green">✅ Yes</span></td></tr>
+          <tr><td>eBay Browse API</td><td>Marketplace</td><td>Yes</td><td>Medium</td><td>Medium</td><td>Free (restricted)</td><td><span class="badge badge-green">✅ Yes</span></td></tr>
+          <tr><td>Etsy Open API v3</td><td>Marketplace</td><td>Yes</td><td>Low–Medium</td><td>Low</td><td>Free</td><td><span class="badge badge-yellow">⚠️ Limited</span></td></tr>
+          <tr><td>eRank</td><td>Marketplace</td><td>No public API</td><td>N/A</td><td>N/A</td><td>N/A</td><td><span class="badge badge-red">❌ No</span></td></tr>
+          <tr><td>Shopify Storefront</td><td>Marketplace</td><td>Yes</td><td>Low</td><td>Low</td><td>Free</td><td><span class="badge badge-yellow">⚠️ Per-store only</span></td></tr>
+          <tr><td>TikTok Research API</td><td>Content</td><td>Academic only</td><td>High</td><td>Medium</td><td>Free (restricted)</td><td><span class="badge badge-red">❌ No</span></td></tr>
+          <tr><td>TikTok Creative Center</td><td>Content</td><td>No API</td><td>N/A</td><td>N/A</td><td>N/A</td><td><span class="badge badge-red">❌ No</span></td></tr>
+          <tr><td>Instagram Graph API</td><td>Content</td><td>Yes (restricted)</td><td>Low</td><td>Medium</td><td>Free</td><td><span class="badge badge-yellow">⚠️ Very limited</span></td></tr>
+          <tr><td>YouTube Data API v3</td><td>Content</td><td>Yes</td><td>Medium</td><td>Low</td><td>Free (10K units/day)</td><td><span class="badge badge-green">✅ Yes</span></td></tr>
+          <tr><td>Exploding Topics</td><td>Content</td><td>Yes</td><td>High</td><td>Low</td><td>$1,000+/mo</td><td><span class="badge badge-yellow">⚠️ Expensive</span></td></tr>
+          <tr><td>Reddit API</td><td>Seller/Operator</td><td>Yes</td><td>High</td><td>Low</td><td>Free / $0.24/1K calls</td><td><span class="badge badge-green">✅ Yes</span></td></tr>
+          <tr><td>X/Twitter API v2</td><td>Seller/Operator</td><td>Yes</td><td>Medium</td><td>Medium</td><td>$200–$5,000/mo</td><td><span class="badge badge-yellow">⚠️ Expensive</span></td></tr>
+          <tr><td>Meta Ad Library API</td><td>Paid Ads</td><td>Yes (free)</td><td>Low–Medium</td><td>Medium</td><td>Free</td><td><span class="badge badge-green">✅ Yes</span></td></tr>
+          <tr><td>TikTok Marketing API</td><td>Paid Ads</td><td>Yes (own data)</td><td>Low</td><td>Medium</td><td>Free</td><td><span class="badge badge-red">❌ Own data only</span></td></tr>
+          <tr><td>SimilarWeb API</td><td>Paid Ads</td><td>Yes</td><td>High</td><td>Low</td><td>$125–199+/mo</td><td><span class="badge badge-green">✅ Yes</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- LAYER 1: SEARCH INTENT -->
+  <section id="layer1">
+    <h2 class="section-title">Layer 1: Search Intent <span class="layer-badge">Search Intent</span></h2>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Google Trends</h3>
+        <div class="meta">
+          <span class="badge badge-yellow">⚠️ Risky</span>
+          <span class="badge badge-blue">Free (unofficial)</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">API Status</div><div class="value">Alpha (invite-only)</div></div>
+        <div class="info-item"><div class="label">Auth</div><div class="value">N/A (unofficial)</div></div>
+        <div class="info-item"><div class="label">Cost</div><div class="value">Free</div></div>
+        <div class="info-item"><div class="label">Data Richness</div><div class="value">Medium</div></div>
+      </div>
+      <h4>Capabilities (Alpha API, invite-only)</h4>
+      <ul>
+        <li>Real-time and historical search interest data (0–100 normalized score)</li>
+        <li>Geographic breakdown by country, region, city</li>
+        <li>Related queries and topics</li>
+        <li>Category filtering</li>
+        <li>Comparison across up to 5 terms</li>
+      </ul>
+      <h4>Practical Path for Builders</h4>
+      <ul>
+        <li>Use <code>pytrends</code> at low volume with rate limiting (risk: ToS violation, IP bans)</li>
+        <li>Apply for Google Trends Alpha API access (no public application process)</li>
+        <li>Use Google Search Console API as a proxy for your own site's search data</li>
+      </ul>
+      <div class="verdict verdict-warn"><strong>Verdict</strong>Usable via unofficial library at low scale, but not production-safe. No official API for commercial use.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Ahrefs API</h3>
+        <div class="meta">
+          <span class="badge badge-green">✅ Viable</span>
+          <span class="badge badge-blue">v3</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">API Version</div><div class="value">v3 (current)</div></div>
+        <div class="info-item"><div class="label">Auth</div><div class="value">Bearer token</div></div>
+        <div class="info-item"><div class="label">Cost</div><div class="value">$129–$449/mo</div></div>
+        <div class="info-item"><div class="label">Data Richness</div><div class="value">High</div></div>
+      </div>
+      <h4>Key Capabilities</h4>
+      <ul>
+        <li><code>keywords-explorer</code> — keyword volume, difficulty, CPC, SERP features</li>
+        <li><code>site-explorer</code> — backlinks, organic traffic, referring domains</li>
+        <li><code>content-explorer</code> — top-performing content by topic</li>
+        <li><code>rank-tracker</code> — SERP position tracking over time</li>
+      </ul>
+      <h4>Relevant Endpoints</h4>
+      <ul>
+        <li><code>GET /v3/keywords-explorer/keywords</code> — search volume + difficulty</li>
+        <li><code>GET /v3/keywords-explorer/matching-terms</code> — related keyword clusters</li>
+        <li><code>GET /v3/keywords-explorer/search-suggestions</code> — autocomplete suggestions</li>
+      </ul>
+      <div class="verdict verdict-yes"><strong>Verdict</strong>Strong keyword intelligence API. Viable for building search intent layer if budget allows.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Semrush API</h3>
+        <div class="meta">
+          <span class="badge badge-yellow">⚠️ Expensive</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Auth</div><div class="value">API key</div></div>
+        <div class="info-item"><div class="label">Cost</div><div class="value">$499.95+/mo</div></div>
+        <div class="info-item"><div class="label">Data Richness</div><div class="value">High</div></div>
+        <div class="info-item"><div class="label">Units/Request</div><div class="value">10 (varies)</div></div>
+      </div>
+      <h4>Key Capabilities</h4>
+      <ul>
+        <li>Domain analytics (organic/paid traffic estimates)</li>
+        <li>Keyword research (volume, CPC, competition, trend)</li>
+        <li>Keyword gap analysis &amp; backlink analytics</li>
+        <li>Market Explorer (TAM, audience overlap)</li>
+      </ul>
+      <h4>Relevant Endpoints</h4>
+      <ul>
+        <li><code>phrase_these</code> — keyword metrics for a list of keywords</li>
+        <li><code>phrase_related</code> — related keywords</li>
+        <li><code>phrase_organic</code> — organic search results for a keyword</li>
+      </ul>
+      <div class="verdict verdict-warn"><strong>Verdict</strong>Comprehensive but expensive. Best for agencies or high-revenue products. Overkill for MVP.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Keyword Tool API</h3>
+        <div class="meta">
+          <span class="badge badge-green">✅ Viable</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Auth</div><div class="value">API key</div></div>
+        <div class="info-item"><div class="label">Cost</div><div class="value">$89–$199/mo</div></div>
+        <div class="info-item"><div class="label">Requests/Day</div><div class="value">5K–100K</div></div>
+        <div class="info-item"><div class="label">Data Richness</div><div class="value">Medium</div></div>
+      </div>
+      <h4>Key Capabilities</h4>
+      <ul>
+        <li>Keyword suggestions from Google, YouTube, Bing, Amazon, eBay, App Store</li>
+        <li>Amazon-specific keyword suggestions (based on Amazon autocomplete)</li>
+        <li>eBay-specific keyword suggestions</li>
+        <li>CPC and competition data</li>
+      </ul>
+      <div class="verdict verdict-yes"><strong>Verdict</strong>Useful for Amazon/eBay keyword discovery. Affordable entry point for search intent layer.</div>
+    </div>
+  </section>
+
+  <!-- LAYER 3: CONTENT -->
+  <section id="layer3">
+    <h2 class="section-title">Layer 3: Content &amp; Attention <span class="layer-badge">Content</span></h2>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>TikTok Research API</h3>
+        <div class="meta"><span class="badge badge-red">❌ Academic only</span></div>
+      </div>
+      <p>Access requires institutional affiliation and application approval. Not available for commercial products.</p>
+      <h4>Capabilities (if approved)</h4>
+      <ul>
+        <li>Query public videos by keyword, hashtag, region, date range</li>
+        <li>Video metadata: views, likes, comments, shares, duration</li>
+        <li>Rate limit: 1,000 requests/day</li>
+      </ul>
+      <div class="verdict verdict-no"><strong>Verdict</strong>Not viable for commercial products. Academic use only.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>TikTok Creative Center</h3>
+        <div class="meta"><span class="badge badge-red">❌ No API</span></div>
+      </div>
+      <p>Web-only tool showing trending hashtags, top ads by industry, popular songs, and keyword insights. No programmatic access.</p>
+      <div class="verdict verdict-no"><strong>Verdict</strong>No API access. Data not programmatically accessible.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Instagram Graph API</h3>
+        <div class="meta">
+          <span class="badge badge-yellow">⚠️ Very limited</span>
+          <span class="badge badge-blue">Free</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Auth</div><div class="value">OAuth 2.0 (Facebook Login)</div></div>
+        <div class="info-item"><div class="label">Cost</div><div class="value">Free</div></div>
+        <div class="info-item"><div class="label">Hashtag limit</div><div class="value">30 unique / 7 days</div></div>
+      </div>
+      <h4>Key Restrictions</h4>
+      <ul>
+        <li>Only 30 unique hashtags per 7 days per Instagram Business Account</li>
+        <li>No trending hashtags endpoint</li>
+        <li><code>like_count</code> hidden on many posts (privacy update)</li>
+        <li>Requires connected Facebook Page + Instagram Business/Creator account</li>
+      </ul>
+      <div class="verdict verdict-warn"><strong>Verdict</strong>Too restricted for trend intelligence. 30 hashtags/week limit makes systematic trend tracking impractical.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>YouTube Data API v3</h3>
+        <div class="meta">
+          <span class="badge badge-green">✅ Viable</span>
+          <span class="badge badge-blue">Free</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Auth</div><div class="value">API key / OAuth 2.0</div></div>
+        <div class="info-item"><div class="label">Cost</div><div class="value">Free</div></div>
+        <div class="info-item"><div class="label">Quota</div><div class="value">10,000 units/day</div></div>
+        <div class="info-item"><div class="label">Search cost</div><div class="value">100 units/request</div></div>
+      </div>
+      <h4>Key Endpoints</h4>
+      <ul>
+        <li><code>GET /videos?chart=mostPopular</code> — most popular videos globally or by region</li>
+        <li><code>GET /search?q=...&amp;order=viewCount</code> — search by keyword, sorted by views</li>
+        <li><code>GET /channels</code> — channel statistics</li>
+      </ul>
+      <div class="verdict verdict-yes"><strong>Verdict</strong>Viable and free. Good signal for content-driven product trends. Quota is manageable for focused use cases.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Exploding Topics API</h3>
+        <div class="meta">
+          <span class="badge badge-yellow">⚠️ Expensive</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Auth</div><div class="value">API key</div></div>
+        <div class="info-item"><div class="label">Min API cost</div><div class="value">$249/mo (Business)</div></div>
+        <div class="info-item"><div class="label">Data Richness</div><div class="value">High</div></div>
+      </div>
+      <h4>Key Capabilities</h4>
+      <ul>
+        <li>Trending topics database (curated + algorithmic)</li>
+        <li>Growth rate and trajectory data</li>
+        <li>Category filtering (e-commerce, tech, health, etc.)</li>
+        <li><code>GET /api/v1/topics</code> — list trending topics with filters</li>
+      </ul>
+      <div class="verdict verdict-warn"><strong>Verdict</strong>High-quality curated trend data. $249/mo minimum for meaningful API access.</div>
+    </div>
+  </section>
+
+  <!-- LAYER 4: SELLER & OPERATOR -->
+  <section id="layer4">
+    <h2 class="section-title">Layer 4: Seller &amp; Operator <span class="layer-badge">Seller</span></h2>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Reddit API</h3>
+        <div class="meta">
+          <span class="badge badge-green">✅ Viable</span>
+          <span class="badge badge-blue">Free tier</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Auth</div><div class="value">OAuth 2.0</div></div>
+        <div class="info-item"><div class="label">Free tier</div><div class="value">100 QPM</div></div>
+        <div class="info-item"><div class="label">Commercial</div><div class="value">$0.24 / 1K calls</div></div>
+        <div class="info-item"><div class="label">Data Richness</div><div class="value">High</div></div>
+      </div>
+      <h4>Key Endpoints</h4>
+      <ul>
+        <li><code>GET /r/{subreddit}/hot</code> — hot posts</li>
+        <li><code>GET /r/{subreddit}/top?t=week</code> — top posts by time period</li>
+        <li><code>GET /search?q=...&amp;subreddit=...</code> — cross-subreddit search</li>
+      </ul>
+      <h4>Relevant Subreddits</h4>
+      <ul>
+        <li><code>r/FulfillmentByAmazon</code> — Amazon FBA sellers</li>
+        <li><code>r/Shopify</code> — Shopify merchants</li>
+        <li><code>r/EtsySellers</code> — Etsy seller community</li>
+        <li><code>r/ecommerce</code> — general e-commerce discussion</li>
+      </ul>
+      <div class="verdict verdict-yes"><strong>Verdict</strong>Excellent signal source for seller sentiment and emerging trends. Affordable at scale. High signal-to-noise ratio in seller subreddits.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>X/Twitter API v2</h3>
+        <div class="meta"><span class="badge badge-yellow">⚠️ Expensive</span></div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Auth</div><div class="value">OAuth 2.0 / Bearer</div></div>
+        <div class="info-item"><div class="label">Basic tier</div><div class="value">$200/mo</div></div>
+        <div class="info-item"><div class="label">Pro tier</div><div class="value">$5,000/mo</div></div>
+        <div class="info-item"><div class="label">Free tier</div><div class="value">Write only</div></div>
+      </div>
+      <h4>Key Endpoints (Basic)</h4>
+      <ul>
+        <li><code>GET /2/tweets/search/recent</code> — last 7 days</li>
+        <li><code>GET /2/trends/by/woeid/{id}</code> — trending topics by location</li>
+        <li>Full archive search requires Pro ($5,000/mo)</li>
+      </ul>
+      <div class="verdict verdict-warn"><strong>Verdict</strong>Useful but expensive. $200/mo minimum for read access. High cost limits viability for early-stage products.</div>
+    </div>
+  </section>
+
+  <!-- LAYER 5: PAID ADS -->
+  <section id="layer5">
+    <h2 class="section-title">Layer 5: Paid Ads Intelligence <span class="layer-badge">Paid Ads</span></h2>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Meta Ad Library API</h3>
+        <div class="meta">
+          <span class="badge badge-green">✅ Viable</span>
+          <span class="badge badge-blue">Free</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Auth</div><div class="value">Facebook Login + ID verify</div></div>
+        <div class="info-item"><div class="label">Cost</div><div class="value">Free</div></div>
+        <div class="info-item"><div class="label">Data Richness</div><div class="value">Low–Medium</div></div>
+      </div>
+      <h4>Key Capabilities</h4>
+      <ul>
+        <li>Search active ads across Facebook, Instagram, Messenger, Audience Network</li>
+        <li>Returns: ad creative, ad copy, CTA, landing page URL, impressions range, spend range</li>
+        <li><code>GET /ads_archive</code> — search ad library by keyword, country, category</li>
+      </ul>
+      <h4>Limitations</h4>
+      <ul>
+        <li>Spend data is ranges only (e.g., "$1,000–$5,000"), not exact</li>
+        <li>No click-through rate or conversion data</li>
+      </ul>
+      <div class="verdict verdict-yes"><strong>Verdict</strong>Free and accessible. Spend ranges limit precision but directional signal is valuable. Good for identifying aggressively advertised products.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>TikTok Marketing API</h3>
+        <div class="meta"><span class="badge badge-red">❌ Own data only</span></div>
+      </div>
+      <p>Only accesses data for your own TikTok Ads account. No competitor ad data, no cross-advertiser trending data.</p>
+      <div class="verdict verdict-no"><strong>Verdict</strong>Not useful for competitive ad intelligence. Own-data only.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>SimilarWeb API</h3>
+        <div class="meta">
+          <span class="badge badge-green">✅ Viable</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Auth</div><div class="value">API key</div></div>
+        <div class="info-item"><div class="label">Starter</div><div class="value">$125/mo</div></div>
+        <div class="info-item"><div class="label">Professional</div><div class="value">$199/mo</div></div>
+        <div class="info-item"><div class="label">Data Richness</div><div class="value">High</div></div>
+      </div>
+      <h4>Key Endpoints</h4>
+      <ul>
+        <li><code>GET /v1/website/{domain}/total-traffic-and-engagement/visits</code> — monthly visits</li>
+        <li><code>GET /v1/website/{domain}/traffic-sources/search-keywords</code> — organic + paid keywords</li>
+        <li><code>GET /v1/industry-analysis/{category}/traffic-and-engagement</code> — industry trends</li>
+      </ul>
+      <div class="verdict verdict-yes"><strong>Verdict</strong>Useful for identifying scaling e-commerce players. Good complement to Meta Ad Library.</div>
+    </div>
+  </section>
+
+  <!-- RECOMMENDATIONS -->
+  <section id="recommendations">
+    <h2 class="section-title">Practical Recommendations</h2>
+
+    <div class="tier-section">
+      <div class="tier-title">Tier 1 — Start here (free or low cost)</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Signal</th><th>API</th><th>Cost</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Marketplace trends</td><td>eBay Browse API</td><td>Free</td><td>BEST_SELLING sort, no auth needed</td></tr>
+            <tr><td>Marketplace trends</td><td>Etsy Open API v3</td><td>Free</td><td>Listing search, review data</td></tr>
+            <tr><td>Review data</td><td>Etsy Open API v3</td><td>Free</td><td>Full review text available</td></tr>
+            <tr><td>Content trends</td><td>YouTube Data API v3</td><td>Free</td><td>mostPopular + keyword search</td></tr>
+            <tr><td>Seller sentiment</td><td>Reddit API</td><td>Free tier</td><td>r/FulfillmentByAmazon, r/Shopify</td></tr>
+            <tr><td>Ad intelligence</td><td>Meta Ad Library API</td><td>Free</td><td>Spend ranges, creative access</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tier-section">
+      <div class="tier-title">Tier 2 — Add when revenue justifies (~$350/mo)</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Signal</th><th>API</th><th>Cost</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Keyword data</td><td>Keyword Tool API</td><td>$89/mo</td><td>Amazon/eBay keyword suggestions</td></tr>
+            <tr><td>Web traffic</td><td>SimilarWeb API</td><td>$125/mo</td><td>Identify scaling competitors</td></tr>
+            <tr><td>Deep keyword</td><td>Ahrefs API</td><td>$129/mo</td><td>Volume + difficulty data</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tier-section">
+      <div class="tier-title">Tier 3 — Post PMF</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Signal</th><th>API</th><th>Cost</th></tr></thead>
+          <tbody>
+            <tr><td>Largest marketplace</td><td>Amazon SP-API</td><td>$1,400/yr</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tier-section">
+      <div class="tier-title">Avoid or defer</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tool</th><th>Reason</th></tr></thead>
+          <tbody>
+            <tr><td>TikTok Research API</td><td>Academic only, not commercial</td></tr>
+            <tr><td>TikTok Creative Center</td><td>No API</td></tr>
+            <tr><td>Instagram Graph API</td><td>30 hashtags/week limit — unusable</td></tr>
+            <tr><td>eRank</td><td>No API</td></tr>
+            <tr><td>Shopify Storefront API</td><td>Per-store only, no aggregate data</td></tr>
+            <tr><td>X/Twitter API</td><td>$200/mo minimum for read access</td></tr>
+            <tr><td>Semrush API</td><td>$499.95/mo — too expensive for MVP</td></tr>
+            <tr><td>Exploding Topics</td><td>$249/mo minimum for API</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3 style="color:var(--text);margin:32px 0 16px;font-size:1rem;">Recommended MVP Data Architecture</h3>
+    <pre>Free Tier Stack (Week 1-4):
+├── Etsy API          → listing data + reviews
+├── eBay Browse API   → BEST_SELLING products
+├── YouTube Data API  → trending product videos
+├── Reddit API        → seller community signals
+└── Meta Ad Library   → active ad creatives
+
+Paid Tier Stack (Month 3+, ~$350/mo):
+├── Keyword Tool API ($89/mo)   → Amazon/eBay keyword suggestions
+├── SimilarWeb API ($125/mo)    → competitor traffic analysis
+└── Ahrefs API ($129/mo)        → keyword volume + difficulty
+
+Enterprise Stack (Post PMF):
+└── Amazon SP-API ($1,400/yr)   → BSR data, largest market</pre>
+  </section>
+
+  <!-- KEY FINDINGS -->
+  <section id="findings">
+    <h2 class="section-title">Key Findings</h2>
+    <div class="findings-grid">
+      <div class="finding-card"><div class="num">01</div><p><strong>No single "trending products" API exists</strong> — you must triangulate from multiple signals (BSR, search volume, content velocity, ad spend).</p></div>
+      <div class="finding-card"><div class="num">02</div><p><strong>TikTok is a black box</strong> — Research API is academic-only. Creative Center has no API. TikTok trend data is not programmatically accessible for commercial use.</p></div>
+      <div class="finding-card"><div class="num">03</div><p><strong>Instagram is severely restricted</strong> — 30 hashtag queries per week makes it useless for systematic trend tracking.</p></div>
+      <div class="finding-card"><div class="num">04</div><p><strong>Reddit is underrated</strong> — free tier is generous, seller subreddits have high signal, and the API is well-documented.</p></div>
+      <div class="finding-card"><div class="num">05</div><p><strong>Etsy reviews are a goldmine</strong> — full review text is accessible via free API. Strongest data source for the Review Mining product.</p></div>
+      <div class="finding-card"><div class="num">06</div><p><strong>Amazon is richest but most expensive</strong> — BSR data available via SP-API but the $1,400/yr barrier makes it a Phase 2 investment.</p></div>
+      <div class="finding-card"><div class="num">07</div><p><strong>Meta Ad Library is free and underused</strong> — spend ranges are imprecise but directional signal is strong. Good for identifying hot product categories.</p></div>
+      <div class="finding-card"><div class="num">08</div><p><strong>YouTube is a viable early signal</strong> — mostPopular endpoint + keyword search can surface product trends before they hit search volume.</p></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <p>All information sourced from official API documentation. No unofficial or unverified data included.</p>
+  <p style="margin-top:8px;">Last updated: 2026-04-14</p>
+</footer>
+
+</body>
+</html>
+    <h2 class="section-title">Layer 2: Marketplace Native Signals <span class="layer-badge">Marketplace</span></h2>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Amazon SP-API</h3>
+        <div class="meta">
+          <span class="badge badge-green">✅ Viable</span>
+          <span class="badge badge-yellow">High barrier</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Auth</div><div class="value">OAuth 2.0 + AWS Sig v4</div></div>
+        <div class="info-item"><div class="label">Cost</div><div class="value">$1,400/yr + usage</div></div>
+        <div class="info-item"><div class="label">Data Richness</div><div class="value">High</div></div>
+        <div class="info-item"><div class="label">Complexity</div><div class="value">High</div></div>
+      </div>
+      <h4>Key Endpoints</h4>
+      <ul>
+        <li><code>GET /catalog/2022-04-01/items</code> — search catalog, returns BSR data</li>
+        <li><code>GET /products/pricing/2022-05-01/items/competitiveSummary</code> — competitive pricing</li>
+        <li><code>GET_FLAT_FILE_OPEN_LISTINGS_DATA</code> — all active listings</li>
+        <li><code>GET_REVIEWS_DATA_REPORT</code> — seller's own products only</li>
+      </ul>
+      <h4>Restrictions</h4>
+      <ul>
+        <li>No "Movers &amp; Shakers" endpoint — web-only feature</li>
+        <li>Review data limited to seller's own ASINs</li>
+        <li>Requires active seller account or explicit seller authorization</li>
+      </ul>
+      <div class="verdict verdict-yes"><strong>Verdict</strong>Viable for BSR-based trend detection. High barrier ($1,400/yr). Best approached after product-market fit.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>eBay Browse API</h3>
+        <div class="meta">
+          <span class="badge badge-green">✅ Viable</span>
+          <span class="badge badge-blue">Free</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Auth</div><div class="value">OAuth 2.0 (App token)</div></div>
+        <div class="info-item"><div class="label">Cost</div><div class="value">Free</div></div>
+        <div class="info-item"><div class="label">Rate Limit</div><div class="value">5,000 calls/day</div></div>
+        <div class="info-item"><div class="label">Data Richness</div><div class="value">Medium</div></div>
+      </div>
+      <h4>Key Capabilities</h4>
+      <ul>
+        <li><code>sort=BEST_MATCH</code> — eBay's relevance ranking</li>
+        <li><code>sort=NEWLY_LISTED</code> — newest listings</li>
+        <li>Filter by category, condition, price range, location</li>
+        <li><code>getAlsoBoughtByProduct</code> / <code>getAlsoViewedByProduct</code> — related products</li>
+      </ul>
+      <h4>Restrictions</h4>
+      <ul>
+        <li>No dedicated "trending" endpoint</li>
+        <li>Completed/sold data not available via API — web only</li>
+      </ul>
+      <div class="verdict verdict-yes"><strong>Verdict</strong>Good for product search and catalog data. No true "trending sold" endpoint. Useful as one signal among many.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Etsy Open API v3</h3>
+        <div class="meta">
+          <span class="badge badge-yellow">⚠️ Limited</span>
+          <span class="badge badge-blue">Free</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Auth</div><div class="value">OAuth 2.0 / API key</div></div>
+        <div class="info-item"><div class="label">Cost</div><div class="value">Free</div></div>
+        <div class="info-item"><div class="label">Rate Limit</div><div class="value">10,000 req/day</div></div>
+        <div class="info-item"><div class="label">Burst</div><div class="value">10 req/sec</div></div>
+      </div>
+      <h4>Key Endpoints</h4>
+      <ul>
+        <li><code>GET /v3/application/listings/active?keywords=...</code> — keyword search</li>
+        <li><code>GET /v3/application/listings/{id}/reviews</code> — listing reviews</li>
+        <li><code>GET /v3/application/shops/{id}/reviews</code> — shop reviews</li>
+        <li>Sort by: <code>created</code>, <code>price</code>, <code>updated</code>, <code>score</code></li>
+      </ul>
+      <h4>Removed in v3</h4>
+      <ul>
+        <li>Trending search terms endpoint (was in v2)</li>
+        <li>Category trending data (removed)</li>
+        <li>No sales volume or revenue data</li>
+      </ul>
+      <div class="verdict verdict-warn"><strong>Verdict</strong>Good for listing data and reviews. No trending signal. Review Mining use case is well-supported.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>eRank</h3>
+        <div class="meta"><span class="badge badge-red">❌ No API</span></div>
+      </div>
+      <p>No public API available. eRank is a web-only SaaS tool for Etsy sellers. Trending tags, keyword estimates, and competitor analysis are web-only features.</p>
+      <div class="verdict verdict-no"><strong>Verdict</strong>No API. Cannot be integrated programmatically. Use Etsy API directly instead.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Shopify Storefront API</h3>
+        <div class="meta">
+          <span class="badge badge-yellow">⚠️ Per-store only</span>
+          <span class="badge badge-blue">Free</span>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Auth</div><div class="value">Storefront token (per-store)</div></div>
+        <div class="info-item"><div class="label">Cost</div><div class="value">Free</div></div>
+        <div class="info-item"><div class="label">Data Richness</div><div class="value">Low</div></div>
+        <div class="info-item"><div class="label">Complexity</div><div class="value">Low</div></div>
+      </div>
+      <h4>Key Capabilities</h4>
+      <ul>
+        <li><code>products(sortKey: BEST_SELLING)</code> — best-selling products for a specific store</li>
+        <li><code>predictiveSearch</code> — autocomplete-style search results</li>
+        <li>Filter by collection, tag, vendor, product type</li>
+      </ul>
+      <h4>Critical Limitation</h4>
+      <ul>
+        <li>Access is per-store — need a token from each individual Shopify store</li>
+        <li>No cross-store trending data</li>
+        <li>Shopify's "Trending Products" feature is web-only</li>
+      </ul>
+      <div class="verdict verdict-warn"><strong>Verdict</strong>Per-store only. Cannot aggregate cross-Shopify trending data. Useful for merchant-facing tools, not market intelligence.</div>
+    </div>
+  </section>
+
+  <!-- RECOMMENDATIONS -->
+  <section id="recommendations">
+    <h2 class="section-title">Recommended MVP Data Architecture</h2>
+
+    <div class="card">
+      <h3>Free Tier Stack (Week 1-4)</h3>
+      <ul>
+        <li>Etsy API → listing data + reviews</li>
+        <li>eBay Browse API → BEST_SELLING products</li>
+        <li>YouTube Data API → trending product videos</li>
+        <li>Reddit API → seller community signals</li>
+        <li>Meta Ad Library → active ad creatives</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Paid Tier Stack (Month 3+, ~$350/mo)</h3>
+      <ul>
+        <li>Keyword Tool API ($89/mo) → Amazon/eBay keyword suggestions</li>
+        <li>SimilarWeb API ($125/mo) → competitor traffic analysis</li>
+        <li>Ahrefs API ($129/mo) → keyword volume + difficulty</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Enterprise Stack (Post PMF)</h3>
+      <ul>
+        <li>Amazon SP-API ($1,400/yr) → BSR data, largest market</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- KEY FINDINGS -->
+  <section id="findings">
+    <h2 class="section-title">Key Findings</h2>
+    <div class="findings-grid">
+      <div class="card">
+        <h3>1. Google Trends has no official API</h3>
+        <p>The widely-used pytrends library violates Google's ToS. Not production-safe.</p>
+      </div>
+      <div class="card">
+        <h3>2. TikTok is a black box</h3>
+        <p>Research API is academic-only. Creative Center has no API. TikTok trend data is not programmatically accessible for commercial use.</p>
+      </div>
+      <div class="card">
+        <h3>3. Instagram is severely restricted</h3>
+        <p>30 hashtag queries per week makes it useless for systematic trend tracking.</p>
+      </div>
+      <div class="card">
+        <h3>4. Reddit is underrated</h3>
+        <p>Free tier is generous, seller subreddits have high signal, and the API is well-documented.</p>
+      </div>
+      <div class="card">
+        <h3>5. Etsy reviews are a goldmine</h3>
+        <p>Full review text is accessible via free API. This is the strongest data source for the Review Mining product.</p>
+      </div>
+      <div class="card">
+        <h3>6. Amazon is the richest but most expensive</h3>
+        <p>BSR data is available via SP-API but the $1,400/yr barrier makes it a Phase 2 investment.</p>
+      </div>
+      <div class="card">
+        <h3>7. Meta Ad Library is free and underused</h3>
+        <p>Spend ranges are imprecise but directional signal is strong. Good for identifying hot product categories.</p>
+      </div>
+      <div class="card">
+        <h3>8. YouTube is a viable early signal</h3>
+        <p>mostPopular endpoint + keyword search can surface product trends before they hit search volume.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer style="text-align: center; padding: 40px 24px; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 60px;">
+    <p>All information sourced from official API documentation</p>
+    <p style="margin-top: 8px;">Last updated: 2026-04-14</p>
+  </footer>
+
+</div>
+</body>
+</html>
