@@ -1,120 +1,264 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marketplace Statistics Dashboard</title>
+    <title>Navos Product Hub</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 40px 20px;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1100px; margin: 0 auto; }
         h1 {
             text-align: center;
             color: white;
-            font-size: 48px;
-            margin-bottom: 16px;
+            font-size: 42px;
+            margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
         .subtitle {
             text-align: center;
-            color: rgba(255,255,255,0.9);
-            font-size: 18px;
-            margin-bottom: 60px;
+            color: rgba(255,255,255,0.85);
+            font-size: 16px;
+            margin-bottom: 50px;
+        }
+        .section { margin-bottom: 40px; }
+        .section-title {
+            color: rgba(255,255,255,0.95);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            padding-left: 4px;
+            border-left: 3px solid rgba(255,255,255,0.6);
+            padding-left: 10px;
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
         .card {
             background: white;
-            border-radius: 16px;
-            padding: 40px 30px;
+            border-radius: 14px;
+            padding: 28px 24px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
             cursor: pointer;
             text-decoration: none;
             color: inherit;
             display: block;
         }
         .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            transform: translateY(-6px);
+            box-shadow: 0 14px 36px rgba(0,0,0,0.28);
         }
-        .card-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
+        .card-icon { font-size: 48px; margin-bottom: 14px; }
+        .card-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .card-desc { font-size: 13px; color: #666; line-height: 1.6; }
+        .badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            font-weight: 600;
         }
-        .card-title {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-        .card-desc {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.6;
-        }
-        .amazon { border-top: 4px solid #ff9900; }
-        .amazon .card-title { color: #ff9900; }
+        .badge-done { background: #dcfce7; color: #16a34a; }
+        .badge-tbd  { background: #fef9c3; color: #a16207; }
+        .amazon  { border-top: 4px solid #ff9900; }
+        .amazon  .card-title { color: #ff9900; }
         .shopify { border-top: 4px solid #5c2d91; }
         .shopify .card-title { color: #5c2d91; }
-        .etsy { border-top: 4px solid #f56400; }
-        .etsy .card-title { color: #f56400; }
-        .ebay { border-top: 4px solid #e53238; }
-        .ebay .card-title { color: #e53238; }
+        .etsy    { border-top: 4px solid #f56400; }
+        .etsy    .card-title { color: #f56400; }
+        .ebay    { border-top: 4px solid #e53238; }
+        .ebay    .card-title { color: #e53238; }
+        .tiktok  { border-top: 4px solid #010101; opacity: 0.6; cursor: default; }
+        .tiktok  .card-title { color: #010101; }
+        .tiktok:hover { transform: none; box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
+        .api     { border-top: 4px solid #2563eb; }
+        .api     .card-title { color: #2563eb; }
+        .demo-price { border-top: 4px solid #2563eb; }
+        .demo-price .card-title { color: #2563eb; }
+        .demo-radar { border-top: 4px solid #7c3aed; }
+        .demo-radar .card-title { color: #7c3aed; }
+        .report  { border-top: 4px solid #0891b2; }
+        .report  .card-title { color: #0891b2; }
         footer {
             text-align: center;
-            color: rgba(255,255,255,0.8);
-            margin-top: 60px;
-            font-size: 14px;
+            color: rgba(255,255,255,0.75);
+            margin-top: 50px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        /* Password overlay */
+        #pw-overlay {
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999;
+        }
+        #pw-box {
+            background: white;
+            border-radius: 16px;
+            padding: 48px 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 360px;
+        }
+        #pw-box h2 { font-size: 24px; margin-bottom: 8px; color: #1e293b; }
+        #pw-box p  { font-size: 14px; color: #64748b; margin-bottom: 28px; }
+        #pw-input {
+            width: 100%; padding: 12px 16px;
+            border: 2px solid #e2e8f0; border-radius: 8px;
+            font-size: 16px; outline: none; margin-bottom: 12px;
+            transition: border-color 0.2s;
+        }
+        #pw-input:focus { border-color: #7c3aed; }
+        #pw-btn {
+            width: 100%; padding: 12px;
+            background: #7c3aed; color: white;
+            border: none; border-radius: 8px;
+            font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: background 0.2s;
+        }
+        #pw-btn:hover { background: #6d28d9; }
+        #pw-error {
+            color: #dc2626; font-size: 13px;
+            margin-top: 10px; display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Marketplace Statistics</h1>
-        <p class="subtitle">Comprehensive data visualizations for major e-commerce platforms</p>
 
+<!-- Password overlay -->
+<div id="pw-overlay">
+    <div id="pw-box">
+        <div style="font-size:48px;margin-bottom:16px;">🔒</div>
+        <h2>Navos Product Hub</h2>
+        <p>请输入访问密码</p>
+        <input id="pw-input" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
+        <button id="pw-btn" onclick="checkPw()">进入</button>
+        <div id="pw-error">密码错误，请重试</div>
+    </div>
+</div>
+
+<div class="container" id="main-content" style="display:none;">
+    <h1>Navos Product Hub</h1>
+    <p class="subtitle">Q2 产品研究 · 市场数据 · Demo 展示</p>
+
+    <!-- Section 1 -->
+    <div class="section">
+        <div class="section-title">1. Marketplace Statistics Dashboard</div>
         <div class="grid">
             <a href="amazon.html" class="card amazon">
+                <div class="badge badge-done">✅ 已完成</div>
                 <div class="card-icon">📦</div>
                 <div class="card-title">Amazon</div>
-                <div class="card-desc">Seller statistics, GMV, active sellers by region, million-dollar sellers, and market trends</div>
+                <div class="card-desc">卖家数据、GMV、区域分布、百万美元卖家及市场趋势</div>
             </a>
-
             <a href="shopify.html" class="card shopify">
+                <div class="badge badge-done">✅ 已完成</div>
                 <div class="card-icon">🛍️</div>
                 <div class="card-title">Shopify</div>
-                <div class="card-desc">Store growth, revenue breakdown, market share, Shop Pay metrics, and global distribution</div>
+                <div class="card-desc">店铺增长、收入拆解、市场份额、Shop Pay 及全球分布</div>
             </a>
-
             <a href="etsy.html" class="card etsy">
+                <div class="badge badge-done">✅ 已完成</div>
                 <div class="card-icon">🎨</div>
                 <div class="card-title">Etsy</div>
-                <div class="card-desc">Seller demographics, revenue trends, buyer behavior, product categories, and sustainability impact</div>
+                <div class="card-desc">卖家画像、收入趋势、买家行为、品类分布及可持续发展</div>
             </a>
-
             <a href="ebay.html" class="card ebay">
+                <div class="badge badge-done">✅ 已完成</div>
                 <div class="card-icon">🏷️</div>
                 <div class="card-title">eBay</div>
-                <div class="card-desc">GMV performance, active buyers, quarterly results, category distribution, and mobile metrics</div>
+                <div class="card-desc">GMV 表现、活跃买家、季度业绩、品类分布及移动端数据</div>
+            </a>
+            <div class="card tiktok">
+                <div class="badge badge-tbd">🕐 TBD</div>
+                <div class="card-icon">🎵</div>
+                <div class="card-title">TikTok Shop</div>
+                <div class="card-desc">@fanxinran — 数据整理中</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="section">
+        <div class="section-title">2. Marketplace APIs – Developer Capability Guide</div>
+        <div class="grid-2">
+            <a href="marketplace-apis.html" class="card api">
+                <div class="card-icon">🔌</div>
+                <div class="card-title">API Capability Guide</div>
+                <div class="card-desc">跨平台 API 能力全景图，覆盖 Amazon / Shopify / Etsy / eBay 核心接口</div>
+            </a>
+            <a href="demo.html" class="card demo-price">
+                <div class="card-icon">💰</div>
+                <div class="card-title">价格情报工具 Demo</div>
+                <div class="card-desc">竞品价格追踪 · 价格历史走势 · 告警规则 · 定价建议</div>
+            </a>
+            <a href="爆款商品雷达_Demo.html" class="card demo-radar">
+                <div class="card-icon">📡</div>
+                <div class="card-title">爆款商品雷达 Demo</div>
+                <div class="card-desc">趋势商品发现 · 跨平台价格对比 · AI 趋势摘要 · 我的关注</div>
             </a>
         </div>
-
-        <footer>
-            <p>Data sources: Official company reports, Capital One Shopping, Printful, ElectroIQ, Business of Apps, and more</p>
-            <p style="margin-top: 8px;">Last updated: April 2026</p>
-        </footer>
     </div>
+
+    <!-- Section 3 -->
+    <div class="section">
+        <div class="section-title">3. API Research Report</div>
+        <div class="grid-2">
+            <a href="api-research-report.html" class="card report">
+                <div class="card-icon">📊</div>
+                <div class="card-title">API Research Report</div>
+                <div class="card-desc">E-Commerce Trend Intelligence Tools — 跨平台 API 字段深度对齐调研报告</div>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Data sources: Official company reports, Capital One Shopping, Printful, ElectroIQ, Business of Apps, and more</p>
+        <p>Last updated: April 2026</p>
+    </footer>
+</div>
+
+<script>
+    const PASS = 'navos2026';
+    const KEY  = 'navos_auth';
+
+    function checkPw() {
+        const val = document.getElementById('pw-input').value;
+        if (val === PASS) {
+            sessionStorage.setItem(KEY, '1');
+            document.getElementById('pw-overlay').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+        } else {
+            document.getElementById('pw-error').style.display = 'block';
+            document.getElementById('pw-input').value = '';
+            document.getElementById('pw-input').focus();
+        }
+    }
+
+    // Auto-unlock if already authenticated this session
+    if (sessionStorage.getItem(KEY) === '1') {
+        document.getElementById('pw-overlay').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+    }
+</script>
 </body>
 </html>
