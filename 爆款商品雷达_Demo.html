@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>爆款商品雷达 — 多平台趋势发现工具</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f3ff; color: #1e1b4b; min-height: 100vh; }
+.app-header { background: #fff; border-bottom: 1px solid #ede9fe; padding: 0 24px; display: flex; align-items: center; gap: 16px; height: 60px; box-shadow: 0 1px 4px rgba(124,58,237,0.07); }
+.app-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: #7C3AED; }
+.app-logo .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg,#7C3AED,#a78bfa); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.app-subtitle { font-size: 12px; color: #8b5cf6; font-weight: 400; margin-left: 4px; }
+.layout { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+.tab-bar { display: flex; gap: 4px; background: #fff; border-radius: 14px; padding: 6px; box-shadow: 0 2px 8px rgba(124,58,237,0.08); margin-bottom: 24px; }
+.tab-btn { flex: 1; padding: 10px 8px; border: none; background: transparent; border-radius: 10px; font-size: 14px; font-weight: 500; color: #6d28d9; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.tab-btn.active { background: #7C3AED; color: #fff; box-shadow: 0 2px 8px rgba(124,58,237,0.3); }
+.tab-btn:hover:not(.active) { background: #ede9fe; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Filter bar */
+.filter-bar { background: #fff; border-radius: 14px; padding: 16px 20px; margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; box-shadow: 0 2px 8px rgba(124,58,237,0.06); }
+.filter-group { display: flex; align-items: center; gap: 8px; }
+.filter-label { font-size: 13px; color: #6d28d9; font-weight: 600; white-space: nowrap; }
+.filter-select { border: 1.5px solid #ddd6fe; border-radius: 8px; padding: 6px 10px; font-size: 13px; color: #1e1b4b; background: #faf5ff; cursor: pointer; outline: none; }
+.filter-select:focus { border-color: #7C3AED; }
+.checkbox-group { display: flex; gap: 10px; }
+.checkbox-label { display: flex; align-items: center; gap: 5px; font-size: 13px; cursor: pointer; }
+.checkbox-label input { accent-color: #7C3AED; width: 15px; height: 15px; }
+.toggle-group { display: flex; background: #ede9fe; border-radius: 8px; padding: 3px; }
+.toggle-btn { padding: 5px 14px; border: none; background: transparent; border-radius: 6px; font-size: 13px; font-weight: 500; color: #6d28d9; cursor: pointer; transition: all 0.15s; }
+.toggle-btn.active { background: #7C3AED; color: #fff; }
+
+/* Signal banner */
+.signal-banner { background: #faf5ff; border: 1.5px solid #ddd6fe; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+.signal-banner-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; cursor: pointer; user-select: none; }
+.signal-banner-title { font-size: 13px; font-weight: 600; color: #7C3AED; display: flex; align-items: center; gap: 8px; }
+.signal-banner-arrow { font-size: 12px; color: #8b5cf6; transition: transform 0.2s; }
+.signal-banner-arrow.open { transform: rotate(180deg); }
+.signal-banner-body { padding: 0 18px 14px; display: none; }
+.signal-banner-body.open { display: flex; gap: 20px; flex-wrap: wrap; }
+.signal-item { display: flex; align-items: flex-start; gap: 8px; flex: 1; min-width: 180px; }
+.signal-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+.signal-text { font-size: 12px; color: #4c1d95; line-height: 1.5; }
+.signal-text strong { display: block; font-size: 13px; color: #6d28d9; }
+
+/* Product grid */
+.product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+@media (max-width: 700px) { .product-grid { grid-template-columns: 1fr; } }
+.product-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(124,58,237,0.08); overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; }
+.product-card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px rgba(124,58,237,0.14); }
+.product-img { height: 120px; display: flex; align-items: center; justify-content: center; font-size: 48px; flex-shrink: 0; }
+.product-body { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.product-title { font-size: 15px; font-weight: 700; color: #1e1b4b; line-height: 1.3; }
+.product-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.category-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: #ede9fe; color: #6d28d9; }
+.platform-badge { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; }
+.platform-amazon { background: #fff3e0; color: #e65100; }
+.platform-ebay { background: #e3f2fd; color: #1565c0; }
+.platform-etsy { background: #e8f5e9; color: #2e7d32; }
+.trend-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.trend-tag { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; display: flex; align-items: center; gap: 3px; }
+.tag-red { background: #fee2e2; color: #b91c1c; }
+.tag-yellow { background: #fef9c3; color: #92400e; }
+.tag-orange { background: #ffedd5; color: #c2410c; }
+.price-range { font-size: 13px; color: #4c1d95; font-weight: 500; }
+.price-range span { color: #7C3AED; font-weight: 700; }
+.card-btn { margin-top: auto; padding: 9px; background: #7C3AED; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+.card-btn:hover { background: #6d28d9; }
+
+/* Tab 2 */
+.section-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(124,58,237,0.08); padding: 22px 24px; margin-bottom: 20px; }
+.section-title { font-size: 16px; font-weight: 700; color: #1e1b4b; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.section-title .icon { font-size: 18px; }
+.product-selector { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.product-selector label { font-size: 14px; font-weight: 600; color: #6d28d9; }
+.product-selector select { border: 1.5px solid #ddd6fe; border-radius: 10px; padding: 8px 14px; font-size: 14px; color: #1e1b4b; background: #faf5ff; outline: none; cursor: pointer; min-width: 220px; }
+.product-selector select:focus { border-color: #7C3AED; }
+
+/* Comparison table */
+.compare-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.compare-table th { background: #7C3AED; color: #fff; padding: 10px 14px; text-align: center; font-weight: 600; }
+.compare-table th:first-child { text-align: left; border-radius: 10px 0 0 0; }
+.compare-table th:last-child { border-radius: 0 10px 0 0; }
+.compare-table td { padding: 10px 14px; text-align: center; border-bottom: 1px solid #f3f0ff; }
+.compare-table td:first-child { text-align: left; font-weight: 600; color: #4c1d95; }
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table tr:hover td { background: #faf5ff; }
+.cell-low { background: #dcfce7 !important; color: #166534; font-weight: 700; border-radius: 6px; }
+.cell-high { background: #fee2e2 !important; color: #991b1b; font-weight: 700; border-radius: 6px; }
+
+/* Arbitrage box */
+.arbitrage-box { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 2px solid #86efac; border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.arbitrage-arrow { font-size: 28px; }
+.arbitrage-text { flex: 1; }
+.arbitrage-title { font-size: 13px; font-weight: 600; color: #166534; margin-bottom: 4px; }
+.arbitrage-value { font-size: 22px; font-weight: 800; color: #15803d; }
+.arbitrage-sub { font-size: 12px; color: #166534; margin-top: 2px; }
+
+/* SVG chart */
+.chart-wrap { width: 100%; overflow-x: auto; }
+.chart-legend { display: flex; gap: 20px; margin-bottom: 10px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; }
+.legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+
+/* 7d summary table */
+.summary-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
+.summary-table th { background: #ede9fe; color: #4c1d95; padding: 8px 12px; text-align: left; font-weight: 600; }
+.summary-table td { padding: 8px 12px; border-bottom: 1px solid #f3f0ff; }
+.summary-table tr:last-child td { border-bottom: none; }
+.change-up { color: #dc2626; font-weight: 700; }
+.change-down { color: #16a34a; font-weight: 700; }
+
+/* Tab 3 AI */
+.ai-generate-bar { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.ai-generate-btn { padding: 10px 24px; background: linear-gradient(135deg, #7C3AED, #a78bfa); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
+.ai-generate-btn:hover { opacity: 0.88; }
+.spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.ai-summary-card { background: linear-gradient(135deg, #faf5ff, #f3e8ff); border: 1.5px solid #ddd6fe; border-radius: 16px; padding: 22px 24px; display: none; }
+.ai-summary-card.visible { display: block; }
+.ai-summary-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.ai-summary-title { font-size: 17px; font-weight: 800; color: #4c1d95; }
+.ai-body p { font-size: 14px; color: #1e1b4b; line-height: 1.75; margin-bottom: 12px; }
+.data-basis { background: #fff; border: 1px solid #ddd6fe; border-radius: 10px; padding: 12px 16px; margin-top: 14px; }
+.data-basis-title { font-size: 12px; font-weight: 700; color: #7C3AED; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+.data-fields { display: flex; flex-wrap: wrap; gap: 8px; }
+.data-field { font-size: 12px; background: #ede9fe; color: #4c1d95; padding: 3px 10px; border-radius: 20px; font-family: monospace; }
+.ai-disclaimer { margin-top: 14px; font-size: 12px; color: #92400e; background: #fef9c3; border-radius: 8px; padding: 8px 12px; }
+.other-products { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 20px; }
+@media (max-width: 700px) { .other-products { grid-template-columns: 1fr; } }
+.mini-card { background: #fff; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(124,58,237,0.07); display: flex; flex-direction: column; gap: 8px; }
+.mini-card-title { font-size: 14px; font-weight: 700; color: #1e1b4b; }
+.mini-card-btn { padding: 7px; background: #ede9fe; color: #6d28d9; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+.mini-card-btn:hover { background: #ddd6fe; }
+
+/* Tab 4 Watchlist */
+.watchlist-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.watchlist-title { font-size: 18px; font-weight: 800; color: #1e1b4b; }
+.add-btn { padding: 9px 18px; background: #7C3AED; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.add-btn:hover { background: #6d28d9; }
+.watchlist-items { display: flex; flex-direction: column; gap: 12px; }
+.watch-item { background: #fff; border-radius: 14px; padding: 16px 20px; box-shadow: 0 2px 10px rgba(124,58,237,0.07); display: flex; align-items: center; gap: 16px; transition: opacity 0.4s, transform 0.4s; }
+.watch-item.removing { opacity: 0; transform: translateX(40px); }
+.watch-img { width: 52px; height: 52px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+.watch-info { flex: 1; }
+.watch-title { font-size: 15px; font-weight: 700; color: #1e1b4b; margin-bottom: 5px; }
+.watch-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
+.watch-time { font-size: 12px; color: #8b5cf6; }
+.status-badge { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 20px; }
+.status-up { background: #fee2e2; color: #b91c1c; }
+.status-stable { background: #fef9c3; color: #92400e; }
+.status-cool { background: #dcfce7; color: #166534; }
+.watch-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.watch-btn { padding: 7px 14px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+.watch-btn-detail { background: #ede9fe; color: #6d28d9; }
+.watch-btn-detail:hover { background: #ddd6fe; }
+.watch-btn-remove { background: #fee2e2; color: #b91c1c; }
+.watch-btn-remove:hover { background: #fecaca; }
+.empty-state { text-align: center; padding: 60px 20px; color: #8b5cf6; font-size: 15px; display: none; }
+.empty-state .empty-icon { font-size: 52px; margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<header class="app-header">
+  <div class="app-logo">
+    <div class="logo-icon">📡</div>
+    爆款商品雷达
+    <span class="app-subtitle">多平台趋势发现工具</span>
+  </div>
+</header>
+<div class="layout">
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab(0)">📈 趋势商品发现</button>
+    <button class="tab-btn" onclick="switchTab(1)">💰 价格对比详情</button>
+    <button class="tab-btn" onclick="switchTab(2)">✨ AI 趋势摘要</button>
+    <button class="tab-btn" onclick="switchTab(3)">⭐ 我的关注</button>
+  </div>
+
+  <!-- TAB 1 -->
+  <div class="tab-panel active" id="tab0">
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">类目</span>
+        <select class="filter-select">
+          <option>全部</option><option>电子产品</option><option>家居</option>
+          <option>运动户外</option><option>美妆</option><option>宠物用品</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">平台</span>
+        <div class="checkbox-group">
+          <label class="checkbox-label"><input type="checkbox" checked> Amazon</label>
+          <label class="checkbox-label"><input type="checkbox" checked> eBay</label>
+          <label class="checkbox-label"><input type="checkbox" checked> Etsy</label>
+        </div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">时间范围</span>
+        <div class="toggle-group">
+          <button class="toggle-btn active" onclick="setToggle(this)">7天</button>
+          <button class="toggle-btn" onclick="setToggle(this)">30天</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">排序</span>
+        <select class="filter-select">
+          <option>价格波动最大</option><option>价差最大</option><option>竞争者增长最快</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="signal-banner">
+      <div class="signal-banner-header" onclick="toggleBanner(this)">
+        <div class="signal-banner-title">💡 趋势信号说明 — 我们如何判断一个商品正在爆发？</div>
+        <div class="signal-banner-arrow">▼</div>
+      </div>
+      <div class="signal-banner-body">
+        <div class="signal-item">
+          <div class="signal-dot" style="background:#ef4444"></div>
+          <div class="signal-text"><strong>价格波动</strong>短期内价格显著上涨，通常意味着需求超过供给，卖家开始提价。</div>
+        </div>
+        <div class="signal-item">
+          <div class="signal-dot" style="background:#f59e0b"></div>
+          <div class="signal-text"><strong>跨平台价差</strong>同一商品在不同平台售价差异较大，存在套利或差异化定价机会。</div>
+        </div>
+        <div class="signal-item">
+          <div class="signal-dot" style="background:#ef4444"></div>
+          <div class="signal-text"><strong>竞争者增加</strong>新卖家快速涌入，说明市场热度上升，但也意味着竞争加剧。</div>
+        </div>
+        <div class="signal-item">
+          <div class="signal-dot" style="background:#f97316"></div>
+          <div class="signal-text"><strong>库存紧张</strong>多个卖家库存低位，补货周期拉长，短期内供应偏紧。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-grid" id="productGrid">
+    </div>
+  </div>
+
+  <!-- TAB 2 -->
+  <div class="tab-panel" id="tab1">
+    <div class="product-selector">
+      <label>选择商品：</label>
+      <select id="compareSelect" onchange="renderCompare()">
+        <option value="0">无线降噪耳机 Pro</option>
+        <option value="1">硅藻土浴室地垫</option>
+        <option value="2">折叠瑜伽垫</option>
+        <option value="3">宠物自动喂食器</option>
+        <option value="4">LED美妆镜</option>
+        <option value="5">便携式颈部按摩仪</option>
+        <option value="6">竹制厨房收纳架</option>
+        <option value="7">儿童编程机器人套件</option>
+      </select>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title"><span class="icon">📊</span>平台价格对比</div>
+      <div id="compareTableWrap"></div>
+    </div>
+
+    <div class="arbitrage-box" id="arbitrageBox">
+      <div class="arbitrage-arrow">💹</div>
+      <div class="arbitrage-text">
+        <div class="arbitrage-title">套利机会发现</div>
+        <div class="arbitrage-value" id="arbitrageValue"></div>
+        <div class="arbitrage-sub" id="arbitrageSub"></div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title"><span class="icon">📉</span>7日价格走势</div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div>Amazon</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>eBay</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>Etsy</div>
+      </div>
+      <div class="chart-wrap">
+        <svg id="priceChart" viewBox="0 0 600 280" width="100%" style="min-width:320px;display:block;"></svg>
+      </div>
+      <table class="summary-table" id="summaryTable"></table>
+    </div>
+  </div>
+
+  <!-- TAB 3 -->
+  <div class="tab-panel" id="tab2">
+    <div class="section-card">
+      <div class="product-selector">
+        <label>选择商品：</label>
+        <select id="aiSelect" onchange="resetAI()">
+          <option value="0">无线降噪耳机 Pro</option>
+          <option value="1">硅藻土浴室地垫</option>
+          <option value="2">折叠瑜伽垫</option>
+          <option value="3">宠物自动喂食器</option>
+          <option value="4">LED美妆镜</option>
+          <option value="5">便携式颈部按摩仪</option>
+          <option value="6">竹制厨房收纳架</option>
+          <option value="7">儿童编程机器人套件</option>
+        </select>
+      </div>
+      <div class="ai-generate-bar">
+        <button class="ai-generate-btn" id="generateBtn" onclick="generateSummary()">
+          <div class="spinner" id="spinner"></div>
+          <span id="generateBtnText">✨ 生成摘要</span>
+        </button>
+        <span style="font-size:13px;color:#8b5cf6;">基于价格、库存、竞争者等信号自动生成</span>
+      </div>
+      <div class="ai-summary-card" id="aiSummaryCard"></div>
+    </div>
+    <div class="section-title" style="margin-top:4px;"><span class="icon">📦</span>其他商品</div>
+    <div class="other-products" id="otherProducts"></div>
+  </div>
+
+  <!-- TAB 4 -->
+  <div class="tab-panel" id="tab3">
+    <div class="watchlist-header">
+      <div class="watchlist-title">⭐ 我的关注</div>
+      <button class="add-btn" onclick="alert('功能开发中，请从趋势发现页添加商品')">＋ 添加商品</button>
+    </div>
+    <div class="watchlist-items" id="watchlistItems"></div>
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🔍</div>
+      <div>暂无关注商品，去趋势发现页添加吧</div>
+    </div>
+  </div>
+</div>
+<script>
+const PRODUCTS = [
+  { id:0, title:'无线降噪耳机 Pro', cat:'电子产品', emoji:'🎧', bg:'#ede9fe',
+    platforms:['amazon','ebay','etsy'],
+    tags:[{text:'价格上涨 +28%',cls:'tag-red'},{text:'竞争者激增 +92%',cls:'tag-red'}],
+    priceRange:'$45 – $89',
+    compare:{ amazon:{price:89,ship:0,land:89,sellers:312,stock:'充足'},
+               ebay:{price:71,ship:5,land:76,sellers:198,stock:'充足'},
+               etsy:{price:52,ship:8,land:60,sellers:44,stock:'偏低'} },
+    arbitrage:'eBay → Amazon 套利空间 $18.50 (32%)',
+    arbitrageSub:'从eBay采购后在Amazon销售，扣除费用后预计净利润约$12–15/件',
+    chartData:{ amazon:[72,74,76,79,83,86,89], ebay:[58,60,62,64,67,69,71], etsy:[44,45,46,48,49,51,52] },
+    summary:`近7日，无线降噪耳机 Pro 在三大平台均呈现明显价格上涨趋势，Amazon平台价格从$72上涨至$89，涨幅达28%。与此同时，新入驻卖家数量激增92%，显示市场热度快速攀升。\n\n跨平台价差方面，Amazon与Etsy之间存在高达$37的价差，套利空间显著。eBay库存相对充足，但Etsy平台库存已出现偏低信号，预计短期内供应将进一步收紧。\n\n综合来看，该商品正处于爆发初期，竞争者快速涌入但市场尚未饱和，建议关注Amazon平台的定价策略，并提前备货以应对可能的库存紧张局面。` },
+
+  { id:1, title:'硅藻土浴室地垫', cat:'家居', emoji:'🛁', bg:'#f0fdf4',
+    platforms:['amazon','etsy'],
+    tags:[{text:'跨平台价差 $18',cls:'tag-yellow'},{text:'库存紧张',cls:'tag-orange'}],
+    priceRange:'$22 – $40',
+    compare:{ amazon:{price:40,ship:0,land:40,sellers:156,stock:'偏低'},
+               ebay:{price:null,ship:null,land:null,sellers:null,stock:'—'},
+               etsy:{price:22,ship:6,land:28,sellers:89,stock:'紧张'} },
+    arbitrage:'Etsy → Amazon 套利空间 $12.00 (30%)',
+    arbitrageSub:'Etsy采购成本低，Amazon溢价明显，适合品牌化包装后上架',
+    chartData:{ amazon:[34,35,36,37,38,39,40], ebay:[null,null,null,null,null,null,null], etsy:[18,19,19,20,21,21,22] },
+    summary:`硅藻土浴室地垫在Amazon与Etsy之间存在明显价差，Amazon平台均价约$40，而Etsy仅$22，差价达$18。两平台库存均出现紧张信号，尤其Etsy多个卖家已标注"库存不足"。\n\n该品类近期在社交媒体上热度持续上升，带动需求快速增长。Amazon平台卖家数量虽多，但头部卖家库存消耗加速，补货周期拉长。\n\n建议关注Etsy平台的补货节奏，并考虑在Amazon提前布局，利用价差优势建立竞争壁垒。` },
+
+  { id:2, title:'折叠瑜伽垫', cat:'运动户外', emoji:'🧘', bg:'#fef9c3',
+    platforms:['amazon','ebay','etsy'],
+    tags:[{text:'价格上涨 +15%',cls:'tag-red'},{text:'跨平台价差 $12',cls:'tag-yellow'}],
+    priceRange:'$28 – $55',
+    compare:{ amazon:{price:55,ship:0,land:55,sellers:423,stock:'充足'},
+               ebay:{price:43,ship:4,land:47,sellers:201,stock:'充足'},
+               etsy:{price:28,ship:7,land:35,sellers:67,stock:'偏低'} },
+    arbitrage:'Etsy → Amazon 套利空间 $20.00 (36%)',
+    arbitrageSub:'Etsy手工定制款价格低，Amazon标准款溢价高，差异化空间大',
+    chartData:{ amazon:[48,49,50,51,52,53,55], ebay:[38,39,40,41,41,42,43], etsy:[24,25,25,26,27,27,28] },
+    summary:`折叠瑜伽垫受益于居家健身趋势持续升温，近7日Amazon价格上涨15%，从$48涨至$55。三平台均有在售，但价格差异显著，Etsy以手工定制款为主，定价最低。\n\n eBay平台卖家数量稳定增长，竞争相对温和。Etsy库存出现偏低信号，部分卖家已暂停接单。\n\n该品类季节性特征明显，春夏季需求旺盛，建议在旺季前完成备货，重点布局Amazon平台。` },
+
+  { id:3, title:'宠物自动喂食器', cat:'宠物用品', emoji:'🐾', bg:'#fff7ed',
+    platforms:['amazon','ebay'],
+    tags:[{text:'竞争者激增 +65%',cls:'tag-red'},{text:'库存紧张',cls:'tag-orange'}],
+    priceRange:'$35 – $68',
+    compare:{ amazon:{price:68,ship:0,land:68,sellers:287,stock:'偏低'},
+               ebay:{price:45,ship:6,land:51,sellers:134,stock:'紧张'},
+               etsy:{price:null,ship:null,land:null,sellers:null,stock:'—'} },
+    arbitrage:'eBay → Amazon 套利空间 $17.00 (25%)',
+    arbitrageSub:'eBay价格洼地明显，Amazon需求旺盛，适合批量采购转售',
+    chartData:{ amazon:[55,57,59,61,63,65,68], ebay:[38,39,40,41,42,44,45], etsy:[null,null,null,null,null,null,null] },
+    summary:`宠物自动喂食器近期竞争者数量激增65%，显示市场热度快速上升。Amazon与eBay两平台库存均出现紧张信号，多个头部卖家库存消耗速度超过补货速度。\n\n价格方面，Amazon平台7日内上涨约24%，eBay涨幅相对温和。新入驻卖家主要集中在eBay，Amazon门槛较高但利润空间更大。\n\n建议密切关注库存动态，在竞争进一步加剧前建立价格优势，同时关注产品差异化机会。` },
+
+  { id:4, title:'LED美妆镜', cat:'美妆', emoji:'💄', bg:'#fdf2f8',
+    platforms:['amazon','etsy'],
+    tags:[{text:'价格上涨 +22%',cls:'tag-red'},{text:'跨平台价差 $25',cls:'tag-yellow'}],
+    priceRange:'$30 – $72',
+    compare:{ amazon:{price:72,ship:0,land:72,sellers:198,stock:'充足'},
+               ebay:{price:null,ship:null,land:null,sellers:null,stock:'—'},
+               etsy:{price:30,ship:8,land:38,sellers:112,stock:'偏低'} },
+    arbitrage:'Etsy → Amazon 套利空间 $34.00 (47%)',
+    arbitrageSub:'价差极大，Amazon品牌溢价显著，Etsy手工款成本优势明显',
+    chartData:{ amazon:[59,61,63,65,67,70,72], ebay:[null,null,null,null,null,null,null], etsy:[25,26,27,27,28,29,30] },
+    summary:`LED美妆镜在Amazon平台价格7日内上涨22%，从$59涨至$72，需求旺盛。Etsy平台以手工定制款为主，价格仅$30，两平台价差高达$42（落地价差$34）。\n\nEtsy库存出现偏低信号，部分热门款式已售罄。Amazon平台新卖家持续涌入，但头部卖家凭借评价优势维持高价。\n\n该品类受美妆博主带货影响明显，建议关注社交媒体热度变化，及时调整备货策略。` },
+
+  { id:5, title:'便携式颈部按摩仪', cat:'电子产品', emoji:'💆', bg:'#eff6ff',
+    platforms:['amazon','ebay'],
+    tags:[{text:'价格上涨 +35%',cls:'tag-red'},{text:'竞争者激增 +48%',cls:'tag-red'}],
+    priceRange:'$38 – $85',
+    compare:{ amazon:{price:85,ship:0,land:85,sellers:176,stock:'充足'},
+               ebay:{price:55,ship:5,land:60,sellers:98,stock:'充足'},
+               etsy:{price:null,ship:null,land:null,sellers:null,stock:'—'} },
+    arbitrage:'eBay → Amazon 套利空间 $25.00 (29%)',
+    arbitrageSub:'eBay价格明显低于Amazon，转售利润空间可观',
+    chartData:{ amazon:[63,66,69,72,76,80,85], ebay:[44,46,47,49,51,53,55], etsy:[null,null,null,null,null,null,null] },
+    summary:`便携式颈部按摩仪近7日价格涨幅高达35%，是本期涨幅最大的商品之一。Amazon平台从$63涨至$85，竞争者数量同期增加48%，市场热度极高。\n\neBay平台价格相对滞后，仍维持在$55左右，与Amazon价差达$25，套利空间显著。两平台库存目前充足，但按当前消耗速度预计2-3周内将出现紧张。\n\n建议尽快布局，在竞争进一步加剧前建立评价基础，同时关注eBay套利机会。` },
+
+  { id:6, title:'竹制厨房收纳架', cat:'家居', emoji:'🎋', bg:'#f0fdf4',
+    platforms:['etsy'],
+    tags:[{text:'跨平台价差 $8',cls:'tag-yellow'},{text:'库存紧张',cls:'tag-orange'}],
+    priceRange:'$18 – $42',
+    compare:{ amazon:{price:42,ship:0,land:42,sellers:89,stock:'充足'},
+               ebay:{price:null,ship:null,land:null,sellers:null,stock:'—'},
+               etsy:{price:18,ship:6,land:24,sellers:203,stock:'紧张'} },
+    arbitrage:'Etsy → Amazon 套利空间 $18.00 (43%)',
+    arbitrageSub:'Etsy手工竹制品价格低，Amazon标准化产品溢价高',
+    chartData:{ amazon:[38,39,39,40,41,41,42], ebay:[null,null,null,null,null,null,null], etsy:[15,16,16,17,17,18,18] },
+    summary:`竹制厨房收纳架在Etsy平台库存持续紧张，多个热门卖家已暂停接单。Amazon平台价格稳定在$42，与Etsy落地价差达$18，套利空间可观。\n\n该品类受环保家居趋势驱动，需求持续增长。Etsy平台以手工制作为主，产能有限，库存紧张局面短期难以缓解。\n\n建议关注Amazon平台的补货机会，同时考虑开发标准化产品以满足大规模需求。` },
+
+  { id:7, title:'儿童编程机器人套件', cat:'电子产品', emoji:'🤖', bg:'#ede9fe',
+    platforms:['amazon','ebay'],
+    tags:[{text:'价格上涨 +19%',cls:'tag-red'},{text:'竞争者激增 +73%',cls:'tag-red'}],
+    priceRange:'$55 – $98',
+    compare:{ amazon:{price:98,ship:0,land:98,sellers:143,stock:'偏低'},
+               ebay:{price:72,ship:8,land:80,sellers:87,stock:'充足'},
+               etsy:{price:null,ship:null,land:null,sellers:null,stock:'—'} },
+    arbitrage:'eBay → Amazon 套利空间 $18.00 (18%)',
+    arbitrageSub:'Amazon库存偏低，eBay货源充足，转售时机较好',
+    chartData:{ amazon:[82,84,86,88,91,94,98], ebay:[62,64,65,67,68,70,72], etsy:[null,null,null,null,null,null,null] },
+    summary:`儿童编程机器人套件受STEM教育热潮驱动，近7日Amazon价格上涨19%，竞争者数量激增73%，是本期竞争增长最快的品类之一。\n\nAmazon平台库存已出现偏低信号，而eBay库存相对充足，价差约$18。节假日临近，该品类需求预计将进一步上升。\n\n建议提前备货，重点布局Amazon平台，同时关注eBay的套利机会，在库存紧张前完成布局。` }
+];
+
+const DAYS = ['4/10','4/11','4/12','4/13','4/14','4/15','4/16'];
+
+function switchTab(idx) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+  document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+  if(idx===1) renderCompare();
+  if(idx===3) renderWatchlist();
+}
+
+function setToggle(btn) {
+  btn.closest('.toggle-group').querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function toggleBanner(header) {
+  const body = header.nextElementSibling;
+  const arrow = header.querySelector('.signal-banner-arrow');
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+// TAB 1
+function renderProducts() {
+  const grid = document.getElementById('productGrid');
+  grid.innerHTML = PRODUCTS.map(p => `
+    <div class="product-card">
+      <div class="product-img" style="background:${p.bg}">${p.emoji}</div>
+      <div class="product-body">
+        <div class="product-title">${p.title}</div>
+        <div class="product-meta">
+          <span class="category-badge">${p.cat}</span>
+          ${p.platforms.map(pl => `<span class="platform-badge platform-${pl}">${pl==='amazon'?'Amazon':pl==='ebay'?'eBay':'Etsy'}</span>`).join('')}
+        </div>
+        <div class="trend-tags">
+          ${p.tags.map(t => `<span class="trend-tag ${t.cls}">${t.text}</span>`).join('')}
+        </div>
+        <div class="price-range">价格区间：<span>${p.priceRange}</span></div>
+        <button class="card-btn" onclick="goDetail(${p.id})">查看详情</button>
+      </div>
+    </div>`).join('');
+}
+
+function goDetail(id) {
+  document.getElementById('compareSelect').value = id;
+  document.getElementById('aiSelect').value = id;
+  switchTab(1);
+}
+
+// TAB 2
+function renderCompare() {
+  const idx = parseInt(document.getElementById('compareSelect').value);
+  const p = PRODUCTS[idx];
+  const c = p.compare;
+  const platforms = ['amazon','ebay','etsy'];
+  const labels = ['Amazon','eBay','Etsy'];
+  const rows = [
+    {key:'price',label:'商品价格',fmt:v=>v!=null?`$${v}`:'—'},
+    {key:'ship',label:'运费',fmt:v=>v!=null?(v===0?'免运费':`$${v}`):'—'},
+    {key:'land',label:'落地价',fmt:v=>v!=null?`$${v}`:'—'},
+    {key:'sellers',label:'卖家数量',fmt:v=>v!=null?`${v}家`:'—'},
+    {key:'stock',label:'库存状态',fmt:v=>v||'—'}
+  ];
+  const landVals = platforms.map(pl => c[pl].land).filter(v=>v!=null);
+  const minLand = Math.min(...landVals), maxLand = Math.max(...landVals);
+  let html = `<table class="compare-table"><thead><tr><th>指标</th>${labels.map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>`;
+  rows.forEach(row => {
+    html += `<tr><td>${row.label}</td>`;
+    platforms.forEach(pl => {
+      const val = c[pl][row.key];
+      let cls = '';
+      if(row.key==='land' && val!=null) {
+        if(val===minLand) cls=' class="cell-low"';
+        else if(val===maxLand) cls=' class="cell-high"';
+      }
+      html += `<td${cls}>${row.fmt(val)}</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('compareTableWrap').innerHTML = html;
+  document.getElementById('arbitrageValue').textContent = p.arbitrage;
+  document.getElementById('arbitrageSub').textContent = p.arbitrageSub;
+  renderChart(idx);
+  renderSummaryTable(idx);
+}
+
+function renderChart(idx) {
+  const p = PRODUCTS[idx];
+  const svg = document.getElementById('priceChart');
+  const W=600, H=280, PL=52, PR=20, PT=20, PB=40;
+  const cW=W-PL-PR, cH=H-PT-PB;
+  const allVals = [...(p.chartData.amazon||[]),...(p.chartData.ebay||[]),...(p.chartData.etsy||[])].filter(v=>v!=null);
+  const minV=Math.min(...allVals)-5, maxV=Math.max(...allVals)+5;
+  const xStep = cW/6;
+  const toX = i => PL + i*xStep;
+  const toY = v => PT + cH - ((v-minV)/(maxV-minV))*cH;
+  const colors = {amazon:'#f97316',ebay:'#3b82f6',etsy:'#22c55e'};
+  let out = '';
+  // grid lines
+  for(let i=0;i<=4;i++){
+    const y=PT+i*(cH/4);
+    const val=Math.round(maxV-(i/4)*(maxV-minV));
+    out+=`<line x1="${PL}" y1="${y}" x2="${W-PR}" y2="${y}" stroke="#e9d5ff" stroke-width="1"/>`;
+    out+=`<text x="${PL-6}" y="${y+4}" text-anchor="end" font-size="11" fill="#8b5cf6">$${val}</text>`;
+  }
+  // x labels
+  DAYS.forEach((d,i)=>{
+    out+=`<text x="${toX(i)}" y="${H-8}" text-anchor="middle" font-size="11" fill="#8b5cf6">${d}</text>`;
+  });
+  // lines + dots
+  ['amazon','ebay','etsy'].forEach(pl=>{
+    const data=p.chartData[pl];
+    const pts=data.map((v,i)=>v!=null?[toX(i),toY(v)]:null).filter(Boolean);
+    if(pts.length<2) return;
+    out+=`<polyline points="${pts.map(pt=>pt.join(',')).join(' ')}" fill="none" stroke="${colors[pl]}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    pts.forEach(pt=>{
+      out+=`<circle cx="${pt[0]}" cy="${pt[1]}" r="4" fill="${colors[pl]}" stroke="#fff" stroke-width="1.5"/>`;
+    });
+  });
+  svg.innerHTML = out;
+}
+
+function renderSummaryTable(idx) {
+  const p = PRODUCTS[idx];
+  const platforms = ['amazon','ebay','etsy'];
+  const labels = ['Amazon','eBay','Etsy'];
+  const colors = ['#f97316','#3b82f6','#22c55e'];
+  let html = `<thead><tr><th>平台</th><th>当前价格</th><th>7日变化</th><th>最低价</th><th>最高价</th></tr></thead><tbody>`;
+  platforms.forEach((pl,i)=>{
+    const data = p.chartData[pl].filter(v=>v!=null);
+    if(!data.length){html+=`<tr><td style="color:${colors[i]};font-weight:700">${labels[i]}</td><td colspan="4" style="color:#aaa">暂无数据</td></tr>`;return;}
+    const cur=data[data.length-1], first=data[0];
+    const diff=cur-first, pct=((diff/first)*100).toFixed(1);
+    const cls=diff>=0?'change-up':'change-down';
+    const arrow=diff>=0?'▲':'▼';
+    html+=`<tr><td style="color:${colors[i]};font-weight:700">${labels[i]}</td><td>$${cur}</td><td class="${cls}">${arrow} $${Math.abs(diff)} (${Math.abs(pct)}%)</td><td>$${Math.min(...data)}</td><td>$${Math.max(...data)}</td></tr>`;
+  });
+  html+='</tbody>';
+  document.getElementById('summaryTable').innerHTML=html;
+}
+
+// TAB 3
+function resetAI() {
+  document.getElementById('aiSummaryCard').classList.remove('visible');
+  document.getElementById('aiSummaryCard').innerHTML='';
+  document.getElementById('generateBtnText').textContent='✨ 生成摘要';
+  document.getElementById('spinner').style.display='none';
+  renderOtherProducts();
+}
+
+function generateSummary() {
+  const btn=document.getElementById('generateBtn');
+  const spinner=document.getElementById('spinner');
+  const txt=document.getElementById('generateBtnText');
+  btn.disabled=true; spinner.style.display='block'; txt.textContent='生成中...';
+  setTimeout(()=>{
+    btn.disabled=false; spinner.style.display='none'; txt.textContent='✨ 重新生成';
+    const idx=parseInt(document.getElementById('aiSelect').value);
+    const p=PRODUCTS[idx];
+    const card=document.getElementById('aiSummaryCard');
+    const paras=p.summary.split('\n\n').filter(Boolean);
+    card.innerHTML=`
+      <div class="ai-summary-header"><span style="font-size:24px">✨</span><div class="ai-summary-title">AI 趋势解读 — ${p.title}</div></div>
+      <div class="ai-body">${paras.map(para=>`<p>${para}</p>`).join('')}</div>
+      <div class="data-basis">
+        <div class="data-basis-title">数据依据</div>
+        <div class="data-fields">
+          <span class="data-field">price_delta</span>
+          <span class="data-field">offer_count_change</span>
+          <span class="data-field">availability_signal</span>
+          <span class="data-field">cross_platform_price_gap</span>
+        </div>
+      </div>
+      <div class="ai-disclaimer">⚠️ 本摘要基于价格、库存、竞争者数量等间接信号生成，不包含真实销量数据，仅供参考</div>`;
+    card.classList.add('visible');
+  },1500);
+}
+
+function renderOtherProducts() {
+  const idx=parseInt(document.getElementById('aiSelect').value);
+  const others=PRODUCTS.filter(p=>p.id!==idx).slice(0,3);
+  document.getElementById('otherProducts').innerHTML=others.map(p=>`
+    <div class="mini-card">
+      <div style="font-size:28px;text-align:center;padding:8px 0;background:${p.bg};border-radius:8px">${p.emoji}</div>
+      <div class="mini-card-title">${p.title}</div>
+      <div class="product-meta">${p.tags.map(t=>`<span class="trend-tag ${t.cls}" style="font-size:10px">${t.text}</span>`).join('')}</div>
+      <button class="mini-card-btn" onclick="document.getElementById('aiSelect').value=${p.id};resetAI()">查看摘要</button>
+    </div>`).join('');
+}
+
+// TAB 4
+let watchlist=[0,3,5];
+function renderWatchlist(){
+  const statuses=[
+    {cls:'status-up',text:'🔴 趋势上升'},
+    {cls:'status-stable',text:'🟡 趋势平稳'},
+    {cls:'status-cool',text:'🟢 热度降温'}
+  ];
+  const times=['2分钟前','15分钟前','1小时前'];
+  const container=document.getElementById('watchlistItems');
+  const empty=document.getElementById('emptyState');
+  if(!watchlist.length){container.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  container.innerHTML=watchlist.map((id,i)=>{
+    const p=PRODUCTS[id];
+    const st=statuses[i%3];
+    return `<div class="watch-item" id="witem-${id}">
+      <div class="watch-img" style="background:${p.bg}">${p.emoji}</div>
+      <div class="watch-info">
+        <div class="watch-title">${p.title}</div>
+        <div class="watch-meta">
+          <span class="category-badge">${p.cat}</span>
+          ${p.platforms.map(pl=>`<span class="platform-badge platform-${pl}">${pl==='amazon'?'Amazon':pl==='ebay'?'eBay':'Etsy'}</span>`).join('')}
+        </div>
+        <div class="watch-time">最后更新：${times[i%3]}</div>
+        <span class="status-badge ${st.cls}">${st.text}</span>
+      </div>
+      <div class="watch-actions">
+        <button class="watch-btn watch-btn-detail" onclick="goDetail(${id})">查看详情</button>
+        <button class="watch-btn watch-btn-remove" onclick="removeWatch(${id})">取消关注</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function removeWatch(id){
+  const el=document.getElementById('witem-'+id);
+  el.classList.add('removing');
+  setTimeout(()=>{
+    watchlist=watchlist.filter(x=>x!==id);
+    renderWatchlist();
+  },400);
+}
+
+// Init
+renderProducts();
+renderOtherProducts();
+</script>
+</body>
+</html>
