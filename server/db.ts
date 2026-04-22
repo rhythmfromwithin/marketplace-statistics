@@ -1,6 +1,8 @@
 import { and, desc, eq, gte, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
+import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import Database from "better-sqlite3";
+import path from "path";
 import {
   alertEvents,
   alertRules,
@@ -16,6 +18,7 @@ import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 let _dbInitError: string | null = null;
+let _migrated = false;
 
 export async function getDb() {
   if (!_db) {
@@ -37,6 +40,17 @@ export async function getDb() {
     }
   }
   return _db;
+}
+
+export async function ensureDbReady() {
+  const db = await getDb();
+  if (!db) throw dbUnavailableError();
+  if (_migrated) return db;
+
+  // Ensure schema exists on fresh deployments (e.g. ephemeral Render disks).
+  migrate(db, { migrationsFolder: path.join(process.cwd(), "drizzle") });
+  _migrated = true;
+  return db;
 }
 
 function dbUnavailableError() {
