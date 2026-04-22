@@ -1,0 +1,226 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@font-face {
+  font-family: 'MiSans';
+  src: url('https://static-cdn.tec-do.cn/navos/1765251929190_MiSans-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* ── Navos Design System ── */
+  --radius: 0.5rem;
+
+  /* Core palette — Navos light */
+  --background: #ffffff;
+  --foreground: #1c222b;
+  --card: #ffffff;
+  --card-foreground: #1c222b;
+  --popover: #ffffff;
+  --popover-foreground: #1c222b;
+
+  /* Navos brand blue */
+  --primary: #0166fe;
+  --primary-foreground: #ffffff;
+
+  /* Navos secondary / muted surfaces */
+  --secondary: #f6f8ff;
+  --secondary-foreground: #1c222b;
+  --muted: #f4f4f5;
+  --muted-foreground: #9ba0a8;
+  --accent: #f6f8ff;
+  --accent-foreground: #1c222b;
+
+  /* Destructive */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  /* Borders & inputs */
+  --border: #ebeced;
+  --input: #e8f0fe;
+  --ring: #0166fe;
+
+  /* Chart colors — Navos palette */
+  --chart-1: #3861fb;
+  --chart-2: #2a9d90;
+  --chart-3: #d97706;
+  --chart-4: #e76e50;
+  --chart-5: #8b5cf6;
+
+  /* Sidebar — Navos clean light sidebar */
+  --sidebar: #fafbff;
+  --sidebar-foreground: #323840;
+  --sidebar-primary: #0166fe;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eff0f2;
+  --sidebar-accent-foreground: #1c222b;
+  --sidebar-border: #ebeced;
+  --sidebar-ring: #0166fe;
+
+  /* Semantic price tokens */
+  --price-up: #16a34a;
+  --price-down: #dc2626;
+  --price-neutral: #9ba0a8;
+
+  /* Platform brand tokens */
+  --platform-amazon: #c8861a;
+  --platform-ebay: #3760f6;
+  --platform-shopify: #1a8c4e;
+  --platform-etsy: #d05a2a;
+
+  /* Navos semantic extras */
+  --navos-text-body: #323840;
+  --navos-text-secondary: #676c78;
+  --navos-text-tertiary: #9ba0a8;
+  --navos-bg-tag: #eff0f2;
+  --navos-bg-light: #f6f8ff;
+  --navos-border-light: #ebeced;
+}
+
+/* Dark overrides (minimal) */
+.dark {
+  --background: #0f1117;
+  --foreground: #f0f2f5;
+  --card: #161b27;
+  --card-foreground: #f0f2f5;
+  --popover: #161b27;
+  --popover-foreground: #f0f2f5;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #1e2535;
+  --secondary-foreground: #d1d5db;
+  --muted: #1e2535;
+  --muted-foreground: #6b7280;
+  --accent: #1e2535;
+  --accent-foreground: #d1d5db;
+  --border: #2a3347;
+  --input: #1e2535;
+  --ring: #3b82f6;
+  --sidebar: #0f1117;
+  --sidebar-foreground: #d1d5db;
+  --sidebar-border: #2a3347;
+  --price-up: #22c55e;
+  --price-down: #f87171;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'MiSans', 'Inter', system-ui, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: var(--navos-text-body);
+  }
+  .font-mono {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+}
+
+@layer utilities {
+  .text-price-up { color: var(--price-up); }
+  .text-price-down { color: var(--price-down); }
+  .text-price-neutral { color: var(--price-neutral); }
+  .bg-price-up { background-color: color-mix(in srgb, var(--price-up) 12%, transparent); }
+  .bg-price-down { background-color: color-mix(in srgb, var(--price-down) 12%, transparent); }
+  .text-platform-amazon { color: var(--platform-amazon); }
+  .text-platform-ebay { color: var(--platform-ebay); }
+  .text-platform-shopify { color: var(--platform-shopify); }
+  .text-platform-etsy { color: var(--platform-etsy); }
+  .bg-platform-amazon { background-color: color-mix(in srgb, var(--platform-amazon) 12%, transparent); }
+  .bg-platform-ebay { background-color: color-mix(in srgb, var(--platform-ebay) 12%, transparent); }
+  .bg-platform-shopify { background-color: color-mix(in srgb, var(--platform-shopify) 12%, transparent); }
+  .bg-platform-etsy { background-color: color-mix(in srgb, var(--platform-etsy) 12%, transparent); }
+  .tabular { font-variant-numeric: tabular-nums; }
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #9ba0a8; border-radius: 3px; }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+}
