@@ -15,19 +15,32 @@ import {
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
+let _dbInitError: string | null = null;
 
 export async function getDb() {
-  if (!_db && process.env.DATABASE_URL) {
-    try {
-      const dbPath = process.env.DATABASE_URL.replace("file:", "");
-      const sqlite = new Database(dbPath);
-      _db = drizzle(sqlite);
-    } catch (error) {
-      console.warn("[Database] Failed to connect:", error);
-      _db = null;
+  if (!_db) {
+    const candidates = [process.env.DATABASE_URL, "file:/tmp/dev.db"].filter(
+      (v, i, arr): v is string => !!v && arr.indexOf(v) === i
+    );
+    for (const connectionString of candidates) {
+      try {
+        const dbPath = connectionString.replace("file:", "");
+        const sqlite = new Database(dbPath);
+        _db = drizzle(sqlite);
+        _dbInitError = null;
+        break;
+      } catch (error) {
+        _dbInitError = error instanceof Error ? error.message : String(error);
+        console.warn(`[Database] Failed to connect with ${connectionString}:`, error);
+        _db = null;
+      }
     }
   }
   return _db;
+}
+
+function dbUnavailableError() {
+  return new Error(_dbInitError ? `DB unavailable: ${_dbInitError}` : "DB unavailable");
 }
 
 // ─── Users ────────────────────────────────────────────────────────────────────
@@ -82,14 +95,14 @@ export async function getAllTrackedProducts() {
 
 export async function addTrackedProduct(data: InsertTrackedProduct) {
   const db = await getDb();
-  if (!db) throw new Error("DB unavailable");
+  if (!db) throw dbUnavailableError();
   const result = await db.insert(trackedProducts).values(data).returning({ id: trackedProducts.id });
   return result[0].id;
 }
 
 export async function removeTrackedProduct(id: number) {
   const db = await getDb();
-  if (!db) throw new Error("DB unavailable");
+  if (!db) throw dbUnavailableError();
   await db.delete(priceSnapshots).where(eq(priceSnapshots.trackedProductId, id));
   await db.delete(alertRules).where(eq(alertRules.trackedProductId, id));
   await db.delete(alertEvents).where(eq(alertEvents.trackedProductId, id));
@@ -172,7 +185,7 @@ export async function insertPriceSnapshot(data: {
   currency?: string;
 }) {
   const db = await getDb();
-  if (!db) throw new Error("DB unavailable");
+  if (!db) throw dbUnavailableError();
   await db.insert(priceSnapshots).values({
     ...data,
     platform: data.platform as any,
@@ -193,20 +206,20 @@ export async function getAlertRules() {
 
 export async function createAlertRule(data: InsertAlertRule) {
   const db = await getDb();
-  if (!db) throw new Error("DB unavailable");
+  if (!db) throw dbUnavailableError();
   const result = await db.insert(alertRules).values(data).returning({ id: alertRules.id });
   return result[0].id;
 }
 
 export async function deleteAlertRule(id: number) {
   const db = await getDb();
-  if (!db) throw new Error("DB unavailable");
+  if (!db) throw dbUnavailableError();
   await db.delete(alertRules).where(eq(alertRules.id, id));
 }
 
 export async function toggleAlertRule(id: number, isActive: boolean) {
   const db = await getDb();
-  if (!db) throw new Error("DB unavailable");
+  if (!db) throw dbUnavailableError();
   await db.update(alertRules).set({ isActive }).where(eq(alertRules.id, id));
 }
 
@@ -219,13 +232,13 @@ export async function getAlertEvents(limit = 50) {
 
 export async function markAlertRead(id: number) {
   const db = await getDb();
-  if (!db) throw new Error("DB unavailable");
+  if (!db) throw dbUnavailableError();
   await db.update(alertEvents).set({ isRead: true }).where(eq(alertEvents.id, id));
 }
 
 export async function markAllAlertsRead() {
   const db = await getDb();
-  if (!db) throw new Error("DB unavailable");
+  if (!db) throw dbUnavailableError();
   await db.update(alertEvents).set({ isRead: true });
 }
 
@@ -239,7 +252,7 @@ export async function insertAlertEvent(data: {
   direction: "up" | "down";
 }) {
   const db = await getDb();
-  if (!db) throw new Error("DB unavailable");
+  if (!db) throw dbUnavailableError();
   await db.insert(alertEvents).values({
     ...data,
     platform: data.platform as any,
@@ -266,7 +279,7 @@ export async function upsertMarginRules(data: {
   shippingCost: number;
 }) {
   const db = await getDb();
-  if (!db) throw new Error("DB unavailable");
+  if (!db) throw dbUnavailableError();
   const existing = await getMarginRules();
   if (existing) {
     await db.update(marginRules).set({
