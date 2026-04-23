@@ -19,8 +19,8 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
+import { trpc } from "@/lib/trpc";
 import { useLang } from "@/contexts/LanguageContext";
 import { BarChart2, LayoutDashboard, LogIn, LogOut, PanelLeft, Store, Tag } from "lucide-react";
 import PriceChat from "./PriceChat";
@@ -70,6 +70,7 @@ function DashboardLayoutContent({
   children,
   setSidebarWidth,
 }: DashboardLayoutContentProps) {
+  const utils = trpc.useUtils();
   const { user, logout, isAuthenticated } = useAuth();
   const { t, lang, toggleLang } = useLang();
   const [location, setLocation] = useLocation();
@@ -78,6 +79,15 @@ function DashboardLayoutContent({
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const mockLoginMutation = trpc.auth.mockLogin.useMutation({
+    onSuccess: async () => {
+      await utils.auth.me.invalidate();
+      await Promise.all([
+        utils.products.list.invalidate(),
+        utils.prices.dashboard.invalidate(),
+      ]);
+    },
+  });
 
   const menuItems = isAuthenticated ? [
     { icon: LayoutDashboard, label: t.nav.dashboard, path: "/" },
@@ -225,7 +235,7 @@ function DashboardLayoutContent({
                   </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem
-                    onClick={() => { window.location.href = getLoginUrl(); }}
+                    onClick={() => mockLoginMutation.mutate()}
                     className="cursor-pointer"
                   >
                     <LogIn className="mr-2 h-4 w-4" />
