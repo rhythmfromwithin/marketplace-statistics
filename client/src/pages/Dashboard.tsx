@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import FeedbackCard from "@/components/FeedbackCard";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 import { RefreshCw, Search, Activity } from "lucide-react";
 import { useState, useMemo } from "react";
@@ -15,6 +14,7 @@ import { useLang } from "@/contexts/LanguageContext";
 
 export default function Dashboard() {
   const { t } = useLang();
+  const utils = trpc.useUtils();
   const { isAuthenticated } = useAuth();
   const [search, setSearch] = useState("");
   const [pollingName, setPollingName] = useState<string | null>(null);
@@ -48,6 +48,20 @@ export default function Dashboard() {
       });
       setPollingName(null);
       setPollingProgress(null);
+    },
+  });
+
+  const mockLoginMutation = trpc.auth.mockLogin.useMutation({
+    onSuccess: async () => {
+      await utils.auth.me.invalidate();
+      await Promise.all([
+        utils.products.list.invalidate(),
+        utils.prices.dashboard.invalidate(),
+      ]);
+      toast.success("Logged in");
+    },
+    onError: (error) => {
+      toast.error(`Login failed: ${error.message}`);
     },
   });
 
@@ -210,7 +224,7 @@ export default function Dashboard() {
               <p className="text-xs text-muted-foreground mt-1">
                 You are viewing a preview of 20 products.
               </p>
-              <Button className="mt-3" size="sm" onClick={() => (window.location.href = getLoginUrl())}>
+              <Button className="mt-3" size="sm" onClick={() => mockLoginMutation.mutate()} disabled={mockLoginMutation.isPending}>
                 {t.signIn}
               </Button>
             </div>
