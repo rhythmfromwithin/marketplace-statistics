@@ -751,7 +751,7 @@ You help users understand competitor pricing, identify opportunities, and make s
   }),
 
   feedback: router({
-    submit: protectedProcedure
+    submit: publicProcedure
       .input(
         z.object({
           category: z.enum(["bug", "feature", "general"]).default("general"),
