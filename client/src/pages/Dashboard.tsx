@@ -5,7 +5,6 @@ import { PlatformBadge, DeltaBadge, AvailabilityBadge, StatCard } from "@/compon
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import FeedbackCard from "@/components/FeedbackCard";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
 import { RefreshCw, Search, Activity } from "lucide-react";
@@ -279,7 +278,6 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-      {isAuthenticated && <FeedbackCard />}
     </div>
   );
 }

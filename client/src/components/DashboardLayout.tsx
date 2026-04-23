@@ -24,6 +24,7 @@ import { trpc } from "@/lib/trpc";
 import { useLang } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { BarChart2, LayoutDashboard, LogIn, LogOut, Moon, PanelLeft, Store, Sun, Tag } from "lucide-react";
+import FeedbackWidget from "./FeedbackWidget";
 import PriceChat from "./PriceChat";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
@@ -297,6 +298,7 @@ function DashboardLayoutContent({
           </div>
         )}
         <main className="flex-1 p-6 bg-background min-h-screen pb-28">{children}</main>
+        <FeedbackWidget />
         {isAuthenticated && <PriceChat />}
       </SidebarInset>
     </>
