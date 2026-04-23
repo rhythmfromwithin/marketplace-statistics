@@ -4,10 +4,8 @@ import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import Database from "better-sqlite3";
 import path from "path";
 import {
-  authVerificationCodes,
   alertEvents,
   alertRules,
-  InsertAuthVerificationCode,
   InsertAlertRule,
   InsertUserFeedback,
   InsertTrackedProduct,
@@ -69,7 +67,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
 
   const values: InsertUser = { openId: user.openId };
   const updateSet: Record<string, unknown> = {};
-  const textFields = ["name", "email", "phone", "loginMethod"] as const;
+  const textFields = ["name", "email", "loginMethod"] as const;
   for (const field of textFields) {
     const value = user[field];
     if (value === undefined) continue;
@@ -101,20 +99,6 @@ export async function getUserByOpenId(openId: string) {
   const db = await getDb();
   if (!db) return undefined;
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
-  return result[0];
-}
-
-export async function getUserByPhone(phone: string) {
-  const db = await getDb();
-  if (!db) return undefined;
-  const result = await db.select().from(users).where(eq(users.phone, phone)).limit(1);
-  return result[0];
-}
-
-export async function getUserByEmail(email: string) {
-  const db = await getDb();
-  if (!db) return undefined;
-  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
   return result[0];
 }
 
@@ -338,60 +322,4 @@ export async function createUserFeedback(data: InsertUserFeedback) {
   if (!db) throw dbUnavailableError();
   const result = await db.insert(userFeedback).values(data).returning({ id: userFeedback.id });
   return result[0]?.id;
-}
-
-// ─── Auth Verification Codes ─────────────────────────────────────────────────
-export async function createAuthVerificationCode(data: InsertAuthVerificationCode) {
-  const db = await getDb();
-  if (!db) throw dbUnavailableError();
-  const result = await db
-    .insert(authVerificationCodes)
-    .values(data)
-    .returning({ id: authVerificationCodes.id });
-  return result[0]?.id;
-}
-
-export async function consumeAuthVerificationCode(input: {
-  targetType: "phone" | "gmail";
-  targetValue: string;
-  verificationCode: string;
-}) {
-  const db = await getDb();
-  if (!db) throw dbUnavailableError();
-
-  const now = new Date();
-  const rows = await db
-    .select()
-    .from(authVerificationCodes)
-    .where(
-      and(
-        eq(authVerificationCodes.targetType, input.targetType),
-        eq(authVerificationCodes.targetValue, input.targetValue),
-        eq(authVerificationCodes.verificationCode, input.verificationCode)
-      )
-    )
-    .orderBy(desc(authVerificationCodes.createdAt))
-    .limit(1);
-
-  const latest = rows[0];
-  if (!latest) return null;
-  if (latest.consumedAt) return null;
-  if (latest.expiresAt < now) return null;
-
-  await db
-    .update(authVerificationCodes)
-    .set({ consumedAt: now })
-    .where(eq(authVerificationCodes.id, latest.id));
-
-  return latest;
-}
-
-export async function getAuthVerificationLogs(limit = 200) {
-  const db = await getDb();
-  if (!db) return [];
-  return db
-    .select()
-    .from(authVerificationCodes)
-    .orderBy(desc(authVerificationCodes.createdAt))
-    .limit(limit);
 }
