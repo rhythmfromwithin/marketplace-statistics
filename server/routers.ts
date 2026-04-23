@@ -1,30 +1,39 @@
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { TRPCError } from "@trpc/server";
+import { randomInt } from "crypto";
 import { z } from "zod";
 import {
   addTrackedProduct,
+  consumeAuthVerificationCode,
+  createAuthVerificationCode,
   createUserFeedback,
   createAlertRule,
   deleteAlertRule,
   getAlertEvents,
   getAlertRules,
   getAllTrackedProducts,
+  getAuthVerificationLogs,
   getLatestSnapshotPerProduct,
+  getUserByOpenId,
   getMarginRules,
   getPriceHistory,
   getPreviousSnapshot,
+  getUserByEmail,
+  getUserByPhone,
   insertAlertEvent,
   insertPriceSnapshot,
   markAlertRead,
   markAllAlertsRead,
   removeTrackedProduct,
   toggleAlertRule,
+  upsertUser,
   upsertMarginRules,
 } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
+import { ENV } from "./_core/env";
 import { invokeLLM } from "./_core/llm";
 import { systemRouter } from "./_core/systemRouter";
-import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { adminProcedure, protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { platformManager } from "./platforms/index";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -75,6 +84,28 @@ function extractAmazonAsinFromUrl(raw: string): string {
   if (byParam && /^[A-Z0-9]{10}$/i.test(byParam)) return byParam.toUpperCase();
 
   throw new TRPCError({ code: "BAD_REQUEST", message: "Could not extract ASIN from Amazon URL" });
+}
+
+function normalizePhone(value: string): string {
+  return value.replace(/[^\d+]/g, "");
+}
+
+function normalizeEmail(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function buildOpenIdFromPhone(phone: string) {
+  return `phone_${phone}`;
+}
+
+function buildOpenIdFromEmail(email: string) {
+  return `gmail_${email.replace(/[^a-z0-9]/g, "_")}`.slice(0, 64);
+}
+
+function toCsvCell(value: unknown): string {
+  const raw = value == null ? "" : String(value);
+  const escaped = raw.replace(/"/g, '""');
+  return `"${escaped}"`;
 }
 
 function normalizePotentialAmazonUrl(value: string): string {
@@ -240,6 +271,149 @@ export const appRouter = router({
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
+    }),
+    requestVerificationCode: publicProcedure
+      .input(
+        z.object({
+          method: z.enum(["phone", "gmail"]),
+          target: z.string().min(3).max(320),
+          purpose: z.enum(["register", "login"]).default("login"),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const targetValue =
+          input.method === "phone" ? normalizePhone(input.target) : normalizeEmail(input.target);
+
+        if (input.method === "phone" && targetValue.length < 7) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid phone number" });
+        }
+        if (
+          input.method === "gmail" &&
+          !/^[^\s@]+@gmail\.com$/i.test(targetValue)
+        ) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Only Gmail is supported here" });
+        }
+
+        const verificationCode = String(randomInt(100000, 1000000));
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+        await createAuthVerificationCode({
+          targetType: input.method,
+          targetValue,
+          verificationCode,
+          purpose: input.purpose,
+          expiresAt,
+        });
+
+        return {
+          success: true,
+          // MVP: return code for quick testing; can be removed when SMS/Email provider is connected.
+          verificationCode,
+          expiresAt,
+        };
+      }),
+    verifyCodeAndSignIn: publicProcedure
+      .input(
+        z.object({
+          method: z.enum(["phone", "gmail"]),
+          target: z.string().min(3).max(320),
+          code: z.string().min(4).max(16),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        const targetValue =
+          input.method === "phone" ? normalizePhone(input.target) : normalizeEmail(input.target);
+        const consumed = await consumeAuthVerificationCode({
+          targetType: input.method,
+          targetValue,
+          verificationCode: input.code.trim(),
+        });
+        if (!consumed) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid or expired verification code" });
+        }
+
+        let user =
+          input.method === "phone"
+            ? await getUserByPhone(targetValue)
+            : await getUserByEmail(targetValue);
+
+        if (!user) {
+          const openId =
+            input.method === "phone"
+              ? buildOpenIdFromPhone(targetValue)
+              : buildOpenIdFromEmail(targetValue);
+          await upsertUser({
+            openId,
+            phone: input.method === "phone" ? targetValue : null,
+            email: input.method === "gmail" ? targetValue : null,
+            loginMethod: input.method,
+            name: null,
+            lastSignedIn: new Date(),
+          });
+          user = await getUserByOpenId(openId);
+        } else {
+          await upsertUser({
+            openId: user.openId,
+            phone: input.method === "phone" ? targetValue : user.phone,
+            email: input.method === "gmail" ? targetValue : user.email,
+            loginMethod: input.method,
+            lastSignedIn: new Date(),
+          });
+        }
+
+        if (!user) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to create user" });
+        }
+
+        const sessionToken = await sdk.createSessionToken(user.openId, {
+          name: user.name || "",
+          expiresInMs: ONE_YEAR_MS,
+        });
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+
+        return { success: true };
+      }),
+    getGoogleSsoUrl: publicProcedure.query(() => {
+      const portal = process.env.VITE_OAUTH_PORTAL_URL;
+      const appId = ENV.appId;
+      if (!portal || !appId) return { url: null };
+      const redirectUri = `${ENV.oAuthServerUrl || ""}/api/oauth/callback`;
+      const state = Buffer.from(redirectUri || "/").toString("base64");
+      const url = new URL(`${portal}/app-auth`);
+      url.searchParams.set("appId", appId);
+      url.searchParams.set("redirectUri", redirectUri);
+      url.searchParams.set("state", state);
+      url.searchParams.set("type", "signIn");
+      url.searchParams.set("platform", "google");
+      return { url: url.toString() };
+    }),
+    exportVerificationCsv: adminProcedure.query(async () => {
+      const logs = await getAuthVerificationLogs(5000);
+      const header = [
+        "id",
+        "targetType",
+        "targetValue",
+        "verificationCode",
+        "purpose",
+        "createdAt",
+        "expiresAt",
+        "consumedAt",
+      ];
+      const rows = logs.map((row) =>
+        [
+          row.id,
+          row.targetType,
+          row.targetValue,
+          row.verificationCode,
+          row.purpose,
+          row.createdAt?.toISOString?.() ?? row.createdAt,
+          row.expiresAt?.toISOString?.() ?? row.expiresAt,
+          row.consumedAt?.toISOString?.() ?? row.consumedAt ?? "",
+        ]
+          .map(toCsvCell)
+          .join(",")
+      );
+      return { filename: "auth_verification_logs.csv", csv: [header.join(","), ...rows].join("\n") };
     }),
   }),
 

@@ -21,8 +21,9 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
+import { trpc } from "@/lib/trpc";
 import { useLang } from "@/contexts/LanguageContext";
-import { BarChart2, LayoutDashboard, LogIn, LogOut, PanelLeft, Store, Tag } from "lucide-react";
+import { BarChart2, Download, LayoutDashboard, LogIn, LogOut, PanelLeft, Store, Tag } from "lucide-react";
 import PriceChat from "./PriceChat";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
@@ -71,6 +72,9 @@ function DashboardLayoutContent({
   setSidebarWidth,
 }: DashboardLayoutContentProps) {
   const { user, logout, isAuthenticated } = useAuth();
+  const exportCsvQuery = trpc.auth.exportVerificationCsv.useQuery(undefined, {
+    enabled: Boolean(user && user.role === "admin"),
+  });
   const { t, lang, toggleLang } = useLang();
   const [location, setLocation] = useLocation();
   const { state, toggleSidebar } = useSidebar();
@@ -95,7 +99,7 @@ function DashboardLayoutContent({
   }, [isCollapsed]);
 
   useEffect(() => {
-    if (!isAuthenticated && location !== "/") {
+    if (!isAuthenticated && location !== "/" && location !== "/login-placeholder") {
       setLocation("/");
     }
   }, [isAuthenticated, location, setLocation]);
@@ -215,6 +219,26 @@ function DashboardLayoutContent({
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
+                {user?.role === "admin" && (
+                  <DropdownMenuItem
+                    onClick={() => {
+                      const csv = exportCsvQuery.data?.csv;
+                      const filename = exportCsvQuery.data?.filename || "auth_verification_logs.csv";
+                      if (!csv) return;
+                      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = filename;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    <span>Export auth CSV</span>
+                  </DropdownMenuItem>
+                )}
                 {user ? (
                   <DropdownMenuItem
                     onClick={logout}

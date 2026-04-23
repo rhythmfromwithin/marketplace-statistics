@@ -10,6 +10,7 @@ export const users = sqliteTable("users", {
   openId: text("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: text("email", { length: 320 }),
+  phone: text("phone", { length: 32 }),
   loginMethod: text("loginMethod", { length: 64 }),
   role: text("role", { enum: ["user", "admin"] }).default("user").notNull(),
   createdAt: integer("createdAt", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
@@ -125,3 +126,18 @@ export const userFeedback = sqliteTable("user_feedback", {
 
 export type UserFeedback = typeof userFeedback.$inferSelect;
 export type InsertUserFeedback = typeof userFeedback.$inferInsert;
+
+// ─── Auth Verification Codes ─────────────────────────────────────────────────
+export const authVerificationCodes = sqliteTable("auth_verification_codes", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  targetType: text("targetType", { enum: ["phone", "gmail"] }).notNull(),
+  targetValue: text("targetValue", { length: 320 }).notNull(),
+  verificationCode: text("verificationCode", { length: 16 }).notNull(),
+  purpose: text("purpose", { enum: ["register", "login"] }).notNull().default("login"),
+  expiresAt: integer("expiresAt", { mode: "timestamp" }).notNull(),
+  consumedAt: integer("consumedAt", { mode: "timestamp" }),
+  createdAt: integer("createdAt", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+});
+
+export type AuthVerificationCode = typeof authVerificationCodes.$inferSelect;
+export type InsertAuthVerificationCode = typeof authVerificationCodes.$inferInsert;
