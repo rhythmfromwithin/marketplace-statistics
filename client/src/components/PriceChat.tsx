@@ -28,6 +28,8 @@ const PROMPT_ICONS = [TrendingDown, TrendingUp, Sparkles, Bot];
 export default function PriceChat() {
   const { t } = useLang();
   const utils = trpc.useUtils();
+  const { data: trackedProducts } = trpc.products.list.useQuery();
+  const { data: dashboardRows } = trpc.prices.dashboard.useQuery();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -143,6 +145,14 @@ export default function PriceChat() {
   };
 
   const hasMessages = messages.length > 0;
+  const topTracked = (trackedProducts ?? []).slice(0, 3);
+  const hasDrops = (dashboardRows ?? []).some((r) => r.direction === "down");
+  const quickActions = [
+    "Track this Amazon URL:",
+    "Compare lowest landed prices today",
+    hasDrops ? "Which products dropped the most today?" : "Any price movement today?",
+    ...topTracked.map((p) => `Show trend for ${p.name}`),
+  ];
 
   return (
     <>
@@ -165,6 +175,16 @@ export default function PriceChat() {
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-0"
         style={{ width: "min(520px, calc(100vw - 2rem))" }}
       >
+        {!isOpen && (
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            className="mb-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Open agent quick actions"
+          >
+            Ask AI about prices and trends
+          </button>
+        )}
         {/* Chat panel — expands above the input bar */}
         <AnimatePresence>
           {isOpen && (
@@ -257,6 +277,18 @@ export default function PriceChat() {
                           </button>
                         );
                       })}
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {quickActions.slice(0, 5).map((action) => (
+                        <button
+                          key={action}
+                          type="button"
+                          onClick={() => sendMessage(action)}
+                          className="text-[11px] rounded-full border border-[#ebeced] bg-white px-2.5 py-1 text-[#556070] hover:border-[#cdd2da] hover:text-[#1c222b] transition-colors"
+                        >
+                          {action}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 ) : (
@@ -365,6 +397,7 @@ export default function PriceChat() {
             onFocus={() => setIsOpen(true)}
             placeholder={t.chatPlaceholder}
             className="flex-1 resize-none bg-transparent outline-none text-sm leading-relaxed"
+            aria-label="Agent input"
             style={{
               color: "#1c222b",
               maxHeight: "120px",
@@ -394,6 +427,7 @@ export default function PriceChat() {
               transform: "scale(1)",
             }}
             title={t.chatSend}
+            aria-label={t.chatSend}
           >
             <ArrowUp className="h-4 w-4" />
           </button>

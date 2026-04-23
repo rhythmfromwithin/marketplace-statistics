@@ -22,7 +22,8 @@ import {
 import { useIsMobile } from "@/hooks/useMobile";
 import { trpc } from "@/lib/trpc";
 import { useLang } from "@/contexts/LanguageContext";
-import { BarChart2, LayoutDashboard, LogIn, LogOut, PanelLeft, Store, Tag } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
+import { BarChart2, LayoutDashboard, LogIn, LogOut, Moon, PanelLeft, Store, Sun, Tag } from "lucide-react";
 import PriceChat from "./PriceChat";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
@@ -73,6 +74,7 @@ function DashboardLayoutContent({
   const utils = trpc.useUtils();
   const { user, logout, isAuthenticated } = useAuth();
   const { t, lang, toggleLang } = useLang();
+  const { theme, toggleTheme, switchable } = useTheme();
   const [location, setLocation] = useLocation();
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
@@ -156,24 +158,48 @@ function DashboardLayoutContent({
                     <span className="font-semibold tracking-tight truncate text-foreground text-sm leading-tight">{t.appName}</span>
                     <span className="text-[10px] tracking-widest uppercase" style={{color: 'var(--navos-text-tertiary)'}}>by Navos</span>
                   </div>
-                  {/* Language toggle */}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {/* Language toggle */}
+                    <button
+                      onClick={toggleLang}
+                      className="h-6 px-2 rounded-md border border-border text-[11px] font-semibold text-muted-foreground hover:text-primary hover:border-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      title={lang === "en" ? "切换中文" : "Switch to English"}
+                    >
+                      {lang === "en" ? "中" : "EN"}
+                    </button>
+                    {switchable && toggleTheme && (
+                      <button
+                        onClick={toggleTheme}
+                        className="h-6 w-6 rounded-md border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring grid place-items-center"
+                        title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                        aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                      >
+                        {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                /* Collapsed: show lang toggle as icon */
+                <div className="flex items-center gap-1">
                   <button
                     onClick={toggleLang}
-                    className="shrink-0 h-6 px-2 rounded-md border border-border text-[11px] font-semibold text-muted-foreground hover:text-primary hover:border-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="h-8 w-8 flex items-center justify-center hover:bg-sidebar-accent rounded-lg transition-colors focus:outline-none text-[10px] font-bold text-muted-foreground"
                     title={lang === "en" ? "切换中文" : "Switch to English"}
                   >
                     {lang === "en" ? "中" : "EN"}
                   </button>
+                  {switchable && toggleTheme && (
+                    <button
+                      onClick={toggleTheme}
+                      className="h-8 w-8 flex items-center justify-center hover:bg-sidebar-accent rounded-lg transition-colors focus:outline-none text-muted-foreground"
+                      title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                    >
+                      {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                    </button>
+                  )}
                 </div>
-              ) : (
-                /* Collapsed: show lang toggle as icon */
-                <button
-                  onClick={toggleLang}
-                  className="h-8 w-8 flex items-center justify-center hover:bg-sidebar-accent rounded-lg transition-colors focus:outline-none text-[10px] font-bold text-muted-foreground"
-                  title={lang === "en" ? "切换中文" : "Switch to English"}
-                >
-                  {lang === "en" ? "中" : "EN"}
-                </button>
               )}
             </div>
           </SidebarHeader>
