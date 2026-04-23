@@ -129,6 +129,71 @@ export class RainforestAPI implements PlatformAPI {
   }
 
   /**
+   * Retrieve products from an Amazon Brand Store page URL.
+   * Uses Rainforest `type=store` and paginates via `max_page`.
+   */
+  async getStoreProductsByUrl(storeUrl: string, maxPage: number = 20): Promise<SearchResult[]> {
+    await this.limiter.acquire();
+
+    const params = new URLSearchParams({
+      api_key: this.apiKey,
+      type: "store",
+      url: storeUrl,
+      max_page: String(Math.max(1, Math.min(maxPage, 50))),
+    });
+
+    const response = await this.retryWithBackoff(async () => {
+      const res = await fetch(`${this.baseUrl}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        const error = await res.text();
+        throw new Error(`Rainforest store failed: ${res.status} ${error}`);
+      }
+
+      return res;
+    });
+
+    const data = await response.json();
+    if (!data.request_info?.success) {
+      const errorMsg = data.error?.message || "Unknown error";
+      throw new Error(`Rainforest API error: ${errorMsg}`);
+    }
+
+    const rawResults: any[] = Array.isArray(data.store_results) ? data.store_results : [];
+    if (rawResults.length === 0) return [];
+
+    const dedup = new Map<string, SearchResult>();
+    for (const item of rawResults) {
+      if (!item?.asin || typeof item.asin !== "string") continue;
+      const asin = item.asin.toUpperCase();
+      if (dedup.has(asin)) continue;
+      dedup.set(asin, {
+        platformProductId: asin,
+        title: item.title ?? `Amazon Product ${asin}`,
+        currentPrice: this.parseMoney(item.price?.value ?? item.prices?.primary?.value),
+        shippingPrice: this.parseShipping(item.prices?.shipping?.raw ?? item.prices?.shipping?.value),
+        landedPrice: Math.round(
+          (this.parseMoney(item.price?.value ?? item.prices?.primary?.value) +
+            this.parseShipping(item.prices?.shipping?.raw ?? item.prices?.shipping?.value)) *
+            100
+        ) / 100,
+        sellerId: item.seller?.name ?? item.brand ?? "Amazon Store",
+        availability: "in_stock",
+        imageUrl: item.image ?? "",
+        productUrl: item.link ?? `https://${this.getAmazonDomain()}/dp/${asin}`,
+        currency: item.price?.currency ?? item.prices?.primary?.currency ?? "USD",
+      });
+    }
+
+    return Array.from(dedup.values());
+  }
+
+  /**
    * 指数退避重试机制
    */
   private async retryWithBackoff<T>(

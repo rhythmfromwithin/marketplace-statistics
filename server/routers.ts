@@ -28,6 +28,7 @@ import { sdk } from "./_core/sdk";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { platformManager } from "./platforms/index";
+import { RainforestAPI } from "./platforms/rainforest";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function calcDelta(prev: number, curr: number) {
@@ -75,6 +76,8 @@ function extractAmazonAsinFromUrl(raw: string): string {
 
   const byParam = parsed.searchParams.get("asin");
   if (byParam && /^[A-Z0-9]{10}$/i.test(byParam)) return byParam.toUpperCase();
+  const byLpAsin = parsed.searchParams.get("lp_asin");
+  if (byLpAsin && /^[A-Z0-9]{10}$/i.test(byLpAsin)) return byLpAsin.toUpperCase();
 
   throw new TRPCError({ code: "BAD_REQUEST", message: "Could not extract ASIN from Amazon URL" });
 }
@@ -86,6 +89,17 @@ function normalizePotentialAmazonUrl(value: string): string {
     return `https://${trimmed}`;
   }
   return trimmed;
+}
+
+function isAmazonStoreUrl(raw: string): boolean {
+  const normalized = normalizePotentialAmazonUrl(raw);
+  try {
+    const parsed = new URL(normalized);
+    if (!parsed.hostname.toLowerCase().includes("amazon.")) return false;
+    return /\/stores(\/|$)/i.test(parsed.pathname);
+  } catch {
+    return false;
+  }
 }
 
 function extractAmazonStoreIdFromUrl(raw: string): string | null {
@@ -172,15 +186,35 @@ async function addAmazonTrackedProductFromUrl(input: {
   };
 }
 
-async function addAmazonProductsFromStoreUrl(url: string, limit: number = 5) {
-  const storeId = extractAmazonStoreIdFromUrl(url);
-  if (!storeId) {
-    throw new TRPCError({ code: "BAD_REQUEST", message: "Could not extract seller/store id from URL" });
-  }
-
+async function addAmazonProductsFromStoreUrl(url: string) {
+  const normalizedUrl = normalizePotentialAmazonUrl(url);
   const api = platformManager.getPlatformAPI("amazon");
-  const searchResults = await api.search(storeId, limit);
-  const picked = searchResults.filter((item) => !!item.platformProductId).slice(0, limit);
+
+  let picked = [] as Array<{
+    platformProductId: string;
+    productUrl: string;
+  }>;
+
+  if (api instanceof RainforestAPI) {
+    const storeResults = await api.getStoreProductsByUrl(normalizedUrl, 20);
+    picked = storeResults
+      .filter((item) => !!item.platformProductId)
+      .map((item) => ({
+        platformProductId: item.platformProductId,
+        productUrl: item.productUrl,
+      }));
+  } else {
+    // Mock mode fallback: try seller id / store name keyword search.
+    const storeId = extractAmazonStoreIdFromUrl(normalizedUrl);
+    const keyword = storeId ?? "amazon store";
+    const searchResults = await api.search(keyword, 50);
+    picked = searchResults
+      .filter((item) => !!item.platformProductId)
+      .map((item) => ({
+        platformProductId: item.platformProductId,
+        productUrl: item.productUrl,
+      }));
+  }
 
   if (picked.length === 0) {
     throw new TRPCError({ code: "NOT_FOUND", message: "No products found for this store URL" });
@@ -196,7 +230,7 @@ async function addAmazonProductsFromStoreUrl(url: string, limit: number = 5) {
     added.push(result);
   }
 
-  return { storeId, added };
+  return { storeUrl: normalizedUrl, totalFound: picked.length, added };
 }
 
 // ─── Recommendation engine ────────────────────────────────────────────────────
@@ -604,22 +638,19 @@ export const appRouter = router({
         const reference = extractAmazonReference(input.message);
         if (reference) {
           try {
-            if (reference.kind === "url") {
-              const storeId = extractAmazonStoreIdFromUrl(reference.value);
-              if (storeId) {
-                const storeResult = await addAmazonProductsFromStoreUrl(reference.value);
-                return {
-                  content: `Added ${storeResult.added.length} products from store ${storeResult.storeId} to tracking.`,
-                  action: {
-                    type: "product_tracked" as const,
-                    trackedProductId: storeResult.added[0]?.id ?? null,
-                    platform: "amazon" as const,
-                    asin: storeResult.added[0]?.asin ?? null,
-                    alreadyExists: storeResult.added.every((item) => item.alreadyExists),
-                    count: storeResult.added.length,
-                  },
-                };
-              }
+            if (reference.kind === "url" && isAmazonStoreUrl(reference.value)) {
+              const storeResult = await addAmazonProductsFromStoreUrl(reference.value);
+              return {
+                content: `Added ${storeResult.added.length} products from store URL to tracking (found ${storeResult.totalFound} products).`,
+                action: {
+                  type: "product_tracked" as const,
+                  trackedProductId: storeResult.added[0]?.id ?? null,
+                  platform: "amazon" as const,
+                  asin: storeResult.added[0]?.asin ?? null,
+                  alreadyExists: storeResult.added.every((item) => item.alreadyExists),
+                  count: storeResult.added.length,
+                },
+              };
             }
 
             const result = await addAmazonTrackedProductFromUrl({
