@@ -100,6 +100,24 @@ export default function Dashboard() {
     return { totalProducts, priceDrops, priceRises, avgLanded };
   }, [rows]);
 
+  const marketInsight = useMemo(() => {
+    if (!rows || rows.length === 0) return null;
+    const biggestDrop = rows
+      .filter((r) => r.direction === "down")
+      .sort((a, b) => Math.abs(b.changePct) - Math.abs(a.changePct))[0];
+    const biggestRise = rows
+      .filter((r) => r.direction === "up")
+      .sort((a, b) => Math.abs(b.changePct) - Math.abs(a.changePct))[0];
+    const latestCapture = rows
+      .map((r) => new Date(r.captured_at).getTime())
+      .sort((a, b) => b - a)[0];
+    return {
+      biggestDrop,
+      biggestRise,
+      latestCapture: latestCapture ? new Date(latestCapture) : null,
+    };
+  }, [rows]);
+
   const grouped = useMemo(() => {
     const map = new Map<string, typeof filtered>();
     const visibleRows = isAuthenticated ? filtered : filtered.slice(0, 20);
@@ -156,6 +174,36 @@ export default function Dashboard() {
           <StatCard label={t.avgLandedPrice} value={formatPrice(stats.avgLanded)} sub={t.allPlatforms} accent />
         </div>
       ) : null}
+
+      {marketInsight && (
+        <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Market insight</p>
+          <div className="grid gap-2 md:grid-cols-3 text-sm">
+            <div>
+              <p className="text-xs text-muted-foreground">Largest drop</p>
+              <p className="font-medium">
+                {marketInsight.biggestDrop
+                  ? `${marketInsight.biggestDrop.productName} (${marketInsight.biggestDrop.changePct.toFixed(2)}%)`
+                  : "No drop detected"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Largest rise</p>
+              <p className="font-medium">
+                {marketInsight.biggestRise
+                  ? `${marketInsight.biggestRise.productName} (+${marketInsight.biggestRise.changePct.toFixed(2)}%)`
+                  : "No rise detected"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Data freshness</p>
+              <p className="font-medium tabular-nums">
+                {marketInsight.latestCapture ? formatRelativeTime(marketInsight.latestCapture) : "No data"}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Search */}
       <div className="relative">
