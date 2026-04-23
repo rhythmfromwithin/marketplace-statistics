@@ -14,6 +14,7 @@ export default function Dashboard() {
   const { t } = useLang();
   const [search, setSearch] = useState("");
   const [pollingName, setPollingName] = useState<string | null>(null);
+  const [pollingProgress, setPollingProgress] = useState<{ current: number; total: number } | null>(null);
 
   const { data: rows, isLoading, refetch } = trpc.prices.dashboard.useQuery(undefined, {
     refetchInterval: 60000,
@@ -29,18 +30,36 @@ export default function Dashboard() {
         toast.success(t.refresh);
       }
     },
-    onError: () => {
-      toast.error(t.failedPrefix + t.refresh.toLowerCase());
+    onError: (err) => {
+      toast.error(t.failedPrefix + t.refresh.toLowerCase(), {
+        action: {
+          label: "Retry",
+          onClick: () => {
+            if (pollingName) {
+              const group = grouped.find(g => g.name === pollingName);
+              if (group) handlePoll(group.entries.map(e => e.trackedProductId), group.name);
+            }
+          }
+        }
+      });
       setPollingName(null);
+      setPollingProgress(null);
     },
   });
 
   const handlePoll = async (ids: number[], name: string) => {
     setPollingName(name);
-    for (const id of ids) {
-      await pollMutation.mutateAsync({ trackedProductId: id });
+    setPollingProgress({ current: 0, total: ids.length });
+
+    toast.info(`Polling ${ids.length} product${ids.length > 1 ? 's' : ''}...`);
+
+    for (let i = 0; i < ids.length; i++) {
+      setPollingProgress({ current: i + 1, total: ids.length });
+      await pollMutation.mutateAsync({ trackedProductId: ids[i] });
     }
+
     setPollingName(null);
+    setPollingProgress(null);
   };
 
   const filtered = useMemo(() => {
@@ -98,7 +117,7 @@ export default function Dashboard() {
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">{t.dashboardTitle}</h1>
           <p className="text-sm text-muted-foreground mt-0.5">{t.dashboardSubtitle}</p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2 shrink-0">
+        <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2 shrink-0" aria-label={t.refresh} title={t.refresh}>
           <RefreshCw className="w-3.5 h-3.5" />
           {t.refresh}
         </Button>
@@ -106,7 +125,7 @@ export default function Dashboard() {
 
       {/* Stats row */}
       {isLoading ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3" role="status" aria-live="polite" aria-label="Loading dashboard statistics">
           {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
         </div>
       ) : stats ? (
@@ -233,6 +252,8 @@ function ProductPriceCard({
           onClick={() => onPoll(group.entries.map(e => e.trackedProductId))}
           disabled={isPolling}
           className="gap-1.5 text-xs h-7 px-2.5 text-muted-foreground hover:text-foreground shrink-0"
+          aria-label={isPolling ? "Polling..." : t.poll}
+          title={isPolling ? "Polling..." : t.poll}
         >
           <RefreshCw className={`w-3 h-3 ${isPolling ? "animate-spin" : ""}`} />
           {isPolling ? "…" : t.poll}

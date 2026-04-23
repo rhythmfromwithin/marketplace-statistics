@@ -16,9 +16,11 @@ import { Streamdown } from "streamdown";
 
 type Message = {
   id: string;
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "system";
   content: string;
   loading?: boolean;
+  error?: boolean;
+  action?: { type: string; productName?: string };
 };
 
 const PROMPT_ICONS = [TrendingDown, TrendingUp, Sparkles, Bot];
@@ -36,11 +38,21 @@ export default function PriceChat() {
     onSuccess: async (data) => {
       setMessages((prev) =>
         prev.map((m) =>
-          m.loading ? { ...m, content: data.content, loading: false } : m
+          m.loading ? { ...m, content: data.content, loading: false, action: data.action } : m
         )
       );
 
       if (data.action?.type === "product_tracked" && data.action.trackedProductId) {
+        const productName = data.action.productName || "Product";
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `sys-${Date.now()}`,
+            role: "system",
+            content: `✓ Added **${productName}** to tracking. [View Products →](/products)`,
+          },
+        ]);
+
         await Promise.all([
           utils.products.list.invalidate(),
           utils.prices.dashboard.invalidate(),
@@ -49,13 +61,18 @@ export default function PriceChat() {
       }
     },
     onError: (err) => {
+      const isNetworkError = err.message.includes("fetch") || err.message.includes("network");
+      const errorType = isNetworkError ? "Network issue" : "Server error";
+      const errorMsg = `${errorType}: ${err.message}`;
+
       setMessages((prev) =>
         prev.map((m) =>
           m.loading
             ? {
                 ...m,
-                content: t.chatError,
+                content: errorMsg,
                 loading: false,
+                error: true,
               }
             : m
         )
@@ -90,13 +107,21 @@ export default function PriceChat() {
     };
 
     const history = messages
-      .filter((m) => !m.loading)
+      .filter((m) => !m.loading && m.role !== "system")
       .map((m) => ({ role: m.role, content: m.content }));
 
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
     setInput("");
 
     askMutation.mutate({ message: trimmed, history });
+  };
+
+  const retryLastMessage = () => {
+    const lastUserMsg = [...messages].reverse().find((m) => m.role === "user");
+    if (lastUserMsg && !askMutation.isPending) {
+      setMessages((prev) => prev.filter((m) => !m.error));
+      sendMessage(lastUserMsg.content);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -191,6 +216,8 @@ export default function PriceChat() {
                     onClick={() => setIsOpen(false)}
                     className="h-7 w-7 rounded-lg flex items-center justify-center transition-colors hover:bg-gray-100"
                     style={{ color: "#9ba0a8" }}
+                    aria-label={t.close ?? "Close"}
+                    title={t.close ?? "Close"}
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -254,11 +281,13 @@ export default function PriceChat() {
                           style={
                             msg.role === "user"
                               ? { background: "#0166fe", color: "#ffffff" }
+                              : msg.role === "system"
+                              ? { background: "#f0fdf4", color: "#14532d", border: "1px solid #bbf7d0" }
                               : { background: "#f6f8ff", color: "#1c222b", border: "1px solid #ebeced" }
                           }
                         >
                           {msg.loading ? (
-                            <div className="flex items-center gap-1.5 py-1">
+                            <div className="flex items-center gap-1.5 py-1" role="status" aria-live="polite" aria-label="Thinking">
                               <span
                                 className="h-1.5 w-1.5 rounded-full animate-bounce"
                                 style={{ background: "#0166fe", animationDelay: "0ms" }}
@@ -272,12 +301,22 @@ export default function PriceChat() {
                                 style={{ background: "#0166fe", animationDelay: "300ms" }}
                               />
                             </div>
-                          ) : msg.role === "assistant" ? (
-                            <div className="prose prose-sm max-w-none" style={{ color: "#1c222b" }}>
+                          ) : msg.role === "assistant" || msg.role === "system" ? (
+                            <div className="prose prose-sm max-w-none" style={{ color: msg.role === "system" ? "#14532d" : "#1c222b" }}>
                               <Streamdown>{msg.content}</Streamdown>
                             </div>
                           ) : (
                             <span>{msg.content}</span>
+                          )}
+                          {msg.error && (
+                            <button
+                              type="button"
+                              className="mt-2 text-xs underline font-medium"
+                              style={{ color: "#b91c1c" }}
+                              onClick={retryLastMessage}
+                            >
+                              Retry
+                            </button>
                           )}
                         </div>
                       </div>
@@ -311,6 +350,7 @@ export default function PriceChat() {
               setIsOpen(true);
             }}
             title={t.chatNewConvo}
+            aria-label={t.chatNewConvo}
           >
             <Plus className="h-4 w-4" />
           </button>
