@@ -162,8 +162,8 @@ export default function PriceChat() {
       </AnimatePresence>
 
       {/* Floating container */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-0"
-        style={{ width: "min(680px, calc(100vw - 2rem))" }}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-0"
+        style={{ width: "min(520px, calc(100vw - 2rem))" }}
       >
         {/* Chat panel — expands above the input bar */}
         <AnimatePresence>
@@ -227,7 +227,7 @@ export default function PriceChat() {
               {/* Messages area */}
               <div
                 className="overflow-y-auto"
-                style={{ maxHeight: "380px", minHeight: hasMessages ? "200px" : "auto" }}
+                style={{ maxHeight: "420px", minHeight: hasMessages ? "220px" : "auto" }}
               >
                 {!hasMessages ? (
                   /* Suggested prompts */

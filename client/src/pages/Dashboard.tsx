@@ -5,6 +5,9 @@ import { PlatformBadge, DeltaBadge, AvailabilityBadge, StatCard } from "@/compon
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import FeedbackCard from "@/components/FeedbackCard";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 import { RefreshCw, Search, Activity } from "lucide-react";
 import { useState, useMemo } from "react";
@@ -12,6 +15,7 @@ import { useLang } from "@/contexts/LanguageContext";
 
 export default function Dashboard() {
   const { t } = useLang();
+  const { isAuthenticated } = useAuth();
   const [search, setSearch] = useState("");
   const [pollingName, setPollingName] = useState<string | null>(null);
   const [pollingProgress, setPollingProgress] = useState<{ current: number; total: number } | null>(null);
@@ -84,7 +88,8 @@ export default function Dashboard() {
 
   const grouped = useMemo(() => {
     const map = new Map<string, typeof filtered>();
-    for (const row of filtered) {
+    const visibleRows = isAuthenticated ? filtered : filtered.slice(0, 20);
+    for (const row of visibleRows) {
       const key = row.productName;
       const existing = map.get(key) ?? [];
       existing.push(row);
@@ -97,17 +102,18 @@ export default function Dashboard() {
       isOwn: entries[0]?.isOwn ?? false,
       entries,
     }));
-  }, [filtered]);
+  }, [filtered, isAuthenticated]);
 
   // Products that exist but have no price snapshots yet
   const snapshotProductIds = useMemo(() => new Set(rows?.map((r) => r.trackedProductId) ?? []), [rows]);
   const unpricedProducts = useMemo(() => {
+    if (!isAuthenticated) return [];
     if (!allProducts) return [];
     const q = search.toLowerCase();
     return allProducts.filter(
       (p) => !snapshotProductIds.has(p.id) && (p.name.toLowerCase().includes(q) || p.platform.toLowerCase().includes(q))
     );
-  }, [allProducts, snapshotProductIds, search]);
+  }, [allProducts, snapshotProductIds, search, isAuthenticated]);
 
   return (
     <div className="flex flex-col gap-6 max-w-[1200px]">
@@ -149,51 +155,69 @@ export default function Dashboard() {
       </div>
 
       {/* Price table */}
-      {isLoading ? (
-        <div className="flex flex-col gap-3">
-          {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-40 rounded-xl" />)}
-        </div>
-      ) : grouped.length === 0 && unpricedProducts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
-          <Activity className="w-10 h-10 text-muted-foreground/40" />
-          <p className="text-muted-foreground text-sm">{t.noProducts}</p>
-          <p className="text-muted-foreground/60 text-xs">{t.addFirstProduct}</p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {grouped.map((group) => (
-            <ProductPriceCard
-              key={group.id}
-              group={group}
-              onPoll={(ids) => handlePoll(ids, group.name)}
-              isPolling={pollingName === group.name}
-            />
-          ))}
-          {unpricedProducts.map((product) => (
-            <div key={product.id} className="rounded-xl border border-dashed border-border bg-card/50 overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3">
-                <div className="flex items-center gap-3">
-                  <PlatformBadge platform={product.platform as Platform} />
-                  <div>
-                    <span className="font-medium text-sm text-foreground">{product.name}</span>
-                    <p className="text-xs font-mono text-muted-foreground">{product.platformProductId}</p>
+      <div className="relative">
+        {isLoading ? (
+          <div className="flex flex-col gap-3">
+            {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-40 rounded-xl" />)}
+          </div>
+        ) : grouped.length === 0 && unpricedProducts.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
+            <Activity className="w-10 h-10 text-muted-foreground/40" />
+            <p className="text-muted-foreground text-sm">{t.noProducts}</p>
+            <p className="text-muted-foreground/60 text-xs">{t.addFirstProduct}</p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {grouped.map((group) => (
+              <ProductPriceCard
+                key={group.id}
+                group={group}
+                onPoll={(ids) => handlePoll(ids, group.name)}
+                isPolling={pollingName === group.name}
+                disablePoll={!isAuthenticated}
+              />
+            ))}
+            {unpricedProducts.map((product) => (
+              <div key={product.id} className="rounded-xl border border-dashed border-border bg-card/50 overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <PlatformBadge platform={product.platform as Platform} />
+                    <div>
+                      <span className="font-medium text-sm text-foreground">{product.name}</span>
+                      <p className="text-xs font-mono text-muted-foreground">{product.platformProductId}</p>
+                    </div>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePoll([product.id], product.name)}
+                    disabled={pollingName === product.name}
+                    className="gap-1.5 text-xs h-7 px-2.5 shrink-0"
+                  >
+                    <RefreshCw className={`w-3 h-3 ${pollingName === product.name ? "animate-spin" : ""}`} />
+                    {pollingName === product.name ? "…" : "获取价格"}
+                  </Button>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePoll([product.id], product.name)}
-                  disabled={pollingName === product.name}
-                  className="gap-1.5 text-xs h-7 px-2.5 shrink-0"
-                >
-                  <RefreshCw className={`w-3 h-3 ${pollingName === product.name ? "animate-spin" : ""}`} />
-                  {pollingName === product.name ? "…" : "获取价格"}
-                </Button>
               </div>
+            ))}
+          </div>
+        )}
+
+        {!isAuthenticated && (
+          <div className="absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-background via-background/95 to-transparent flex items-end justify-center pb-10">
+            <div className="rounded-xl border border-border bg-card px-5 py-4 text-center shadow-sm">
+              <p className="text-sm font-medium text-foreground">Login to unlock full data & actions</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                You are viewing a preview of 20 products.
+              </p>
+              <Button className="mt-3" size="sm" onClick={() => (window.location.href = getLoginUrl())}>
+                {t.signIn}
+              </Button>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
+      {isAuthenticated && <FeedbackCard />}
     </div>
   );
 }
@@ -222,10 +246,12 @@ function ProductPriceCard({
   group,
   onPoll,
   isPolling,
+  disablePoll,
 }: {
   group: { id: number; name: string; category: string | null; isOwn: boolean; entries: PriceRow[] };
   onPoll: (ids: number[]) => void;
   isPolling: boolean;
+  disablePoll: boolean;
 }) {
   const { t } = useLang();
   const lowestLanded = Math.min(...group.entries.map((e) => e.landed_price));
@@ -250,7 +276,7 @@ function ProductPriceCard({
           variant="ghost"
           size="sm"
           onClick={() => onPoll(group.entries.map(e => e.trackedProductId))}
-          disabled={isPolling}
+          disabled={isPolling || disablePoll}
           className="gap-1.5 text-xs h-7 px-2.5 text-muted-foreground hover:text-foreground shrink-0"
           aria-label={isPolling ? "Polling..." : t.poll}
           title={isPolling ? "Polling..." : t.poll}

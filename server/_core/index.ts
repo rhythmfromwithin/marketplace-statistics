@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { ensureDbReady } from "../db";
+import { startAutoPricePolling } from "../jobs/autoPricePolling";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -63,6 +64,9 @@ async function startServer() {
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
   });
+
+  // Refresh all tracked product prices every 4 hours.
+  startAutoPricePolling();
 }
 
 startServer().catch(console.error);

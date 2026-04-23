@@ -21,9 +21,8 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { trpc } from "@/lib/trpc";
 import { useLang } from "@/contexts/LanguageContext";
-import { BarChart2, Bell, LayoutDashboard, LogIn, LogOut, PanelLeft, Sparkles, Tag } from "lucide-react";
+import { BarChart2, LayoutDashboard, LogIn, LogOut, PanelLeft, Store, Tag } from "lucide-react";
 import PriceChat from "./PriceChat";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
@@ -71,7 +70,7 @@ function DashboardLayoutContent({
   children,
   setSidebarWidth,
 }: DashboardLayoutContentProps) {
-  const { user, logout } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   const { t, lang, toggleLang } = useLang();
   const [location, setLocation] = useLocation();
   const { state, toggleSidebar } = useSidebar();
@@ -79,15 +78,13 @@ function DashboardLayoutContent({
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
-  const { data: unreadCount } = trpc.alerts.unreadCount.useQuery(undefined, { refetchInterval: 30000 });
 
-  const menuItems = [
+  const menuItems = isAuthenticated ? [
     { icon: LayoutDashboard, label: t.nav.dashboard, path: "/" },
     { icon: Tag, label: t.nav.products, path: "/products" },
     { icon: BarChart2, label: t.nav.history, path: "/history" },
-    { icon: Bell, label: t.nav.alerts, path: "/alerts" },
-    { icon: Sparkles, label: t.nav.recommendations, path: "/recommendations" },
-  ];
+    { icon: Store, label: t.nav.competitors, path: "/competitors" },
+  ] : [{ icon: LayoutDashboard, label: t.nav.dashboard, path: "/" }];
 
   const activeMenuItem = menuItems.find(item => item.path === location);
 
@@ -96,6 +93,12 @@ function DashboardLayoutContent({
       setIsResizing(false);
     }
   }, [isCollapsed]);
+
+  useEffect(() => {
+    if (!isAuthenticated && location !== "/") {
+      setLocation("/");
+    }
+  }, [isAuthenticated, location, setLocation]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -169,7 +172,6 @@ function DashboardLayoutContent({
             <SidebarMenu className="px-2 py-1">
               {menuItems.map(item => {
                 const isActive = location === item.path;
-                const hasAlertBadge = item.path === '/alerts' && (unreadCount ?? 0) > 0;
                 return (
                   <SidebarMenuItem key={item.path}>
                     <SidebarMenuButton
@@ -184,16 +186,8 @@ function DashboardLayoutContent({
                     >
                       <div className="relative">
                         <item.icon className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
-                        {hasAlertBadge && (
-                          <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-destructive" />
-                        )}
                       </div>
                       <span className="flex-1">{item.label}</span>
-                      {hasAlertBadge && !isCollapsed && (
-                        <span className="text-[10px] font-semibold bg-destructive text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
-                          {unreadCount}
-                        </span>
-                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
@@ -267,7 +261,7 @@ function DashboardLayoutContent({
           </div>
         )}
         <main className="flex-1 p-6 bg-background min-h-screen pb-28">{children}</main>
-        <PriceChat />
+        {isAuthenticated && <PriceChat />}
       </SidebarInset>
     </>
   );
