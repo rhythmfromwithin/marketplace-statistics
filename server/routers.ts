@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
   addTrackedProduct,
+  createUserFeedback,
   createAlertRule,
   deleteAlertRule,
   getAlertEvents,
@@ -42,7 +43,7 @@ function jitter(base: number, pct: number): number {
 }
 
 function extractAmazonAsinFromUrl(raw: string): string {
-  const value = raw.trim();
+  const value = normalizePotentialAmazonUrl(raw);
   if (!value) throw new TRPCError({ code: "BAD_REQUEST", message: "Amazon URL is required" });
 
   // Allow direct ASIN input as a fallback.
@@ -76,11 +77,41 @@ function extractAmazonAsinFromUrl(raw: string): string {
   throw new TRPCError({ code: "BAD_REQUEST", message: "Could not extract ASIN from Amazon URL" });
 }
 
-function extractFirstAmazonUrl(text: string): string | null {
-  const match = text.match(/https?:\/\/[^\s]*amazon\.[^\s]+/i);
-  if (!match?.[0]) return null;
-  // Trim common trailing punctuation from chat messages.
-  return match[0].replace(/[),.;!?]+$/, "");
+function normalizePotentialAmazonUrl(value: string): string {
+  const trimmed = value.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (/^amazon\./i.test(trimmed) || /^www\.amazon\./i.test(trimmed)) {
+    return `https://${trimmed}`;
+  }
+  return trimmed;
+}
+
+function extractAmazonStoreIdFromUrl(raw: string): string | null {
+  const normalized = normalizePotentialAmazonUrl(raw);
+  try {
+    const parsed = new URL(normalized);
+    if (!parsed.hostname.toLowerCase().includes("amazon.")) return null;
+    const byParam = parsed.searchParams.get("seller");
+    if (byParam) return byParam.trim();
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function extractAmazonReference(text: string): { kind: "asin" | "url"; value: string } | null {
+  const urlMatch = text.match(/(?:https?:\/\/)?(?:www\.)?amazon\.[^\s]+/i);
+  if (urlMatch?.[0]) {
+    const cleaned = urlMatch[0].replace(/[),.;!?]+$/, "");
+    return { kind: "url", value: normalizePotentialAmazonUrl(cleaned) };
+  }
+
+  const asinMatch = text.match(/\b[A-Z0-9]{10}\b/i);
+  if (asinMatch?.[0]) {
+    return { kind: "asin", value: asinMatch[0].toUpperCase() };
+  }
+
+  return null;
 }
 
 async function addAmazonTrackedProductFromUrl(input: {
@@ -88,7 +119,7 @@ async function addAmazonTrackedProductFromUrl(input: {
   category?: string;
   isOwn?: boolean;
 }) {
-  const asin = extractAmazonAsinFromUrl(input.url);
+  const asin = extractAmazonAsinFromUrl(normalizePotentialAmazonUrl(input.url));
 
   const existing = (await getAllTrackedProducts()).find(
     (p) => p.platform === "amazon" && p.platformProductId.toUpperCase() === asin
@@ -139,6 +170,33 @@ async function addAmazonTrackedProductFromUrl(input: {
   };
 }
 
+async function addAmazonProductsFromStoreUrl(url: string, limit: number = 5) {
+  const storeId = extractAmazonStoreIdFromUrl(url);
+  if (!storeId) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Could not extract seller/store id from URL" });
+  }
+
+  const api = platformManager.getPlatformAPI("amazon");
+  const searchResults = await api.search(storeId, limit);
+  const picked = searchResults.filter((item) => !!item.platformProductId).slice(0, limit);
+
+  if (picked.length === 0) {
+    throw new TRPCError({ code: "NOT_FOUND", message: "No products found for this store URL" });
+  }
+
+  const added = [];
+  for (const item of picked) {
+    const result = await addAmazonTrackedProductFromUrl({
+      url: item.productUrl || item.platformProductId,
+      category: "competitor-store",
+      isOwn: false,
+    });
+    added.push(result);
+  }
+
+  return { storeId, added };
+}
+
 // ─── Recommendation engine ────────────────────────────────────────────────────
 function computeRecommendation(
   landedPrices: number[],
@@ -187,8 +245,10 @@ export const appRouter = router({
 
   // ─── Products ──────────────────────────────────────────────────────────────
   products: router({
-    list: publicProcedure.query(async () => {
-      return getAllTrackedProducts();
+    list: publicProcedure.query(async ({ ctx }) => {
+      const rows = await getAllTrackedProducts();
+      if (ctx.user) return rows;
+      return rows.slice(0, 20);
     }),
 
     // 跨平台搜索商品（真实 API 集成）
@@ -217,7 +277,7 @@ export const appRouter = router({
         }
       }),
 
-    add: publicProcedure
+    add: protectedProcedure
       .input(
         z.object({
           name: z.string().min(1),
@@ -233,7 +293,7 @@ export const appRouter = router({
         return { id };
       }),
 
-    addFromAmazonUrl: publicProcedure
+    addFromAmazonUrl: protectedProcedure
       .input(
         z.object({
           url: z.string().min(1),
@@ -246,7 +306,7 @@ export const appRouter = router({
         return { id: result.id, alreadyExists: result.alreadyExists };
       }),
 
-    remove: publicProcedure
+    remove: protectedProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await removeTrackedProduct(input.id);
@@ -256,7 +316,7 @@ export const appRouter = router({
 
   // ─── Prices ────────────────────────────────────────────────────────────────
   prices: router({
-    dashboard: publicProcedure.query(async () => {
+    dashboard: publicProcedure.query(async ({ ctx }) => {
       const [products, latestSnapshots] = await Promise.all([
         getAllTrackedProducts(),
         getLatestSnapshotPerProduct(),
@@ -292,7 +352,8 @@ export const appRouter = router({
         })
       );
 
-      return rows;
+      if (ctx.user) return rows;
+      return rows.slice(0, 20);
     }),
 
     history: publicProcedure
@@ -311,7 +372,7 @@ export const appRouter = router({
         }));
       }),
 
-    poll: publicProcedure
+    poll: protectedProcedure
       .input(z.object({ trackedProductId: z.number() }))
       .mutation(async ({ input }) => {
         // 获取追踪商品信息
@@ -504,7 +565,7 @@ export const appRouter = router({
 
   // ─── AI Chat ───────────────────────────────────────────────────────────────
   chat: router({
-    ask: publicProcedure
+    ask: protectedProcedure
       .input(
         z.object({
           message: z.string().min(1).max(2000),
@@ -520,10 +581,30 @@ export const appRouter = router({
         })
       )
       .mutation(async ({ input }) => {
-        const amazonUrl = extractFirstAmazonUrl(input.message);
-        if (amazonUrl) {
+        const reference = extractAmazonReference(input.message);
+        if (reference) {
           try {
-            const result = await addAmazonTrackedProductFromUrl({ url: amazonUrl });
+            if (reference.kind === "url") {
+              const storeId = extractAmazonStoreIdFromUrl(reference.value);
+              if (storeId) {
+                const storeResult = await addAmazonProductsFromStoreUrl(reference.value);
+                return {
+                  content: `Added ${storeResult.added.length} products from store ${storeResult.storeId} to tracking.`,
+                  action: {
+                    type: "product_tracked" as const,
+                    trackedProductId: storeResult.added[0]?.id ?? null,
+                    platform: "amazon" as const,
+                    asin: storeResult.added[0]?.asin ?? null,
+                    alreadyExists: storeResult.added.every((item) => item.alreadyExists),
+                    count: storeResult.added.length,
+                  },
+                };
+              }
+            }
+
+            const result = await addAmazonTrackedProductFromUrl({
+              url: reference.value,
+            });
             const suffix =
               result.currentPrice == null
                 ? ""
@@ -543,7 +624,7 @@ export const appRouter = router({
           } catch (error) {
             const message = error instanceof Error ? error.message : "Failed to add product";
             return {
-              content: `I found an Amazon link but couldn't add it yet: ${message}`,
+              content: `I found an Amazon reference but couldn't add it yet: ${message}`,
               action: {
                 type: "product_tracked" as const,
                 trackedProductId: null,
@@ -615,6 +696,25 @@ You help users understand competitor pricing, identify opportunities, and make s
         const rawContent = response.choices?.[0]?.message?.content;
         const content = typeof rawContent === "string" ? rawContent : (rawContent ? JSON.stringify(rawContent) : "I couldn't generate a response. Please try again.");
         return { content, action: null };
+      }),
+  }),
+
+  feedback: router({
+    submit: protectedProcedure
+      .input(
+        z.object({
+          category: z.enum(["bug", "feature", "general"]).default("general"),
+          message: z.string().min(5).max(2000),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const id = await createUserFeedback({
+          openId: ctx.user?.openId ?? null,
+          email: ctx.user?.email ?? null,
+          category: input.category,
+          message: input.message.trim(),
+        });
+        return { id, success: true };
       }),
   }),
 

@@ -7,10 +7,12 @@ import {
   alertEvents,
   alertRules,
   InsertAlertRule,
+  InsertUserFeedback,
   InsertTrackedProduct,
   marginRules,
   priceSnapshots,
   trackedProducts,
+  userFeedback,
   type InsertUser,
   users,
 } from "../drizzle/schema";
@@ -312,4 +314,12 @@ export async function upsertMarginRules(data: {
       shippingCost: data.shippingCost.toFixed(2),
     } as any);
   }
+}
+
+// ─── User Feedback ────────────────────────────────────────────────────────────
+export async function createUserFeedback(data: InsertUserFeedback) {
+  const db = await getDb();
+  if (!db) throw dbUnavailableError();
+  const result = await db.insert(userFeedback).values(data).returning({ id: userFeedback.id });
+  return result[0]?.id;
 }

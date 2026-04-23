@@ -112,3 +112,16 @@ export const marginRules = sqliteTable("margin_rules", {
 
 export type MarginRule = typeof marginRules.$inferSelect;
 export type InsertMarginRule = typeof marginRules.$inferInsert;
+
+// ─── User Feedback ────────────────────────────────────────────────────────────
+export const userFeedback = sqliteTable("user_feedback", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  openId: text("openId", { length: 64 }),
+  email: text("email", { length: 320 }),
+  category: text("category", { enum: ["bug", "feature", "general"] }).notNull().default("general"),
+  message: text("message").notNull(),
+  createdAt: integer("createdAt", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+});
+
+export type UserFeedback = typeof userFeedback.$inferSelect;
+export type InsertUserFeedback = typeof userFeedback.$inferInsert;
