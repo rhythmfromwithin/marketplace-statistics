@@ -172,8 +172,10 @@ import {
 import { useState } from "react";
 import { toast as sonnerToast } from "sonner";
 import { AIChatBox, type Message } from "@/components/AIChatBox";
+import { useLang } from "@/contexts/LanguageContext";
 
 export default function ComponentsShowcase() {
+  const { t } = useLang();
   const { theme, toggleTheme } = useTheme();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [datePickerDate, setDatePickerDate] = useState<Date>();
@@ -195,8 +197,8 @@ export default function ComponentsShowcase() {
 
   const handleDialogSubmit = () => {
     console.log("Dialog submitted with value:", dialogInput);
-    sonnerToast.success("Submitted successfully", {
-      description: `Input: ${dialogInput}`,
+    sonnerToast.success(t.showcaseDialogToastTitle, {
+      description: t.showcaseDialogToastDesc(dialogInput),
     });
     setDialogInput("");
     setDialogOpen(false);
@@ -231,9 +233,23 @@ export default function ComponentsShowcase() {
       <main className="container max-w-6xl mx-auto">
         <div className="space-y-2 justify-between flex">
           <h2 className="text-3xl font-bold tracking-tight mb-6">
-            Shadcn/ui Component Library
+            {t.showcaseTitleMain}
           </h2>
-          <Button variant="outline" size="icon" onClick={toggleTheme}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleTheme}
+            title={
+              theme === "light"
+                ? t.showcaseThemeToggleLightAria
+                : t.showcaseThemeToggleDarkAria
+            }
+            aria-label={
+              theme === "light"
+                ? t.showcaseThemeToggleLightAria
+                : t.showcaseThemeToggleDarkAria
+            }
+          >
             {theme === "light" ? (
               <Moon className="h-5 w-5" />
             ) : (
@@ -245,7 +261,7 @@ export default function ComponentsShowcase() {
         <div className="space-y-12">
           {/* Text Colors Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Text Colors</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecTextColors}</h3>
             <Card>
               <CardContent className="pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -324,7 +340,7 @@ export default function ComponentsShowcase() {
 
           {/* Color Combinations Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Color Combinations</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecColorCombo}</h3>
             <Card>
               <CardContent className="pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -383,18 +399,18 @@ export default function ComponentsShowcase() {
 
           {/* Buttons Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Buttons</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecButtons}</h3>
             <Card>
               <CardContent className="pt-6">
                 <div className="flex flex-wrap gap-4">
-                  <Button>Default</Button>
-                  <Button variant="secondary">Secondary</Button>
-                  <Button variant="destructive">Destructive</Button>
-                  <Button variant="outline">Outline</Button>
-                  <Button variant="ghost">Ghost</Button>
-                  <Button variant="link">Link</Button>
-                  <Button size="sm">Small</Button>
-                  <Button size="lg">Large</Button>
+                  <Button>{t.showcaseBtnDefault}</Button>
+                  <Button variant="secondary">{t.showcaseBtnSecondary}</Button>
+                  <Button variant="destructive">{t.showcaseBtnDestructive}</Button>
+                  <Button variant="outline">{t.showcaseBtnOutline}</Button>
+                  <Button variant="ghost">{t.showcaseBtnGhost}</Button>
+                  <Button variant="link">{t.showcaseBtnLink}</Button>
+                  <Button size="sm">{t.showcaseBtnSmall}</Button>
+                  <Button size="lg">{t.showcaseBtnLarge}</Button>
                   <Button size="icon">
                     <Check className="h-4 w-4" />
                   </Button>
@@ -405,7 +421,7 @@ export default function ComponentsShowcase() {
 
           {/* Form Inputs Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Form Inputs</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecFormInputs}</h3>
             <Card>
               <CardContent className="pt-6 space-y-6">
                 <div className="space-y-2">
@@ -679,7 +695,7 @@ export default function ComponentsShowcase() {
 
           {/* Data Display Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Data Display</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecDataDisplay}</h3>
             <Card>
               <CardContent className="pt-6 space-y-6">
                 <div className="space-y-2">
@@ -713,13 +729,13 @@ export default function ComponentsShowcase() {
                       size="sm"
                       onClick={() => setProgress(Math.max(0, progress - 10))}
                     >
-                      -10
+                      {t.showcaseBtnMinusTen}
                     </Button>
                     <Button
                       size="sm"
                       onClick={() => setProgress(Math.min(100, progress + 10))}
                     >
-                      +10
+                      {t.showcaseBtnPlusTen}
                     </Button>
                   </div>
                 </div>
@@ -868,7 +884,7 @@ export default function ComponentsShowcase() {
 
           {/* Alerts Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Alerts</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecAlertUI}</h3>
             <div className="space-y-4">
               <Alert>
                 <AlertCircle className="h-4 w-4" />
@@ -889,7 +905,7 @@ export default function ComponentsShowcase() {
 
           {/* Tabs Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Tabs</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecTabs}</h3>
             <Tabs defaultValue="account" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="account">Account</TabsTrigger>
@@ -911,7 +927,7 @@ export default function ComponentsShowcase() {
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button>Save changes</Button>
+                    <Button>{t.showcaseBtnSaveChanges}</Button>
                   </CardFooter>
                 </Card>
               </TabsContent>
@@ -934,7 +950,7 @@ export default function ComponentsShowcase() {
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button>Save password</Button>
+                    <Button>{t.showcaseBtnSavePassword}</Button>
                   </CardFooter>
                 </Card>
               </TabsContent>
@@ -958,7 +974,7 @@ export default function ComponentsShowcase() {
 
           {/* Accordion Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Accordion</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecAccordion}</h3>
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1">
                 <AccordionTrigger>Is it accessible?</AccordionTrigger>
@@ -985,7 +1001,7 @@ export default function ComponentsShowcase() {
 
           {/* Collapsible Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Collapsible</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecCollapsible}</h3>
             <Collapsible>
               <Card>
                 <CardHeader>
@@ -1016,13 +1032,13 @@ export default function ComponentsShowcase() {
 
           {/* Dialog, Sheet, Drawer Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Overlays</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecOverlays}</h3>
             <Card>
               <CardContent className="pt-6">
                 <div className="flex flex-wrap gap-4">
                   <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="outline">Open Dialog</Button>
+                      <Button variant="outline">{t.showcaseBtnOpenDialog}</Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
@@ -1049,16 +1065,18 @@ export default function ComponentsShowcase() {
                           variant="outline"
                           onClick={() => setDialogOpen(false)}
                         >
-                          Cancel
+                          {t.showcaseBtnCancel}
                         </Button>
-                        <Button onClick={handleDialogSubmit}>Submit</Button>
+                        <Button onClick={handleDialogSubmit}>
+                          {t.showcaseBtnSubmit}
+                        </Button>
                       </div>
                     </DialogContent>
                   </Dialog>
 
                   <Sheet>
                     <SheetTrigger asChild>
-                      <Button variant="outline">Open Sheet</Button>
+                      <Button variant="outline">{t.showcaseBtnOpenSheet}</Button>
                     </SheetTrigger>
                     <SheetContent>
                       <SheetHeader>
@@ -1073,7 +1091,7 @@ export default function ComponentsShowcase() {
 
                   <Drawer>
                     <DrawerTrigger asChild>
-                      <Button variant="outline">Open Drawer</Button>
+                      <Button variant="outline">{t.showcaseBtnOpenDrawer}</Button>
                     </DrawerTrigger>
                     <DrawerContent>
                       <DrawerHeader>
@@ -1083,9 +1101,9 @@ export default function ComponentsShowcase() {
                         </DrawerDescription>
                       </DrawerHeader>
                       <DrawerFooter>
-                        <Button>Submit</Button>
+                        <Button>{t.showcaseBtnSubmit}</Button>
                         <DrawerClose asChild>
-                          <Button variant="outline">Cancel</Button>
+                          <Button variant="outline">{t.showcaseBtnCancel}</Button>
                         </DrawerClose>
                       </DrawerFooter>
                     </DrawerContent>
@@ -1093,7 +1111,7 @@ export default function ComponentsShowcase() {
 
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline">Open Popover</Button>
+                      <Button variant="outline">{t.showcaseBtnOpenPopover}</Button>
                     </PopoverTrigger>
                     <PopoverContent>
                       <div className="space-y-2">
@@ -1107,7 +1125,7 @@ export default function ComponentsShowcase() {
 
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline">Hover me</Button>
+                      <Button variant="outline">{t.showcaseBtnHoverMe}</Button>
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>Add to library</p>
@@ -1120,13 +1138,13 @@ export default function ComponentsShowcase() {
 
           {/* Menus Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Menus</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecMenus}</h3>
             <Card>
               <CardContent className="pt-6">
                 <div className="flex flex-wrap gap-4">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline">Dropdown Menu</Button>
+                      <Button variant="outline">{t.showcaseBtnDropdownMenu}</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -1140,7 +1158,7 @@ export default function ComponentsShowcase() {
 
                   <ContextMenu>
                     <ContextMenuTrigger asChild>
-                      <Button variant="outline">Right Click Me</Button>
+                      <Button variant="outline">{t.showcaseBtnRightClick}</Button>
                     </ContextMenuTrigger>
                     <ContextMenuContent>
                       <ContextMenuItem>Profile</ContextMenuItem>
@@ -1152,7 +1170,7 @@ export default function ComponentsShowcase() {
 
                   <HoverCard>
                     <HoverCardTrigger asChild>
-                      <Button variant="outline">Hover Card</Button>
+                      <Button variant="outline">{t.showcaseBtnHoverCard}</Button>
                     </HoverCardTrigger>
                     <HoverCardContent>
                       <div className="space-y-2">
@@ -1171,7 +1189,7 @@ export default function ComponentsShowcase() {
 
           {/* Calendar Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Calendar</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecCalendar}</h3>
             <Card>
               <CardContent className="pt-6 flex justify-center">
                 <Calendar
@@ -1186,7 +1204,7 @@ export default function ComponentsShowcase() {
 
           {/* Carousel Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Carousel</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecCarousel}</h3>
             <Card>
               <CardContent className="pt-6">
                 <Carousel className="w-full max-w-xs mx-auto">
@@ -1214,7 +1232,7 @@ export default function ComponentsShowcase() {
 
           {/* Toggle Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Toggle</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecToggle}</h3>
             <Card>
               <CardContent className="pt-6 space-y-4">
                 <div className="space-y-2">
@@ -1255,7 +1273,7 @@ export default function ComponentsShowcase() {
 
           {/* Aspect Ratio & Scroll Area Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Layout Components</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecLayout}</h3>
             <Card>
               <CardContent className="pt-6 space-y-6">
                 <div className="space-y-2">
@@ -1287,7 +1305,7 @@ export default function ComponentsShowcase() {
 
           {/* Resizable Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Resizable Panels</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSecResizable}</h3>
             <Card>
               <CardContent className="pt-6">
                 <ResizablePanelGroup
@@ -1312,63 +1330,61 @@ export default function ComponentsShowcase() {
 
           {/* Toast Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">Toast</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSectionToast}</h3>
             <Card>
               <CardContent className="pt-6 space-y-4">
                 <div className="space-y-2">
-                  <Label>Sonner Toast</Label>
+                  <Label>{t.showcaseSonnerLabel}</Label>
                   <div className="flex flex-wrap gap-2">
                     <Button
                       variant="outline"
                       onClick={() => {
-                        sonnerToast.success("Operation successful", {
-                          description: "Your changes have been saved",
+                        sonnerToast.success(t.showcaseToastSuccessTitle, {
+                          description: t.showcaseToastSuccessDesc,
                         });
                       }}
                     >
-                      Success
+                      {t.showcaseBtnSuccess}
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => {
-                        sonnerToast.error("Operation failed", {
-                          description:
-                            "Cannot complete operation, please try again",
+                        sonnerToast.error(t.showcaseToastErrorTitle, {
+                          description: t.showcaseToastErrorDesc,
                         });
                       }}
                     >
-                      Error
+                      {t.showcaseBtnError}
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => {
-                        sonnerToast.info("Information", {
-                          description: "This is an information message",
+                        sonnerToast.info(t.showcaseToastInfoTitle, {
+                          description: t.showcaseToastInfoDesc,
                         });
                       }}
                     >
-                      Info
+                      {t.showcaseBtnInfo}
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => {
-                        sonnerToast.warning("Warning", {
-                          description:
-                            "Please note the impact of this operation",
+                        sonnerToast.warning(t.showcaseToastWarningTitle, {
+                          description: t.showcaseToastWarningDesc,
                         });
                       }}
                     >
-                      Warning
+                      {t.showcaseBtnWarning}
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => {
-                        sonnerToast.loading("Loading", {
-                          description: "Please wait",
+                        sonnerToast.loading(t.showcaseToastLoadingTitle, {
+                          description: t.showcaseToastLoadingDesc,
                         });
                       }}
                     >
-                      Loading
+                      {t.showcaseBtnLoading}
                     </Button>
                     <Button
                       variant="outline"
@@ -1377,13 +1393,13 @@ export default function ComponentsShowcase() {
                           setTimeout(resolve, 2000)
                         );
                         sonnerToast.promise(promise, {
-                          loading: "Processing...",
-                          success: "Processing complete!",
-                          error: "Processing failed",
+                          loading: t.showcaseToastPromiseLoading,
+                          success: t.showcaseToastPromiseSuccess,
+                          error: t.showcaseToastPromiseError,
                         });
                       }}
                     >
-                      Promise
+                      {t.showcaseBtnPromise}
                     </Button>
                   </div>
                 </div>
@@ -1393,32 +1409,22 @@ export default function ComponentsShowcase() {
 
           {/* AI ChatBox Section */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-semibold">AI ChatBox</h3>
+            <h3 className="text-2xl font-semibold">{t.showcaseSectionAiChat}</h3>
             <Card>
               <CardContent className="pt-6">
                 <div className="space-y-4">
                   <div className="text-sm text-muted-foreground">
-                    <p>
-                      A ready-to-use chat interface component that integrates with the LLM system.
-                      Features markdown rendering, auto-scrolling, and loading states.
-                    </p>
-                    <p className="mt-2">
-                      This is a demo with simulated responses. In a real app, you'd connect it to a tRPC mutation.
-                    </p>
+                    <p>{t.showcaseAiChatIntro1}</p>
+                    <p className="mt-2">{t.showcaseAiChatIntro2}</p>
                   </div>
                   <AIChatBox
                     messages={chatMessages}
                     onSendMessage={handleChatSend}
                     isLoading={isChatLoading}
-                    placeholder="Try sending a message..."
+                    placeholder={t.showcaseAiChatPlaceholder}
                     height="500px"
-                    emptyStateMessage="How can I help you today?"
-                    suggestedPrompts={[
-                      "What is React?",
-                      "Explain TypeScript",
-                      "How to use tRPC?",
-                      "Best practices for web development",
-                    ]}
+                    emptyStateMessage={t.showcaseAiChatEmptyState}
+                    suggestedPrompts={[...t.showcaseAiChatPrompts]}
                   />
                 </div>
               </CardContent>
@@ -1429,7 +1435,7 @@ export default function ComponentsShowcase() {
 
       <footer className="border-t py-6 mt-12">
         <div className="container text-center text-sm text-muted-foreground">
-          <p>Shadcn/ui Component Showcase</p>
+          <p>{t.showcasePageTitle}</p>
         </div>
       </footer>
     </div>
