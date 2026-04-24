@@ -18,6 +18,15 @@ export const translations = {
     guestLabel: "Guest",
     demoMode: "Demo mode",
     signIn: "Sign in",
+    signOut: "Sign out",
+
+    // Layout / chrome
+    layoutToggleNav: "Toggle navigation",
+    layoutSwitchLangToZh: "Switch to Chinese",
+    layoutSwitchLangToEn: "Switch to English",
+    layoutThemeLight: "Switch to light mode",
+    layoutThemeDark: "Switch to dark mode",
+    layoutMenu: "Menu",
 
     // Dashboard
     dashboardTitle: "Price Dashboard",
@@ -41,6 +50,50 @@ export const translations = {
     noProducts: "No products tracked yet",
     addFirstProduct: "Add your first product to start monitoring prices",
     addProduct: "Add Product",
+    loadingStatsAria: "Loading dashboard statistics",
+    marketInsightTitle: "Market insight",
+    marketLargestDrop: "Largest drop",
+    marketLargestRise: "Largest rise",
+    marketDataFreshness: "Data freshness",
+    marketNoDrop: "No drop detected",
+    marketNoRise: "No rise detected",
+    marketNoData: "No data",
+    fetchPrice: "Fetch price",
+    guestUnlockTitle: "Login to unlock full data and actions",
+    guestUnlockSubtitle: "You are viewing a preview of 20 products.",
+    pollingToast: (n: number) => `Polling ${n} product${n !== 1 ? "s" : ""}…`,
+    alertsTriggeredToast: (n: number) => `${n} price alert${n !== 1 ? "s" : ""} triggered`,
+    retry: "Retry",
+    loggedInToast: "Logged in",
+    loginFailedPrefix: "Login failed: ",
+    pollingInProgress: "Polling…",
+
+    // Feedback widget
+    feedbackOpenAria: "Open feedback form",
+    feedbackTitle: "Send feedback",
+    feedbackDescription: "Tell us about bugs, feature requests, or any suggestions.",
+    feedbackCatGeneral: "General",
+    feedbackCatFeature: "Feature",
+    feedbackCatBug: "Bug",
+    feedbackPlaceholder: "Share your feedback…",
+    feedbackSubmit: "Submit feedback",
+    feedbackSubmitting: "Submitting…",
+    feedbackSuccessToast: "Feedback submitted successfully.",
+    feedbackFailedPrefix: "Submit failed: ",
+
+    // Competitor shops page
+    competitorsSubtitle: "Sellers discovered from tracked product snapshots.",
+    competitorsLoading: "Loading competitor stores…",
+    competitorsEmpty: "No competitor shops yet. Add products or store URLs in the AI agent.",
+    competitorsTrackedCount: (n: number) => `${n} tracked product${n !== 1 ? "s" : ""}`,
+    competitorsAvgLanded: "Avg landed",
+
+    // Products toasts / validation
+    toastProductExists: "Product already exists. Reusing existing entry.",
+    toastProductAdded: "Product added and initial price fetched.",
+    toastProductRemoved: "Product removed",
+    toastProductRemoveFailed: "Failed to remove product",
+    toastPasteAmazonUrl: "Please paste an Amazon product link.",
 
     // Products
     productsTitle: "Product Tracking",
@@ -159,12 +212,144 @@ export const translations = {
     chatClear: "Clear",
     chatLiveData: "Live data",
     chatError: "Failed to get response. Please try again.",
+    close: "Close",
+    chatPanelTitle: "Price Intel AI",
+    chatProactiveCta: "Ask AI about prices and trends",
+    chatOpenQuickActionsAria: "Open agent quick actions",
+    chatErrorNetwork: "Network issue",
+    chatErrorServer: "Server error",
+    chatRetry: "Retry",
+    chatThinkingAria: "Thinking",
+    chatAgentInputAria: "Agent input",
+    chatTrackUrlChip: "Track this Amazon URL:",
+    chatCompareLandedChip: "Compare lowest landed prices today",
+    chatDropsChip: "Which products dropped the most today?",
+    chatMovementChip: "Any price movement today?",
+    chatShowTrendFor: (name: string) => `Show trend for ${name}`,
+    trackedAddedSystem: (name: string) =>
+      `✓ Added **${name}** to tracking. [View Products →](/products)`,
+    productDefaultName: "Product",
     chatSuggestedPrompts: [
       "Which product has the biggest price drop?",
       "Where am I priced above market average?",
       "What's the best price for my product on Amazon?",
       "Which competitor has the lowest landed price?",
     ],
+
+    documentTitle: "Price Intel — Price intelligence",
+    appLoading: "Loading…",
+    notFoundCode: "404",
+    notFoundTitle: "Page not found",
+    notFoundDescription:
+      "Sorry, the page you are looking for doesn't exist. It may have been moved or deleted.",
+    notFoundGoHome: "Go home",
+    errorBoundaryTitle: "An unexpected error occurred.",
+    errorBoundaryReload: "Reload page",
+    manusLoginPrompt: "Please sign in with Manus to continue.",
+    manusLoginButton: "Sign in with Manus",
+    manusDialogGraphicAlt: "Dialog illustration",
+    productsAmazonUrlHelp:
+      "Paste an Amazon product link and the system will auto-detect ASIN, fetch details, and start tracking.",
+    productsAmazonUrlPlaceholder: "https://www.amazon.com/dp/B0XXXXXXXX",
+    productsPlatformCount: (n: number) => `${n} platform${n !== 1 ? "s" : ""}`,
+    directionShortAny: "Any",
+    directionShortUp: "Up",
+    directionShortDown: "Down",
+    alertRuleSummary: (pct: number, dir: string) => `Threshold: ${pct}% · Direction: ${dir}`,
+    priceStatMin: "Low",
+    priceStatMax: "High",
+    chartSubtitleLastDays: (days: number) => `Last ${days} days`,
+    showcasePageTitle: "Shadcn/ui component showcase",
+    showcaseSectionToast: "Toast",
+    showcaseSectionAiChat: "AI ChatBox",
+    showcaseSonnerLabel: "Sonner Toast",
+    showcaseBtnSuccess: "Success",
+    showcaseBtnError: "Error",
+    showcaseBtnInfo: "Info",
+    showcaseBtnWarning: "Warning",
+    showcaseBtnLoading: "Loading",
+    showcaseBtnPromise: "Promise",
+    showcaseDialogToastTitle: "Submitted successfully",
+    showcaseDialogToastDesc: (value: string) => `Input: ${value}`,
+    showcaseToastSuccessTitle: "Operation successful",
+    showcaseToastSuccessDesc: "Your changes have been saved",
+    showcaseToastErrorTitle: "Operation failed",
+    showcaseToastErrorDesc: "Cannot complete the operation. Please try again.",
+    showcaseToastInfoTitle: "Information",
+    showcaseToastInfoDesc: "This is an informational message.",
+    showcaseToastWarningTitle: "Warning",
+    showcaseToastWarningDesc: "Please note the impact of this operation.",
+    showcaseToastLoadingTitle: "Loading",
+    showcaseToastLoadingDesc: "Please wait",
+    showcaseToastPromiseLoading: "Processing…",
+    showcaseToastPromiseSuccess: "Processing complete",
+    showcaseToastPromiseError: "Processing failed",
+
+    showcaseTitleMain: "Shadcn/ui Component Library",
+    showcaseSecTextColors: "Text Colors",
+    showcaseSecColorCombo: "Color Combinations",
+    showcaseSecButtons: "Buttons",
+    showcaseSecFormInputs: "Form Inputs",
+    showcaseSecDataDisplay: "Data Display",
+    showcaseSecAlertUI: "Alerts",
+    showcaseSecTabs: "Tabs",
+    showcaseSecAccordion: "Accordion",
+    showcaseSecCollapsible: "Collapsible",
+    showcaseSecOverlays: "Overlays",
+    showcaseSecMenus: "Menus",
+    showcaseSecCalendar: "Calendar",
+    showcaseSecCarousel: "Carousel",
+    showcaseSecToggle: "Toggle",
+    showcaseSecLayout: "Layout Components",
+    showcaseSecResizable: "Resizable Panels",
+
+    showcaseBtnDefault: "Default",
+    showcaseBtnSecondary: "Secondary",
+    showcaseBtnDestructive: "Destructive",
+    showcaseBtnOutline: "Outline",
+    showcaseBtnGhost: "Ghost",
+    showcaseBtnLink: "Link",
+    showcaseBtnSmall: "Small",
+    showcaseBtnLarge: "Large",
+    showcaseBtnSaveChanges: "Save changes",
+    showcaseBtnSavePassword: "Save password",
+    showcaseBtnOpenDialog: "Open Dialog",
+    showcaseBtnSubmit: "Submit",
+    showcaseBtnOpenSheet: "Open Sheet",
+    showcaseBtnOpenDrawer: "Open Drawer",
+    showcaseBtnCancel: "Cancel",
+    showcaseBtnOpenPopover: "Open Popover",
+    showcaseBtnHoverMe: "Hover me",
+    showcaseBtnDropdownMenu: "Dropdown Menu",
+    showcaseBtnRightClick: "Right Click Me",
+    showcaseBtnHoverCard: "Hover Card",
+    showcaseBtnMinusTen: "−10",
+    showcaseBtnPlusTen: "+10",
+    showcaseThemeToggleLightAria: "Switch to dark theme",
+    showcaseThemeToggleDarkAria: "Switch to light theme",
+
+    showcaseAiChatIntro1:
+      "A ready-to-use chat interface component that integrates with the LLM system. Features markdown rendering, auto-scrolling, and loading states.",
+    showcaseAiChatIntro2:
+      "This is a demo with simulated responses. In a real app, you would connect it to a tRPC mutation.",
+    showcaseAiChatPlaceholder: "Try sending a message…",
+    showcaseAiChatEmptyState: "How can I help you today?",
+    showcaseAiChatPrompts: [
+      "What is React?",
+      "Explain TypeScript",
+      "How to use tRPC?",
+      "Best practices for web development",
+    ],
+
+    homeExampleTitle: "Example page",
+    homeExampleMarkdown: "Sample **markdown** block.",
+    homeExampleButton: "Example button",
+    aiChatPlaceholderDefault: "Type your message…",
+    aiChatEmptyStateDefault: "Start a conversation with the assistant",
+    aiChatSendAria: "Send message",
+    feedbackCardTitle: "Feedback",
+    feedbackCardLead: "Tell us what to improve in this MVP.",
+    feedbackCardSubmit: "Send feedback",
 
     // Availability
     inStock: "In Stock",
@@ -196,6 +381,15 @@ export const translations = {
     guestLabel: "访客",
     demoMode: "演示模式",
     signIn: "登录",
+    signOut: "退出登录",
+
+    // Layout / chrome
+    layoutToggleNav: "展开或收起导航",
+    layoutSwitchLangToZh: "切换到中文",
+    layoutSwitchLangToEn: "切换到 English",
+    layoutThemeLight: "切换到浅色模式",
+    layoutThemeDark: "切换到深色模式",
+    layoutMenu: "菜单",
 
     // Dashboard
     dashboardTitle: "价格看板",
@@ -219,6 +413,50 @@ export const translations = {
     noProducts: "暂无追踪商品",
     addFirstProduct: "添加第一个商品以开始监控价格",
     addProduct: "添加商品",
+    loadingStatsAria: "正在加载看板统计",
+    marketInsightTitle: "市场洞察",
+    marketLargestDrop: "最大跌幅",
+    marketLargestRise: "最大涨幅",
+    marketDataFreshness: "数据新鲜度",
+    marketNoDrop: "暂无下跌",
+    marketNoRise: "暂无上涨",
+    marketNoData: "暂无数据",
+    fetchPrice: "获取价格",
+    guestUnlockTitle: "登录以解锁完整数据与操作",
+    guestUnlockSubtitle: "当前为演示模式，仅展示 20 条商品预览。",
+    pollingToast: (n: number) => `正在轮询 ${n} 个商品…`,
+    alertsTriggeredToast: (n: number) => `已触发 ${n} 条价格预警`,
+    retry: "重试",
+    loggedInToast: "已登录",
+    loginFailedPrefix: "登录失败：",
+    pollingInProgress: "轮询中…",
+
+    // Feedback widget
+    feedbackOpenAria: "打开反馈表单",
+    feedbackTitle: "发送反馈",
+    feedbackDescription: "欢迎反馈缺陷、功能建议或其他想法。",
+    feedbackCatGeneral: "一般",
+    feedbackCatFeature: "功能建议",
+    feedbackCatBug: "缺陷",
+    feedbackPlaceholder: "请描述你的反馈…",
+    feedbackSubmit: "提交反馈",
+    feedbackSubmitting: "提交中…",
+    feedbackSuccessToast: "反馈已提交。",
+    feedbackFailedPrefix: "提交失败：",
+
+    // Competitor shops page
+    competitorsSubtitle: "来自已追踪商品价格快照的卖家信息。",
+    competitorsLoading: "正在加载竞品店铺…",
+    competitorsEmpty: "暂无竞品店铺。请在 AI 助手中添加商品或店铺链接。",
+    competitorsTrackedCount: (n: number) => `已追踪 ${n} 个商品`,
+    competitorsAvgLanded: "平均到手",
+
+    // Products toasts / validation
+    toastProductExists: "该商品已存在，已定位到现有记录",
+    toastProductAdded: "商品已添加并完成首次价格抓取",
+    toastProductRemoved: "商品已移除",
+    toastProductRemoveFailed: "移除失败",
+    toastPasteAmazonUrl: "请先粘贴 Amazon 商品链接",
 
     // Products
     productsTitle: "商品追踪",
@@ -337,12 +575,136 @@ export const translations = {
     chatClear: "清空",
     chatLiveData: "实时数据",
     chatError: "无法生成回答，请重试。",
+    close: "关闭",
+    chatPanelTitle: "价格情报 AI",
+    chatProactiveCta: "向 AI 询问价格与趋势",
+    chatOpenQuickActionsAria: "打开智能助手快捷操作",
+    chatErrorNetwork: "网络问题",
+    chatErrorServer: "服务器错误",
+    chatRetry: "重试",
+    chatThinkingAria: "思考中",
+    chatAgentInputAria: "智能助手输入框",
+    chatTrackUrlChip: "追踪这个 Amazon 链接：",
+    chatCompareLandedChip: "对比今日最低到手价",
+    chatDropsChip: "今天哪些商品跌幅最大？",
+    chatMovementChip: "今天有没有价格波动？",
+    chatShowTrendFor: (name: string) => `展示「${name}」的价格走势`,
+    trackedAddedSystem: (name: string) =>
+      `✓ 已将 **${name}** 加入追踪。[前往商品列表 →](/products)`,
+    productDefaultName: "商品",
     chatSuggestedPrompts: [
       "哪个商品的价格降幅最大？",
       "我的哪些商品定价高于市场均价？",
       "我在亚马逊的商品最佳定价是多少？",
       "哪个竞争对手的到手价最低？",
     ],
+
+    documentTitle: "价格情报 — 跨平台价格监控",
+    appLoading: "加载中…",
+    notFoundCode: "404",
+    notFoundTitle: "页面未找到",
+    notFoundDescription: "抱歉，你访问的页面不存在，或已被移动、删除。",
+    notFoundGoHome: "返回首页",
+    errorBoundaryTitle: "发生了意外错误。",
+    errorBoundaryReload: "重新加载页面",
+    manusLoginPrompt: "请使用 Manus 登录以继续。",
+    manusLoginButton: "使用 Manus 登录",
+    manusDialogGraphicAlt: "对话框配图",
+    productsAmazonUrlHelp: "粘贴 Amazon 商品链接，系统会自动识别 ASIN、抓取商品信息并加入监控。",
+    productsAmazonUrlPlaceholder: "https://www.amazon.com/dp/B0XXXXXXXX",
+    productsPlatformCount: (n: number) => `${n} 个平台`,
+    directionShortAny: "任意",
+    directionShortUp: "涨",
+    directionShortDown: "跌",
+    alertRuleSummary: (pct: number, dir: string) => `阈值：${pct}% · 方向：${dir}`,
+    priceStatMin: "最低",
+    priceStatMax: "最高",
+    chartSubtitleLastDays: (days: number) => `最近 ${days} 天`,
+    showcasePageTitle: "Shadcn/ui 组件展示",
+    showcaseSectionToast: "Toast 提示",
+    showcaseSectionAiChat: "AI 对话框",
+    showcaseSonnerLabel: "Sonner Toast",
+    showcaseBtnSuccess: "成功",
+    showcaseBtnError: "错误",
+    showcaseBtnInfo: "信息",
+    showcaseBtnWarning: "警告",
+    showcaseBtnLoading: "加载中",
+    showcaseBtnPromise: "Promise",
+    showcaseDialogToastTitle: "提交成功",
+    showcaseDialogToastDesc: (value: string) => `输入内容：${value}`,
+    showcaseToastSuccessTitle: "操作成功",
+    showcaseToastSuccessDesc: "更改已保存",
+    showcaseToastErrorTitle: "操作失败",
+    showcaseToastErrorDesc: "无法完成操作，请重试。",
+    showcaseToastInfoTitle: "提示",
+    showcaseToastInfoDesc: "这是一条信息提示。",
+    showcaseToastWarningTitle: "警告",
+    showcaseToastWarningDesc: "请注意此操作的影响。",
+    showcaseToastLoadingTitle: "加载中",
+    showcaseToastLoadingDesc: "请稍候",
+    showcaseToastPromiseLoading: "处理中…",
+    showcaseToastPromiseSuccess: "处理完成",
+    showcaseToastPromiseError: "处理失败",
+
+    showcaseTitleMain: "Shadcn/ui 组件库",
+    showcaseSecTextColors: "文字颜色",
+    showcaseSecColorCombo: "颜色组合",
+    showcaseSecButtons: "按钮",
+    showcaseSecFormInputs: "表单输入",
+    showcaseSecDataDisplay: "数据展示",
+    showcaseSecAlertUI: "提示框",
+    showcaseSecTabs: "标签页",
+    showcaseSecAccordion: "手风琴",
+    showcaseSecCollapsible: "可折叠",
+    showcaseSecOverlays: "浮层",
+    showcaseSecMenus: "菜单",
+    showcaseSecCalendar: "日历",
+    showcaseSecCarousel: "轮播",
+    showcaseSecToggle: "开关",
+    showcaseSecLayout: "布局组件",
+    showcaseSecResizable: "可调整面板",
+
+    showcaseBtnDefault: "默认",
+    showcaseBtnSecondary: "次要",
+    showcaseBtnDestructive: "危险",
+    showcaseBtnOutline: "描边",
+    showcaseBtnGhost: "幽灵",
+    showcaseBtnLink: "链接",
+    showcaseBtnSmall: "小",
+    showcaseBtnLarge: "大",
+    showcaseBtnSaveChanges: "保存更改",
+    showcaseBtnSavePassword: "保存密码",
+    showcaseBtnOpenDialog: "打开对话框",
+    showcaseBtnSubmit: "提交",
+    showcaseBtnOpenSheet: "打开侧边栏",
+    showcaseBtnOpenDrawer: "打开抽屉",
+    showcaseBtnCancel: "取消",
+    showcaseBtnOpenPopover: "打开气泡",
+    showcaseBtnHoverMe: "悬停我",
+    showcaseBtnDropdownMenu: "下拉菜单",
+    showcaseBtnRightClick: "右键我",
+    showcaseBtnHoverCard: "悬停卡片",
+    showcaseBtnMinusTen: "−10",
+    showcaseBtnPlusTen: "+10",
+    showcaseThemeToggleLightAria: "切换到深色主题",
+    showcaseThemeToggleDarkAria: "切换到浅色主题",
+
+    showcaseAiChatIntro1:
+      "可与 LLM 系统对接的现成聊天界面组件，支持 Markdown 渲染、自动滚动与加载状态。",
+    showcaseAiChatIntro2: "当前为模拟回复演示；在真实应用中可接入 tRPC mutation。",
+    showcaseAiChatPlaceholder: "试着发送一条消息…",
+    showcaseAiChatEmptyState: "今天我能帮你什么？",
+    showcaseAiChatPrompts: ["什么是 React？", "解释 TypeScript", "如何使用 tRPC？", "Web 开发最佳实践"],
+
+    homeExampleTitle: "示例页面",
+    homeExampleMarkdown: "示例 **Markdown** 内容。",
+    homeExampleButton: "示例按钮",
+    aiChatPlaceholderDefault: "输入消息…",
+    aiChatEmptyStateDefault: "开始与助手对话",
+    aiChatSendAria: "发送消息",
+    feedbackCardTitle: "反馈",
+    feedbackCardLead: "告诉我们这个 MVP 需要改进的地方。",
+    feedbackCardSubmit: "发送反馈",
 
     // Availability
     inStock: "有货",
@@ -377,20 +739,43 @@ type LanguageContextType = {
 
 const LanguageContext = createContext<LanguageContextType | null>(null);
 
+function readStoredLang(): Lang | null {
+  try {
+    const saved = localStorage.getItem("price-intel-lang");
+    return saved === "zh" || saved === "en" ? saved : null;
+  } catch {
+    return null;
+  }
+}
+
+function detectBrowserLang(): Lang {
+  if (typeof navigator === "undefined") return "en";
+  return navigator.language.toLowerCase().startsWith("zh") ? "zh" : "en";
+}
+
+/** Active UI language (localStorage override, else browser). Safe outside React for class components. */
+export function readActiveLang(): Lang {
+  return readStoredLang() ?? detectBrowserLang();
+}
+
+/** Translation bundle for a given language (e.g. ErrorBoundary). */
+export function tAt(lang: Lang): (typeof translations)["en"] {
+  return translations[lang] as (typeof translations)["en"];
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>(() => {
-    try {
-      const saved = localStorage.getItem("price-intel-lang");
-      return (saved === "zh" || saved === "en") ? saved : "en";
-    } catch {
-      return "en";
-    }
-  });
+  const [lang, setLang] = useState<Lang>(() => readActiveLang());
 
   useEffect(() => {
     try {
       localStorage.setItem("price-intel-lang", lang);
     } catch {}
+  }, [lang]);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
+    document.title = translations[lang].documentTitle;
   }, [lang]);
 
   const toggleLang = () => setLang((l) => (l === "en" ? "zh" : "en"));
