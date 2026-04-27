@@ -21,6 +21,9 @@ import {
   toggleAlertRule,
   upsertUser,
   upsertMarginRules,
+  insertSalesEstimate,
+  getSalesEstimatesByProduct,
+  getLatestSalesEstimate,
 } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { invokeLLM } from "./_core/llm";
@@ -29,6 +32,12 @@ import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { platformManager } from "./platforms/index";
 import { RainforestAPI } from "./platforms/rainforest";
+import {
+  estimateSalesFromBSR,
+  estimateSalesFromReviews,
+  estimateSalesComprehensive,
+  getSupportedCategories,
+} from "./platforms/amazon/sales-estimator";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function calcDelta(prev: number, curr: number) {
@@ -799,6 +808,86 @@ You help users understand competitor pricing, identify opportunities, and make s
         await upsertMarginRules(input);
         return { success: true };
       }),
+  }),
+
+  // ─── Sales Estimator ──────────────────────────────────────────────────────
+  salesEstimator: router({
+    estimate: publicProcedure
+      .input(
+        z.object({
+          trackedProductId: z.number(),
+          asin: z.string().optional(),
+          bsr: z.number().optional(),
+          category: z.string().optional(),
+          reviewCount: z.number().optional(),
+          reviewGrowthRate: z.number().optional(),
+          price: z.number().optional(),
+          availability: z.string().optional(),
+          productAge: z.date().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const estimate = estimateSalesComprehensive({
+          bsr: input.bsr,
+          category: input.category,
+          reviewCount: input.reviewCount,
+          reviewGrowthRate: input.reviewGrowthRate,
+          price: input.price,
+          availability: input.availability,
+        });
+
+        const estimateId = await insertSalesEstimate({
+          trackedProductId: input.trackedProductId,
+          platform: "amazon",
+          estimatedDailySales: estimate.dailySales.toString(),
+          estimatedMonthlySales: estimate.monthlySales.toString(),
+          bsr: input.bsr ?? null,
+          bsrCategory: input.category ?? null,
+          reviewCount: input.reviewCount ?? null,
+          reviewGrowthRate: input.reviewGrowthRate ?? null,
+          estimationMethod: estimate.method,
+          confidence: estimate.confidence.toString(),
+          metadata: JSON.stringify(estimate.breakdown),
+        });
+
+        return {
+          id: estimateId,
+          ...estimate,
+        };
+      }),
+
+    getByProduct: publicProcedure
+      .input(z.object({ trackedProductId: z.number() }))
+      .query(async ({ input }) => {
+        const estimates = await getSalesEstimatesByProduct(input.trackedProductId);
+        return estimates.map((e) => ({
+          ...e,
+          estimatedDailySales: parseFloat(e.estimatedDailySales as any),
+          estimatedMonthlySales: parseFloat(e.estimatedMonthlySales as any),
+          confidence: parseFloat(e.confidence as any),
+          reviewGrowthRate: e.reviewGrowthRate ? parseFloat(e.reviewGrowthRate as any) : null,
+          metadata: e.metadata ? JSON.parse(e.metadata as any) : null,
+        }));
+      }),
+
+    getLatest: publicProcedure
+      .input(z.object({ trackedProductId: z.number() }))
+      .query(async ({ input }) => {
+        const estimate = await getLatestSalesEstimate(input.trackedProductId);
+        if (!estimate) return null;
+        return {
+          ...estimate,
+          estimatedDailySales: parseFloat(estimate.estimatedDailySales as any),
+          estimatedMonthlySales: parseFloat(estimate.estimatedMonthlySales as any),
+          confidence: parseFloat(estimate.confidence as any),
+          reviewGrowthRate: estimate.reviewGrowthRate ? parseFloat(estimate.reviewGrowthRate as any) : null,
+          metadata: estimate.metadata ? JSON.parse(estimate.metadata as any) : null,
+        };
+      }),
+
+    getSupportedCategories: publicProcedure.query(() => {
+      return getSupportedCategories();
+    }),
   }),
 });
 

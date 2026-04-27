@@ -15,6 +15,9 @@ import {
   userFeedback,
   type InsertUser,
   users,
+  salesEstimates,
+  InsertSalesEstimate,
+  bsrConversionRules,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -322,4 +325,34 @@ export async function createUserFeedback(data: InsertUserFeedback) {
   if (!db) throw dbUnavailableError();
   const result = await db.insert(userFeedback).values(data).returning({ id: userFeedback.id });
   return result[0]?.id;
+}
+
+// ─── Sales Estimates ──────────────────────────────────────────────────────────
+export async function insertSalesEstimate(data: InsertSalesEstimate) {
+  const db = await getDb();
+  if (!db) throw dbUnavailableError();
+  const result = await db.insert(salesEstimates).values(data).returning({ id: salesEstimates.id });
+  return result[0].id;
+}
+
+export async function getSalesEstimatesByProduct(trackedProductId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(salesEstimates)
+    .where(eq(salesEstimates.trackedProductId, trackedProductId))
+    .orderBy(desc(salesEstimates.estimatedAt));
+}
+
+export async function getLatestSalesEstimate(trackedProductId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const rows = await db
+    .select()
+    .from(salesEstimates)
+    .where(eq(salesEstimates.trackedProductId, trackedProductId))
+    .orderBy(desc(salesEstimates.estimatedAt))
+    .limit(1);
+  return rows[0] ?? null;
 }

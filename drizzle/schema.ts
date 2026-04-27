@@ -125,3 +125,59 @@ export const userFeedback = sqliteTable("user_feedback", {
 
 export type UserFeedback = typeof userFeedback.$inferSelect;
 export type InsertUserFeedback = typeof userFeedback.$inferInsert;
+
+// ─── Sales Estimates ──────────────────────────────────────────────────────────
+export const salesEstimates = sqliteTable("sales_estimates", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  trackedProductId: integer("trackedProductId").notNull(),
+  platform: text("platform", { enum: ["amazon", "ebay", "shopify", "etsy"] }).notNull(),
+  /** Estimated daily sales volume */
+  estimatedDailySales: integer("estimatedDailySales"),
+  /** Estimated monthly sales volume */
+  estimatedMonthlySales: integer("estimatedMonthlySales"),
+  /** Best Seller Rank */
+  bsr: integer("bsr"),
+  /** BSR category (e.g., "Electronics", "Home & Kitchen") */
+  bsrCategory: text("bsrCategory", { length: 255 }),
+  /** Total review count */
+  reviewCount: integer("reviewCount"),
+  /** Review growth rate (reviews per day) */
+  reviewGrowthRate: real("reviewGrowthRate"),
+  /** Estimation method: bsr, review, or combined */
+  estimationMethod: text("estimationMethod", { enum: ["bsr", "review", "combined"] }).notNull(),
+  /** Confidence score (0-100) */
+  confidence: integer("confidence").notNull(),
+  /** Additional metadata stored as JSON string */
+  metadata: text("metadata"),
+  /** Timestamp when estimation was performed */
+  estimatedAt: integer("estimatedAt", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+});
+
+export type SalesEstimate = typeof salesEstimates.$inferSelect;
+export type InsertSalesEstimate = typeof salesEstimates.$inferInsert;
+
+// ─── BSR Conversion Rules ─────────────────────────────────────────────────────
+export const bsrConversionRules = sqliteTable("bsr_conversion_rules", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  /** Product category (e.g., "Electronics", "Home & Kitchen") */
+  category: text("category", { length: 255 }).notNull(),
+  /** Marketplace identifier (e.g., "amazon.com", "amazon.co.uk") */
+  marketplace: text("marketplace", { length: 64 }).notNull(),
+  /** Minimum BSR in this range */
+  bsrMin: integer("bsrMin").notNull(),
+  /** Maximum BSR in this range */
+  bsrMax: integer("bsrMax").notNull(),
+  /** Minimum estimated daily sales for this BSR range */
+  dailySalesMin: integer("dailySalesMin").notNull(),
+  /** Maximum estimated daily sales for this BSR range */
+  dailySalesMax: integer("dailySalesMax").notNull(),
+  /** Confidence score for this conversion rule (0-100) */
+  confidence: integer("confidence").notNull().default(50),
+  /** Data source (e.g., "jungle_scout", "helium10", "manual") */
+  source: text("source", { length: 128 }),
+  createdAt: integer("createdAt", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+  updatedAt: integer("updatedAt", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+});
+
+export type BsrConversionRule = typeof bsrConversionRules.$inferSelect;
+export type InsertBsrConversionRule = typeof bsrConversionRules.$inferInsert;
