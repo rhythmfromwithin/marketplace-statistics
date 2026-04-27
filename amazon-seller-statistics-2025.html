@@ -190,6 +190,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 </head>
 <body>
 
@@ -254,7 +255,7 @@ Amazon's seller base grew explosively through the 2010s, peaked during the pande
 <tr><td>2024</td><td>1.9 million</td></tr>
 <tr><td>2025</td><td>1.9 million</td></tr>
 </tbody></table>
-<div class="chart-container">
+<div class="chart-container" style="">
     <canvas id="seller-growth-chart" role="img" aria-label="Amazon Active Sellers 2010-2025"></canvas>
     <p class="chart-caption">Source: Marketplace Pulse seller tracking data</p>
 </div>
@@ -294,6 +295,16 @@ Third-party (3P) sellers now account for <strong>more than 60% of all units sold
 <tr><td>2024</td><td>60%</td></tr>
 <tr><td>2025</td><td>60%+</td></tr>
 </tbody></table>
+<div class="chart-container" style="height:320px;">
+    <canvas id="third-party-sales-share-chart" role="img" aria-label="Third-Party Sales Share (2021–2025)"></canvas>
+    <p class="chart-caption">Source: Amazon annual reports</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('third-party-sales-share-chart').getContext('2d');
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Third-Party Sales Share (2021–2025)", "data": [57, 58, 60, 60, 60], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Third-Party Sales Share (2021–2025)", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
+})();
+</script>
 <p>
 This is a structural shift. Amazon began as a first-party retailer; it is now primarily a marketplace. Third-party sellers collectively generate an estimated <strong>$575 billion in GMV</strong>, making Amazon's marketplace one of the largest commercial platforms on earth.
 </p>
@@ -327,14 +338,14 @@ Sellers are not evenly distributed across categories. Home & Kitchen dominates, 
 <tr><td>Electronics</td><td>12%</td></tr>
 <tr><td>Sports & Outdoors</td><td>10%</td></tr>
 </tbody></table>
-<div class="chart-container">
+<div class="chart-container" style="height:368px;">
     <canvas id="categories-chart" role="img" aria-label="Top Product Categories on Amazon 2025"></canvas>
     <p class="chart-caption">Source: Jungle Scout category analysis</p>
 </div>
 <script>
 (function() {
     var ctx = document.getElementById('categories-chart').getContext('2d');
-    new Chart(ctx, {"type": "bar", "data": {"labels": ["Home & Kitchen", "Beauty", "Clothing", "Toys", "Electronics", "Sports"], "datasets": [{"label": "Top Product Categories on Amazon 2025", "data": [35, 26, 20, 18, 12, 10], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 1}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Top Product Categories on Amazon 2025", "font": {"size": 16, "weight": "bold"}}}, "scales": {"x": {"beginAtZero": true, "ticks": {"callback": function(value) { return value + "%"; }}}}}});
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["Home & Kitchen", "Beauty", "Clothing", "Toys", "Electronics", "Sports"], "datasets": [{"label": "Top Product Categories on Amazon 2025", "data": [35, 26, 20, 18, 12, 10], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Top Product Categories on Amazon 2025", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>
 <p>
@@ -350,14 +361,14 @@ Most Amazon sellers use private label as their primary business model. For a ful
 <tr><td>Wholesale / Retail Arbitrage</td><td>23%</td></tr>
 <tr><td>Dropshipping</td><td>10%</td></tr>
 </tbody></table>
-<div class="chart-container">
+<div class="chart-container" style="height:224px;">
     <canvas id="business-models-chart" role="img" aria-label="Amazon Seller Business Models 2025"></canvas>
     <p class="chart-caption">Source: Jungle Scout State of the Amazon Seller 2025</p>
 </div>
 <script>
 (function() {
     var ctx = document.getElementById('business-models-chart').getContext('2d');
-    new Chart(ctx, {"type": "doughnut", "data": {"labels": ["Private Label", "Wholesale", "Dropshipping"], "datasets": [{"data": [67, 23, 10], "backgroundColor": ["#FF9900", "#232F3E", "#146EB4"], "borderWidth": 2, "borderColor": "#fff"}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"position": "bottom"}, "title": {"display": true, "text": "Amazon Seller Business Models 2025", "font": {"size": 16, "weight": "bold"}}}}});
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["Private Label", "Wholesale", "Dropshipping"], "datasets": [{"label": "Amazon Seller Business Models 2025", "data": [67, 23, 10], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Amazon Seller Business Models 2025", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>
 <p>
