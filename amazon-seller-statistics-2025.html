@@ -170,7 +170,26 @@
             article table { font-size: 12px; }
             article thead td, article tbody td { padding: 7px 8px; }
         }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            max-width: 700px;
+            width: 100%;
+            margin: 24px auto 32px;
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #eee;
+        }
+        .chart-caption {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -235,6 +254,16 @@ Amazon's seller base grew explosively through the 2010s, peaked during the pande
 <tr><td>2024</td><td>1.9 million</td></tr>
 <tr><td>2025</td><td>1.9 million</td></tr>
 </tbody></table>
+<div class="chart-container">
+    <canvas id="seller-growth-chart" role="img" aria-label="Amazon Active Sellers 2010-2025"></canvas>
+    <p class="chart-caption">Source: Marketplace Pulse seller tracking data</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('seller-growth-chart').getContext('2d');
+    new Chart(ctx, {"type": "line", "data": {"labels": ["2010", "2011", "2015", "2018", "2020", "2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Amazon Active Sellers 2010-2025", "data": [50000, 100000, 500000, 1200000, 1900000, 2400000, 2200000, 2000000, 1900000, 1900000], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true, "borderWidth": 2}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Amazon Active Sellers 2010-2025", "font": {"size": 16, "weight": "bold"}}}}});
+})();
+</script>
 <p>
 The peak of <strong>2.4 million active sellers in 2021</strong> coincided with pandemic-era e-commerce acceleration. Since then, the market has normalized. The current 1.9 million figure represents a stable, competitive baseline.
 </p>
@@ -298,6 +327,16 @@ Sellers are not evenly distributed across categories. Home & Kitchen dominates, 
 <tr><td>Electronics</td><td>12%</td></tr>
 <tr><td>Sports & Outdoors</td><td>10%</td></tr>
 </tbody></table>
+<div class="chart-container">
+    <canvas id="categories-chart" role="img" aria-label="Top Product Categories on Amazon 2025"></canvas>
+    <p class="chart-caption">Source: Jungle Scout category analysis</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('categories-chart').getContext('2d');
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["Home & Kitchen", "Beauty", "Clothing", "Toys", "Electronics", "Sports"], "datasets": [{"label": "Top Product Categories on Amazon 2025", "data": [35, 26, 20, 18, 12, 10], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 1}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Top Product Categories on Amazon 2025", "font": {"size": 16, "weight": "bold"}}}, "scales": {"x": {"beginAtZero": true, "ticks": {"callback": function(value) { return value + "%"; }}}}}});
+})();
+</script>
 <p>
 Home & Kitchen's dominance reflects the category's low barriers to entry, high search volume, and strong private label potential. For the full demographic breakdown, see <a href="amazon-seller-demographics-2025.html">Amazon Seller Demographics 2025: Countries, Categories & Business Models</a>.
 </p>
@@ -311,6 +350,16 @@ Most Amazon sellers use private label as their primary business model. For a ful
 <tr><td>Wholesale / Retail Arbitrage</td><td>23%</td></tr>
 <tr><td>Dropshipping</td><td>10%</td></tr>
 </tbody></table>
+<div class="chart-container">
+    <canvas id="business-models-chart" role="img" aria-label="Amazon Seller Business Models 2025"></canvas>
+    <p class="chart-caption">Source: Jungle Scout State of the Amazon Seller 2025</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('business-models-chart').getContext('2d');
+    new Chart(ctx, {"type": "doughnut", "data": {"labels": ["Private Label", "Wholesale", "Dropshipping"], "datasets": [{"data": [67, 23, 10], "backgroundColor": ["#FF9900", "#232F3E", "#146EB4"], "borderWidth": 2, "borderColor": "#fff"}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"position": "bottom"}, "title": {"display": true, "text": "Amazon Seller Business Models 2025", "font": {"size": 16, "weight": "bold"}}}}});
+})();
+</script>
 <p>
 Private label — sourcing generic products and selling under a proprietary brand — remains the dominant strategy because it offers the highest margins and brand control.
 </p>

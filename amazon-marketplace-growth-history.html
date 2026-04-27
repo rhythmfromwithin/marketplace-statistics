@@ -170,7 +170,26 @@
             article table { font-size: 12px; }
             article thead td, article tbody td { padding: 7px 8px; }
         }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            max-width: 700px;
+            width: 100%;
+            margin: 24px auto 32px;
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #eee;
+        }
+        .chart-caption {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -208,6 +227,16 @@ This article traces the complete growth arc of Amazon's seller marketplace, from
 <tr><td>2024</td><td>1,900,000</td><td>Stabilization</td></tr>
 <tr><td>2025</td><td>1,900,000</td><td>Stable, mature marketplace</td></tr>
 </tbody></table>
+<div class="chart-container">
+    <canvas id="growth-timeline-chart" role="img" aria-label="Amazon Active Sellers 2010-2025"></canvas>
+    <p class="chart-caption">Source: Marketplace Pulse 15-year seller tracking</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('growth-timeline-chart').getContext('2d');
+    new Chart(ctx, {"type": "line", "data": {"labels": ["2010", "2011", "2015", "2018", "2020", "2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Amazon Active Sellers 2010-2025", "data": [50000, 100000, 500000, 1200000, 1900000, 2400000, 2200000, 2000000, 1900000, 1900000], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true, "borderWidth": 2}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Amazon Active Sellers 2010-2025", "font": {"size": 16, "weight": "bold"}}}}});
+})();
+</script>
 <hr>
 <h2 id="phase-1-the-early-marketplace-2010-2015">Phase 1: The Early Marketplace (2010–2015)</h2>
 <p>
@@ -247,6 +276,16 @@ The post-pandemic period has been characterized by contraction and stabilization
 <tr><td>2024</td><td>1,900,000</td><td>~600</td></tr>
 <tr><td>2025</td><td>1,900,000</td><td>~550</td></tr>
 </tbody></table>
+<div class="chart-container">
+    <canvas id="dual-axis-chart" role="img" aria-label="Active Sellers vs Daily Registrations 2021-2025"></canvas>
+    <p class="chart-caption">Source: Marketplace Pulse seller tracking</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('dual-axis-chart').getContext('2d');
+    new Chart(ctx, {"type": "line", "data": {"labels": ["2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Active Sellers", "data": [2400000, 2200000, 2000000, 1900000, 1900000], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true}, {"label": "Daily Registrations", "data": [4000, 3200, 750, 600, 550], "borderColor": "#232F3E", "backgroundColor": "rgba(35, 47, 62, 0.1)", "tension": 0.3, "fill": true}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"position": "bottom"}, "title": {"display": true, "text": "Active Sellers vs Daily Registrations 2021-2025", "font": {"size": 16, "weight": "bold"}}}}});
+})();
+</script>
 <p>
 The decline in active sellers from 2.4 million to 1.9 million represents a <strong>21% contraction</strong> from peak. The collapse in daily new registrations — from 4,000/day to 550/day — is even more dramatic: an <strong>86% decline</strong>.
 </p>

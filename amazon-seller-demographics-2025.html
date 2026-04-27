@@ -170,7 +170,26 @@
             article table { font-size: 12px; }
             article thead td, article tbody td { padding: 7px 8px; }
         }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            max-width: 700px;
+            width: 100%;
+            margin: 24px auto 32px;
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #eee;
+        }
+        .chart-caption {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -220,6 +239,16 @@ The geographic origin of new Amazon seller registrations reveals a marketplace h
 <tr><td>United States</td><td>16.3%</td></tr>
 <tr><td>Other Countries</td><td>23.8%</td></tr>
 </tbody></table>
+<div class="chart-container">
+    <canvas id="seller-origin-chart" role="img" aria-label="Amazon Seller Country of Origin 2025"></canvas>
+    <p class="chart-caption">Source: Marketplace Pulse seller registration tracking</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('seller-origin-chart').getContext('2d');
+    new Chart(ctx, {"type": "doughnut", "data": {"labels": ["China", "US", "Other"], "datasets": [{"data": [59.9, 16.3, 23.8], "backgroundColor": ["#FF9900", "#232F3E", "#146EB4"], "borderWidth": 2, "borderColor": "#fff"}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"position": "bottom"}, "title": {"display": true, "text": "Amazon Seller Country of Origin 2025", "font": {"size": 16, "weight": "bold"}}}}});
+})();
+</script>
 <p>
 <strong>Chinese sellers represent nearly 60% of all new Amazon seller registrations</strong> — a figure that reflects the deep integration between Chinese manufacturing and Amazon's global marketplace. Chinese sellers typically offer manufacturing-direct pricing, which creates significant competitive pressure in many product categories.
 </p>
@@ -252,6 +281,16 @@ Sellers are not evenly distributed across Amazon's catalog. A handful of categor
 <tr><td>Electronics</td><td>12%</td></tr>
 <tr><td>Sports & Outdoors</td><td>10%</td></tr>
 </tbody></table>
+<div class="chart-container">
+    <canvas id="seller-categories-chart" role="img" aria-label="Top Product Categories 2025"></canvas>
+    <p class="chart-caption">Source: Jungle Scout category analysis</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('seller-categories-chart').getContext('2d');
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["Home & Kitchen", "Beauty", "Clothing", "Toys", "Electronics", "Sports"], "datasets": [{"label": "Top Product Categories 2025", "data": [35, 26, 20, 18, 12, 10], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 1}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Top Product Categories 2025", "font": {"size": 16, "weight": "bold"}}}, "scales": {"x": {"beginAtZero": true, "ticks": {"callback": function(value) { return value + "%"; }}}}}});
+})();
+</script>
 <h3 id="why-home-kitchen-dominates">Why Home & Kitchen Dominates</h3>
 <p>
 Home & Kitchen is the most popular category for Amazon sellers for several reasons:
@@ -282,6 +321,16 @@ The three primary business models used by Amazon sellers in 2025:
 <tr><td>Wholesale / Retail Arbitrage</td><td>23%</td><td>Resell branded products purchased at wholesale or retail</td></tr>
 <tr><td>Dropshipping</td><td>10%</td><td>List products without holding inventory; supplier ships directly</td></tr>
 </tbody></table>
+<div class="chart-container">
+    <canvas id="seller-business-models-chart" role="img" aria-label="Amazon Seller Business Models 2025"></canvas>
+    <p class="chart-caption">Source: Jungle Scout State of the Amazon Seller 2025</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('seller-business-models-chart').getContext('2d');
+    new Chart(ctx, {"type": "doughnut", "data": {"labels": ["Private Label", "Wholesale", "Dropshipping"], "datasets": [{"data": [67, 23, 10], "backgroundColor": ["#FF9900", "#232F3E", "#146EB4"], "borderWidth": 2, "borderColor": "#fff"}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"position": "bottom"}, "title": {"display": true, "text": "Amazon Seller Business Models 2025", "font": {"size": 16, "weight": "bold"}}}}});
+})();
+</script>
 <h3 id="private-label-the-dominant-strategy">Private Label: The Dominant Strategy</h3>
 <p>
 <strong>67% of Amazon sellers use private label</strong> as their primary business model. Private label involves sourcing products (often from Chinese manufacturers) and selling them under a proprietary brand name.

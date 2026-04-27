@@ -170,7 +170,26 @@
             article table { font-size: 12px; }
             article thead td, article tbody td { padding: 7px 8px; }
         }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            max-width: 700px;
+            width: 100%;
+            margin: 24px auto 32px;
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #eee;
+        }
+        .chart-caption {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -218,6 +237,16 @@ The trajectory of Amazon's million-dollar seller segment tells a story of market
 <tr><td>2021</td><td>60,000</td></tr>
 <tr><td>2025</td><td>100,000</td></tr>
 </tbody></table>
+<div class="chart-container">
+    <canvas id="million-dollar-growth-chart" role="img" aria-label="Million-Dollar Sellers 2021 vs 2025"></canvas>
+    <p class="chart-caption">Source: Jungle Scout Million-Dollar Seller Report</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('million-dollar-growth-chart').getContext('2d');
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["2021", "2025"], "datasets": [{"label": "Million-Dollar Sellers 2021 vs 2025", "data": [60000, 100000], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 1}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Million-Dollar Sellers 2021 vs 2025", "font": {"size": 16, "weight": "bold"}}}}});
+})();
+</script>
 <p>
 The 40,000 additional million-dollar sellers added between 2021 and 2025 represent a significant expansion of the high-revenue tier — even as the total number of active sellers declined from 2.4 million to 1.9 million over the same period.
 </p>
@@ -254,6 +283,16 @@ Not all Amazon marketplaces offer equal revenue potential. The percentage of act
 <tr><td>Japan</td><td>31%</td></tr>
 <tr><td>Global Average</td><td>19%</td></tr>
 </tbody></table>
+<div class="chart-container">
+    <canvas id="marketplace-achievement-chart" role="img" aria-label="Million-Dollar Achievement Rate by Marketplace"></canvas>
+    <p class="chart-caption">Source: Jungle Scout Million-Dollar Seller Report</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('marketplace-achievement-chart').getContext('2d');
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["US", "Germany", "UK", "Japan", "Global"], "datasets": [{"label": "Million-Dollar Achievement Rate by Marketplace", "data": [43, 34, 31, 31, 19], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 1}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Million-Dollar Achievement Rate by Marketplace", "font": {"size": 16, "weight": "bold"}}}, "scales": {"x": {"beginAtZero": true, "ticks": {"callback": function(value) { return value + "%"; }}}}}});
+})();
+</script>
 <p>
 The United States marketplace offers the highest probability of reaching six-figure revenue, with <strong>43% of active U.S. sellers</strong> crossing the $100K threshold. This is more than double the global average of 19%.
 </p>

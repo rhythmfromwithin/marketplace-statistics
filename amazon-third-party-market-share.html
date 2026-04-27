@@ -170,7 +170,26 @@
             article table { font-size: 12px; }
             article thead td, article tbody td { padding: 7px 8px; }
         }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            max-width: 700px;
+            width: 100%;
+            margin: 24px auto 32px;
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #eee;
+        }
+        .chart-caption {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -215,6 +234,16 @@ Amazon's third-party sales share has grown steadily over the past five years:
 <tr><td>2024</td><td>60%</td></tr>
 <tr><td>2025</td><td>60%+</td></tr>
 </tbody></table>
+<div class="chart-container">
+    <canvas id="3p-share-chart" role="img" aria-label="Third-Party Sales Share 2021-2025"></canvas>
+    <p class="chart-caption">Source: Amazon annual reports and Marketplace Pulse analysis</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('3p-share-chart').getContext('2d');
+    new Chart(ctx, {"type": "line", "data": {"labels": ["2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Third-Party Sales Share 2021-2025", "data": [57, 58, 60, 60, 60], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true, "borderWidth": 2}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Third-Party Sales Share 2021-2025", "font": {"size": 16, "weight": "bold"}}}}});
+})();
+</script>
 <p>
 The stabilization at 60% since 2023 suggests the market has reached a structural equilibrium — Amazon continues to operate its own retail business (1P), but the majority of consumer purchases are fulfilled by independent sellers.
 </p>
@@ -308,6 +337,16 @@ Despite the dominance of 3P sellers, new seller registrations have fallen sharpl
 <tr><td>2024</td><td>~600</td></tr>
 <tr><td>2025</td><td>~550</td></tr>
 </tbody></table>
+<div class="chart-container">
+    <canvas id="new-seller-growth-chart" role="img" aria-label="Daily New Seller Registrations 2021-2025"></canvas>
+    <p class="chart-caption">Source: Marketplace Pulse seller tracking</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('new-seller-growth-chart').getContext('2d');
+    new Chart(ctx, {"type": "line", "data": {"labels": ["2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Daily New Seller Registrations 2021-2025", "data": [4000, 3200, 750, 600, 550], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true, "borderWidth": 2}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Daily New Seller Registrations 2021-2025", "font": {"size": 16, "weight": "bold"}}}}});
+})();
+</script>
 <p>
 The 86% decline from 2021 to 2025 reflects market maturation. The 3P marketplace is no longer a gold rush — it is a competitive, professionalized industry where success requires capital, expertise, and operational discipline.
 </p>

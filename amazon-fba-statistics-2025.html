@@ -170,7 +170,26 @@
             article table { font-size: 12px; }
             article thead td, article tbody td { padding: 7px 8px; }
         }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            max-width: 700px;
+            width: 100%;
+            margin: 24px auto 32px;
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #eee;
+        }
+        .chart-caption {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -202,6 +221,16 @@ This article examines the FBA adoption data, what it means for sellers, and how 
 <tr><td>Active sellers not using FBA</td><td>~342,000</td></tr>
 <tr><td>Third-party GMV (FBA + FBM combined)</td><td>$575 billion</td></tr>
 </tbody></table>
+<div class="chart-container">
+    <canvas id="fba-adoption-chart" role="img" aria-label="FBA Adoption Rate Among Active Sellers"></canvas>
+    <p class="chart-caption">Source: Marketplace Pulse FBA tracking</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('fba-adoption-chart').getContext('2d');
+    new Chart(ctx, {"type": "doughnut", "data": {"labels": ["Using FBA", "Not Using FBA"], "datasets": [{"data": [82, 18], "backgroundColor": ["#FF9900", "#232F3E"], "borderWidth": 2, "borderColor": "#fff"}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"position": "bottom"}, "title": {"display": true, "text": "FBA Adoption Rate Among Active Sellers", "font": {"size": 16, "weight": "bold"}}}}});
+})();
+</script>
 <p>
 With 1.9 million active sellers on Amazon and an 82% FBA adoption rate, approximately <strong>1.56 million sellers</strong> are currently enrolled in FBA. The remaining 18% use Fulfillment by Merchant (FBM) or Seller Fulfilled Prime (SFP).
 </p>
@@ -238,6 +267,16 @@ The correlation between FBA adoption and revenue achievement is significant. Loo
 <tr><td>Japan</td><td>31%</td></tr>
 <tr><td>Global Average</td><td>19%</td></tr>
 </tbody></table>
+<div class="chart-container">
+    <canvas id="fba-revenue-chart" role="img" aria-label="Million-Dollar Seller Achievement Rate by Marketplace"></canvas>
+    <p class="chart-caption">Source: Jungle Scout Million-Dollar Seller Report</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('fba-revenue-chart').getContext('2d');
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["US", "Germany", "UK", "Japan", "Global"], "datasets": [{"label": "Million-Dollar Seller Achievement Rate by Marketplace", "data": [43, 34, 31, 31, 19], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 1}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Million-Dollar Seller Achievement Rate by Marketplace", "font": {"size": 16, "weight": "bold"}}}, "scales": {"x": {"beginAtZero": true, "ticks": {"callback": function(value) { return value + "%"; }}}}}});
+})();
+</script>
 <p>
 The U.S. marketplace — where FBA infrastructure is most mature and Prime penetration is highest — shows the strongest revenue outcomes, with 43% of active sellers crossing the $100K threshold.
 </p>
