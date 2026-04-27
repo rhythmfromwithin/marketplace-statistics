@@ -242,13 +242,13 @@ The geographic origin of new Amazon seller registrations reveals a marketplace h
 <tr><td>Other Countries</td><td>23.8%</td></tr>
 </tbody></table>
 <div class="chart-container" style="height:224px;">
-    <canvas id="seller-origin-chart" role="img" aria-label="Amazon Seller Country of Origin 2025"></canvas>
+    <canvas id="seller-origin-chart" role="img" aria-label="New Seller Registrations by Country (2025)"></canvas>
     <p class="chart-caption">Source: Marketplace Pulse seller registration tracking</p>
 </div>
 <script>
 (function() {
     var ctx = document.getElementById('seller-origin-chart').getContext('2d');
-    new Chart(ctx, {"type": "bar", "data": {"labels": ["China", "US", "Other"], "datasets": [{"label": "Amazon Seller Country of Origin 2025", "data": [59.9, 16.3, 23.8], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Amazon Seller Country of Origin 2025", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["China", "United States", "Other Countries"], "datasets": [{"label": "New Seller Registrations by Country (2025)", "data": [59.9, 16.3, 23.8], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "New Seller Registrations by Country (2025)", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>
 <p>
@@ -267,6 +267,16 @@ While Chinese sellers dominate new registrations, the distribution of <em>active
 <tr><td>Canada</td><td>~100,000</td></tr>
 <tr><td>Australia</td><td>~80,000</td></tr>
 </tbody></table>
+<div class="chart-container" style="height:416px;">
+    <canvas id="active-sellers-marketplace-chart" role="img" aria-label="Active Sellers by Marketplace (2025)"></canvas>
+    <p class="chart-caption">Source: Marketplace Pulse regional tracking</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('active-sellers-marketplace-chart').getContext('2d');
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["United States", "United Kingdom", "Germany", "India", "Japan", "Canada", "Australia"], "datasets": [{"label": "Active Sellers by Marketplace (2025)", "data": [1100000, 290000, 260000, 150000, 120000, 100000, 80000], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Active Sellers by Marketplace (2025)", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { if(value>=1000000) return (value/1000000).toFixed(1)+"M"; if(value>=1000) return (value/1000).toFixed(0)+"K"; return value; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
+})();
+</script>
 <p>
 The U.S. marketplace hosts the largest concentration of active sellers — approximately 1.1 million, or more than half of all active sellers globally. Many Chinese sellers operate across multiple marketplaces simultaneously, which is why the new registration data and active seller data tell different stories.
 </p>
@@ -330,7 +340,7 @@ The three primary business models used by Amazon sellers in 2025:
 <script>
 (function() {
     var ctx = document.getElementById('seller-business-models-chart').getContext('2d');
-    new Chart(ctx, {"type": "bar", "data": {"labels": ["Private Label", "Wholesale", "Dropshipping"], "datasets": [{"label": "Amazon Seller Business Models 2025", "data": [67, 23, 10], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Amazon Seller Business Models 2025", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["Private Label", "Wholesale / Retail Arbitrage", "Dropshipping"], "datasets": [{"label": "Amazon Seller Business Models 2025", "data": [67, 23, 10], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Amazon Seller Business Models 2025", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>
 <h3 id="private-label-the-dominant-strategy">Private Label: The Dominant Strategy</h3>
@@ -364,6 +374,16 @@ Of Amazon's 9.7 million total registered seller accounts:
 <tr><td>Semi-active</td><td>~1.0 million</td></tr>
 <tr><td>Dormant/Inactive</td><td>~6.8 million</td></tr>
 </tbody></table>
+<div class="chart-container" style="height:224px;">
+    <canvas id="account-status-chart" role="img" aria-label="Amazon Seller Account Status (9.7M Total)"></canvas>
+    <p class="chart-caption">Source: Marketplace Pulse account tracking</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('account-status-chart').getContext('2d');
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["Active", "Semi-active", "Dormant / Inactive"], "datasets": [{"label": "Amazon Seller Account Status (9.7M Total)", "data": [1900000, 1000000, 6800000], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Amazon Seller Account Status (9.7M Total)", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { if(value>=1000000) return (value/1000000).toFixed(1)+"M"; if(value>=1000) return (value/1000).toFixed(0)+"K"; return value; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
+})();
+</script>
 <p>
 The 80% dormancy rate reflects the high attrition among new sellers. Many register, attempt to sell, and either fail to gain traction or abandon the effort. The 1.9 million active sellers represent the competitive landscape that matters.
 </p>
@@ -393,6 +413,16 @@ The demographic data connects directly to revenue outcomes:
 <tr><td>Japan</td><td>31%</td></tr>
 <tr><td>Global Average</td><td>19%</td></tr>
 </tbody></table>
+<div class="chart-container" style="height:320px;">
+    <canvas id="revenue-by-geo-chart" role="img" aria-label="Sellers Achieving $100K+ Annual Revenue by Market"></canvas>
+    <p class="chart-caption">Source: Jungle Scout Million-Dollar Seller Report</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('revenue-by-geo-chart').getContext('2d');
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["United States", "Germany", "United Kingdom", "Japan", "Global Average"], "datasets": [{"label": "Sellers Achieving $100K+ Annual Revenue by Market", "data": [43, 34, 31, 31, 19], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Sellers Achieving $100K+ Annual Revenue by Market", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
+})();
+</script>
 <p>
 U.S.-based sellers achieve the highest revenue rates, reflecting the size and purchasing power of the U.S. consumer market. The global average of 19% means roughly 1 in 5 active sellers worldwide crosses the $100K threshold.
 </p>

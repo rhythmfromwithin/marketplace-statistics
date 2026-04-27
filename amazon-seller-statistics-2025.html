@@ -281,6 +281,16 @@ One of the most significant signals in 2025 is the sharp decline in new seller r
 <tr><td>2024</td><td>~600</td></tr>
 <tr><td>2025</td><td>~550</td></tr>
 </tbody></table>
+<div class="chart-container" style="">
+    <canvas id="new-seller-reg-chart" role="img" aria-label="Daily New Seller Registrations 2021-2025"></canvas>
+    <p class="chart-caption">Source: Marketplace Pulse seller tracking</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('new-seller-reg-chart').getContext('2d');
+    new Chart(ctx, {"type": "line", "data": {"labels": ["2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Daily New Seller Registrations 2021-2025", "data": [4000, 3200, 750, 600, 550], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true, "borderWidth": 2}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Daily New Seller Registrations 2021-2025", "font": {"size": 16, "weight": "bold"}}, "datalabels": {"display": false}}}});
+})();
+</script>
 <p>
 The drop from 4,000/day in 2021 to 550/day in 2025 reflects several converging factors: increased competition, rising advertising costs, tighter margins, and greater seller sophistication required to succeed. The era of easy Amazon entry is over.
 </p>
@@ -323,6 +333,16 @@ Active sellers are concentrated in a handful of markets, with the United States 
 <tr><td>Canada</td><td>~100,000</td></tr>
 <tr><td>Australia</td><td>~80,000</td></tr>
 </tbody></table>
+<div class="chart-container" style="height:416px;">
+    <canvas id="sellers-by-region-chart" role="img" aria-label="Active Sellers by Marketplace (2025)"></canvas>
+    <p class="chart-caption">Source: Marketplace Pulse regional tracking</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('sellers-by-region-chart').getContext('2d');
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["United States", "United Kingdom", "Germany", "India", "Japan", "Canada", "Australia"], "datasets": [{"label": "Active Sellers by Marketplace (2025)", "data": [1100000, 290000, 260000, 150000, 120000, 100000, 80000], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Active Sellers by Marketplace (2025)", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { if(value>=1000000) return (value/1000000).toFixed(1)+"M"; if(value>=1000) return (value/1000).toFixed(0)+"K"; return value; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
+})();
+</script>
 <p>
 The US marketplace alone accounts for more than half of all active Amazon sellers globally.
 </p>

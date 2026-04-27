@@ -239,14 +239,14 @@ The trajectory of Amazon's million-dollar seller segment tells a story of market
 <tr><td>2021</td><td>60,000</td></tr>
 <tr><td>2025</td><td>100,000</td></tr>
 </tbody></table>
-<div class="chart-container" style="">
+<div class="chart-container" style="height:200px;">
     <canvas id="million-dollar-growth-chart" role="img" aria-label="Million-Dollar Sellers 2021 vs 2025"></canvas>
     <p class="chart-caption">Source: Jungle Scout Million-Dollar Seller Report</p>
 </div>
 <script>
 (function() {
     var ctx = document.getElementById('million-dollar-growth-chart').getContext('2d');
-    new Chart(ctx, {"type": "bar", "data": {"labels": ["2021", "2025"], "datasets": [{"label": "Million-Dollar Sellers 2021 vs 2025", "data": [60000, 100000], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 1}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Million-Dollar Sellers 2021 vs 2025", "font": {"size": 16, "weight": "bold"}}, "datalabels": {"display": false}}}});
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["2021", "2025"], "datasets": [{"label": "Million-Dollar Sellers 2021 vs 2025", "data": [60000, 100000], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Million-Dollar Sellers 2021 vs 2025", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { if(value>=1000000) return (value/1000000).toFixed(1)+"M"; if(value>=1000) return (value/1000).toFixed(0)+"K"; return value; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>
 <p>
@@ -264,6 +264,16 @@ The most dramatic growth has occurred at the very top of the revenue distributio
 <tr><td>~2021</td><td>~50</td></tr>
 <tr><td>2025</td><td>235</td></tr>
 </tbody></table>
+<div class="chart-container" style="height:200px;">
+    <canvas id="100m-sellers-chart" role="img" aria-label="$100M+ Sellers 2021 vs 2025"></canvas>
+    <p class="chart-caption">Source: Jungle Scout Million-Dollar Seller Report</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('100m-sellers-chart').getContext('2d');
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["2021", "2025"], "datasets": [{"label": "$100M+ Sellers 2021 vs 2025", "data": [50, 235], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "$100M+ Sellers 2021 vs 2025", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { if(value>=1000000) return (value/1000000).toFixed(1)+"M"; if(value>=1000) return (value/1000).toFixed(0)+"K"; return value; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
+})();
+</script>
 <p>
 The jump from 50 to 235 sellers generating $100 million or more annually represents a <strong>370% increase</strong> in four years. This growth reflects:
 </p>
@@ -286,13 +296,13 @@ Not all Amazon marketplaces offer equal revenue potential. The percentage of act
 <tr><td>Global Average</td><td>19%</td></tr>
 </tbody></table>
 <div class="chart-container" style="height:320px;">
-    <canvas id="marketplace-achievement-chart" role="img" aria-label="Million-Dollar Achievement Rate by Marketplace"></canvas>
+    <canvas id="marketplace-achievement-chart" role="img" aria-label="Sellers Achieving $100K+ Annual Revenue by Marketplace"></canvas>
     <p class="chart-caption">Source: Jungle Scout Million-Dollar Seller Report</p>
 </div>
 <script>
 (function() {
     var ctx = document.getElementById('marketplace-achievement-chart').getContext('2d');
-    new Chart(ctx, {"type": "bar", "data": {"labels": ["US", "Germany", "UK", "Japan", "Global"], "datasets": [{"label": "Million-Dollar Achievement Rate by Marketplace", "data": [43, 34, 31, 31, 19], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Million-Dollar Achievement Rate by Marketplace", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["United States", "Germany", "United Kingdom", "Japan", "Global Average"], "datasets": [{"label": "Sellers Achieving $100K+ Annual Revenue by Marketplace", "data": [43, 34, 31, 31, 19], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Sellers Achieving $100K+ Annual Revenue by Marketplace", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>
 <p>

@@ -306,6 +306,16 @@ The most telling indicator of marketplace maturation is the divergence between s
 <tr><td>3P sales share</td><td>57%</td><td>60%+</td><td>+3pp</td></tr>
 <tr><td>3P GMV</td><td>(lower)</td><td>$575 billion</td><td>Significant growth</td></tr>
 </tbody></table>
+<div class="chart-container" style="height:224px;">
+    <canvas id="maturation-signal-chart" role="img" aria-label="Maturation Signal: 2021 vs 2025"></canvas>
+    <p class="chart-caption">Source: Amazon Investor Relations, Jungle Scout</p>
+</div>
+<script>
+(function() {
+    var ctx = document.getElementById('maturation-signal-chart').getContext('2d');
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["Active Sellers", "$1M+ Sellers", "$100M+ Sellers"], "datasets": [{"label": "Maturation Signal: 2021 vs 2025", "data": [-21, 67, 370], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Maturation Signal: 2021 vs 2025", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
+})();
+</script>
 <p>
 Fewer sellers, more revenue. This is the hallmark of a maturing marketplace: consolidation among high-performing operators, exit of marginal sellers, and increasing revenue concentration at the top.
 </p>
