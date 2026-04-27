@@ -190,6 +190,8 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script>Chart.register(ChartDataLabels);</script>
 </head>
 <body>
 
@@ -239,14 +241,14 @@ The geographic origin of new Amazon seller registrations reveals a marketplace h
 <tr><td>United States</td><td>16.3%</td></tr>
 <tr><td>Other Countries</td><td>23.8%</td></tr>
 </tbody></table>
-<div class="chart-container">
+<div class="chart-container" style="height:224px;">
     <canvas id="seller-origin-chart" role="img" aria-label="Amazon Seller Country of Origin 2025"></canvas>
     <p class="chart-caption">Source: Marketplace Pulse seller registration tracking</p>
 </div>
 <script>
 (function() {
     var ctx = document.getElementById('seller-origin-chart').getContext('2d');
-    new Chart(ctx, {"type": "doughnut", "data": {"labels": ["China", "US", "Other"], "datasets": [{"data": [59.9, 16.3, 23.8], "backgroundColor": ["#FF9900", "#232F3E", "#146EB4"], "borderWidth": 2, "borderColor": "#fff"}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"position": "bottom"}, "title": {"display": true, "text": "Amazon Seller Country of Origin 2025", "font": {"size": 16, "weight": "bold"}}}}});
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["China", "US", "Other"], "datasets": [{"label": "Amazon Seller Country of Origin 2025", "data": [59.9, 16.3, 23.8], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Amazon Seller Country of Origin 2025", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>
 <p>
@@ -281,14 +283,14 @@ Sellers are not evenly distributed across Amazon's catalog. A handful of categor
 <tr><td>Electronics</td><td>12%</td></tr>
 <tr><td>Sports & Outdoors</td><td>10%</td></tr>
 </tbody></table>
-<div class="chart-container">
+<div class="chart-container" style="height:368px;">
     <canvas id="seller-categories-chart" role="img" aria-label="Top Product Categories 2025"></canvas>
     <p class="chart-caption">Source: Jungle Scout category analysis</p>
 </div>
 <script>
 (function() {
     var ctx = document.getElementById('seller-categories-chart').getContext('2d');
-    new Chart(ctx, {"type": "bar", "data": {"labels": ["Home & Kitchen", "Beauty", "Clothing", "Toys", "Electronics", "Sports"], "datasets": [{"label": "Top Product Categories 2025", "data": [35, 26, 20, 18, 12, 10], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 1}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Top Product Categories 2025", "font": {"size": 16, "weight": "bold"}}}, "scales": {"x": {"beginAtZero": true, "ticks": {"callback": function(value) { return value + "%"; }}}}}});
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["Home & Kitchen", "Beauty", "Clothing", "Toys", "Electronics", "Sports"], "datasets": [{"label": "Top Product Categories 2025", "data": [35, 26, 20, 18, 12, 10], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Top Product Categories 2025", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>
 <h3 id="why-home-kitchen-dominates">Why Home & Kitchen Dominates</h3>
@@ -321,14 +323,14 @@ The three primary business models used by Amazon sellers in 2025:
 <tr><td>Wholesale / Retail Arbitrage</td><td>23%</td><td>Resell branded products purchased at wholesale or retail</td></tr>
 <tr><td>Dropshipping</td><td>10%</td><td>List products without holding inventory; supplier ships directly</td></tr>
 </tbody></table>
-<div class="chart-container">
+<div class="chart-container" style="height:224px;">
     <canvas id="seller-business-models-chart" role="img" aria-label="Amazon Seller Business Models 2025"></canvas>
     <p class="chart-caption">Source: Jungle Scout State of the Amazon Seller 2025</p>
 </div>
 <script>
 (function() {
     var ctx = document.getElementById('seller-business-models-chart').getContext('2d');
-    new Chart(ctx, {"type": "doughnut", "data": {"labels": ["Private Label", "Wholesale", "Dropshipping"], "datasets": [{"data": [67, 23, 10], "backgroundColor": ["#FF9900", "#232F3E", "#146EB4"], "borderWidth": 2, "borderColor": "#fff"}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"position": "bottom"}, "title": {"display": true, "text": "Amazon Seller Business Models 2025", "font": {"size": 16, "weight": "bold"}}}}});
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["Private Label", "Wholesale", "Dropshipping"], "datasets": [{"label": "Amazon Seller Business Models 2025", "data": [67, 23, 10], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Amazon Seller Business Models 2025", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>
 <h3 id="private-label-the-dominant-strategy">Private Label: The Dominant Strategy</h3>

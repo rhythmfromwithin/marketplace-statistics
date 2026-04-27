@@ -190,6 +190,8 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script>Chart.register(ChartDataLabels);</script>
 </head>
 <body>
 
@@ -221,14 +223,14 @@ This article examines the FBA adoption data, what it means for sellers, and how 
 <tr><td>Active sellers not using FBA</td><td>~342,000</td></tr>
 <tr><td>Third-party GMV (FBA + FBM combined)</td><td>$575 billion</td></tr>
 </tbody></table>
-<div class="chart-container">
+<div class="chart-container" style="height:200px;">
     <canvas id="fba-adoption-chart" role="img" aria-label="FBA Adoption Rate Among Active Sellers"></canvas>
     <p class="chart-caption">Source: Marketplace Pulse FBA tracking</p>
 </div>
 <script>
 (function() {
     var ctx = document.getElementById('fba-adoption-chart').getContext('2d');
-    new Chart(ctx, {"type": "doughnut", "data": {"labels": ["Using FBA", "Not Using FBA"], "datasets": [{"data": [82, 18], "backgroundColor": ["#FF9900", "#232F3E"], "borderWidth": 2, "borderColor": "#fff"}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"position": "bottom"}, "title": {"display": true, "text": "FBA Adoption Rate Among Active Sellers", "font": {"size": 16, "weight": "bold"}}}}});
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["Using FBA", "Not Using FBA"], "datasets": [{"label": "FBA Adoption Rate Among Active Sellers", "data": [82, 18], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "FBA Adoption Rate Among Active Sellers", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>
 <p>
@@ -267,14 +269,14 @@ The correlation between FBA adoption and revenue achievement is significant. Loo
 <tr><td>Japan</td><td>31%</td></tr>
 <tr><td>Global Average</td><td>19%</td></tr>
 </tbody></table>
-<div class="chart-container">
+<div class="chart-container" style="height:320px;">
     <canvas id="fba-revenue-chart" role="img" aria-label="Million-Dollar Seller Achievement Rate by Marketplace"></canvas>
     <p class="chart-caption">Source: Jungle Scout Million-Dollar Seller Report</p>
 </div>
 <script>
 (function() {
     var ctx = document.getElementById('fba-revenue-chart').getContext('2d');
-    new Chart(ctx, {"type": "bar", "data": {"labels": ["US", "Germany", "UK", "Japan", "Global"], "datasets": [{"label": "Million-Dollar Seller Achievement Rate by Marketplace", "data": [43, 34, 31, 31, 19], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 1}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Million-Dollar Seller Achievement Rate by Marketplace", "font": {"size": 16, "weight": "bold"}}}, "scales": {"x": {"beginAtZero": true, "ticks": {"callback": function(value) { return value + "%"; }}}}}});
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["US", "Germany", "UK", "Japan", "Global"], "datasets": [{"label": "Million-Dollar Seller Achievement Rate by Marketplace", "data": [43, 34, 31, 31, 19], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Million-Dollar Seller Achievement Rate by Marketplace", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>
 <p>

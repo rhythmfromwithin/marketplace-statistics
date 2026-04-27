@@ -191,6 +191,7 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script>Chart.register(ChartDataLabels);</script>
 </head>
 <body>
 
@@ -262,7 +263,7 @@ Amazon's seller base grew explosively through the 2010s, peaked during the pande
 <script>
 (function() {
     var ctx = document.getElementById('seller-growth-chart').getContext('2d');
-    new Chart(ctx, {"type": "line", "data": {"labels": ["2010", "2011", "2015", "2018", "2020", "2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Amazon Active Sellers 2010-2025", "data": [50000, 100000, 500000, 1200000, 1900000, 2400000, 2200000, 2000000, 1900000, 1900000], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true, "borderWidth": 2}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Amazon Active Sellers 2010-2025", "font": {"size": 16, "weight": "bold"}}}}});
+    new Chart(ctx, {"type": "line", "data": {"labels": ["2010", "2011", "2015", "2018", "2020", "2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Amazon Active Sellers 2010-2025", "data": [50000, 100000, 500000, 1200000, 1900000, 2400000, 2200000, 2000000, 1900000, 1900000], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true, "borderWidth": 2}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Amazon Active Sellers 2010-2025", "font": {"size": 16, "weight": "bold"}}, "datalabels": {"display": false}}}});
 })();
 </script>
 <p>

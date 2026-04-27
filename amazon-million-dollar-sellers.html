@@ -190,6 +190,8 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script>Chart.register(ChartDataLabels);</script>
 </head>
 <body>
 
@@ -237,14 +239,14 @@ The trajectory of Amazon's million-dollar seller segment tells a story of market
 <tr><td>2021</td><td>60,000</td></tr>
 <tr><td>2025</td><td>100,000</td></tr>
 </tbody></table>
-<div class="chart-container">
+<div class="chart-container" style="">
     <canvas id="million-dollar-growth-chart" role="img" aria-label="Million-Dollar Sellers 2021 vs 2025"></canvas>
     <p class="chart-caption">Source: Jungle Scout Million-Dollar Seller Report</p>
 </div>
 <script>
 (function() {
     var ctx = document.getElementById('million-dollar-growth-chart').getContext('2d');
-    new Chart(ctx, {"type": "bar", "data": {"labels": ["2021", "2025"], "datasets": [{"label": "Million-Dollar Sellers 2021 vs 2025", "data": [60000, 100000], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 1}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Million-Dollar Sellers 2021 vs 2025", "font": {"size": 16, "weight": "bold"}}}}});
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["2021", "2025"], "datasets": [{"label": "Million-Dollar Sellers 2021 vs 2025", "data": [60000, 100000], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 1}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Million-Dollar Sellers 2021 vs 2025", "font": {"size": 16, "weight": "bold"}}, "datalabels": {"display": false}}}});
 })();
 </script>
 <p>
@@ -283,14 +285,14 @@ Not all Amazon marketplaces offer equal revenue potential. The percentage of act
 <tr><td>Japan</td><td>31%</td></tr>
 <tr><td>Global Average</td><td>19%</td></tr>
 </tbody></table>
-<div class="chart-container">
+<div class="chart-container" style="height:320px;">
     <canvas id="marketplace-achievement-chart" role="img" aria-label="Million-Dollar Achievement Rate by Marketplace"></canvas>
     <p class="chart-caption">Source: Jungle Scout Million-Dollar Seller Report</p>
 </div>
 <script>
 (function() {
     var ctx = document.getElementById('marketplace-achievement-chart').getContext('2d');
-    new Chart(ctx, {"type": "bar", "data": {"labels": ["US", "Germany", "UK", "Japan", "Global"], "datasets": [{"label": "Million-Dollar Achievement Rate by Marketplace", "data": [43, 34, 31, 31, 19], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 1}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Million-Dollar Achievement Rate by Marketplace", "font": {"size": 16, "weight": "bold"}}}, "scales": {"x": {"beginAtZero": true, "ticks": {"callback": function(value) { return value + "%"; }}}}}});
+    new Chart(ctx, {"type": "bar", "data": {"labels": ["US", "Germany", "UK", "Japan", "Global"], "datasets": [{"label": "Million-Dollar Achievement Rate by Marketplace", "data": [43, 34, 31, 31, 19], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Million-Dollar Achievement Rate by Marketplace", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { return value + "%"; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>
 <p>

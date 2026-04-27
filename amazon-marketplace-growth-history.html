@@ -191,6 +191,7 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script>Chart.register(ChartDataLabels);</script>
 </head>
 <body>
 
@@ -235,7 +236,7 @@ This article traces the complete growth arc of Amazon's seller marketplace, from
 <script>
 (function() {
     var ctx = document.getElementById('growth-timeline-chart').getContext('2d');
-    new Chart(ctx, {"type": "line", "data": {"labels": ["2010", "2011", "2015", "2018", "2020", "2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Amazon Active Sellers 2010-2025", "data": [50000, 100000, 500000, 1200000, 1900000, 2400000, 2200000, 2000000, 1900000, 1900000], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true, "borderWidth": 2}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Amazon Active Sellers 2010-2025", "font": {"size": 16, "weight": "bold"}}}}});
+    new Chart(ctx, {"type": "line", "data": {"labels": ["2010", "2011", "2015", "2018", "2020", "2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Amazon Active Sellers 2010-2025", "data": [50000, 100000, 500000, 1200000, 1900000, 2400000, 2200000, 2000000, 1900000, 1900000], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true, "borderWidth": 2}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Amazon Active Sellers 2010-2025", "font": {"size": 16, "weight": "bold"}}, "datalabels": {"display": false}}}});
 })();
 </script>
 <hr>
@@ -284,7 +285,7 @@ The post-pandemic period has been characterized by contraction and stabilization
 <script>
 (function() {
     var ctx = document.getElementById('dual-axis-chart').getContext('2d');
-    new Chart(ctx, {"type": "line", "data": {"labels": ["2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Active Sellers", "data": [2400000, 2200000, 2000000, 1900000, 1900000], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true}, {"label": "Daily Registrations", "data": [4000, 3200, 750, 600, 550], "borderColor": "#232F3E", "backgroundColor": "rgba(35, 47, 62, 0.1)", "tension": 0.3, "fill": true}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"position": "bottom"}, "title": {"display": true, "text": "Active Sellers vs Daily Registrations 2021-2025", "font": {"size": 16, "weight": "bold"}}}}});
+    new Chart(ctx, {"type": "line", "data": {"labels": ["2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Active Sellers", "data": [2400000, 2200000, 2000000, 1900000, 1900000], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true}, {"label": "Daily Registrations", "data": [4000, 3200, 750, 600, 550], "borderColor": "#232F3E", "backgroundColor": "rgba(35, 47, 62, 0.1)", "tension": 0.3, "fill": true}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"position": "bottom"}, "title": {"display": true, "text": "Active Sellers vs Daily Registrations 2021-2025", "font": {"size": 16, "weight": "bold"}}, "datalabels": {"display": false}}}});
 })();
 </script>
 <p>
@@ -342,7 +343,7 @@ As the seller base has evolved, the third-party sales share has grown steadily:
 <script>
 (function() {
     var ctx = document.getElementById('3p-share-trajectory-chart').getContext('2d');
-    new Chart(ctx, {"type": "line", "data": {"labels": ["2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Third-Party Sales Share 2021-2025", "data": [57, 58, 60, 60, 60], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true, "borderWidth": 2}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Third-Party Sales Share 2021-2025", "font": {"size": 16, "weight": "bold"}}}}});
+    new Chart(ctx, {"type": "line", "data": {"labels": ["2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Third-Party Sales Share 2021-2025", "data": [57, 58, 60, 60, 60], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true, "borderWidth": 2}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Third-Party Sales Share 2021-2025", "font": {"size": 16, "weight": "bold"}}, "datalabels": {"display": false}}}});
 })();
 </script>
 <p>
