@@ -23,7 +23,7 @@ import { useIsMobile } from "@/hooks/useMobile";
 import { trpc } from "@/lib/trpc";
 import { useLang } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
-import { BarChart2, LayoutDashboard, LogIn, LogOut, Moon, PanelLeft, Store, Sun, Tag } from "lucide-react";
+import { BarChart2, LayoutDashboard, LogIn, LogOut, Moon, PanelLeft, Store, Sun, Tag, TrendingUp } from "lucide-react";
 import FeedbackWidget from "./FeedbackWidget";
 import PriceChat from "./PriceChat";
 import { CSSProperties, useEffect, useRef, useState } from "react";
@@ -97,6 +97,7 @@ function DashboardLayoutContent({
     { icon: Tag, label: t.nav.products, path: "/products" },
     { icon: BarChart2, label: t.nav.history, path: "/history" },
     { icon: Store, label: t.nav.competitors, path: "/competitors" },
+    { icon: TrendingUp, label: lang === "zh" ? "销量估算" : "Sales Estimator", path: "/sales-estimator" },
   ] : [{ icon: LayoutDashboard, label: t.nav.dashboard, path: "/" }];
 
   const activeMenuItem = menuItems.find(item => item.path === location);
@@ -146,7 +147,7 @@ function DashboardLayoutContent({
               <button
                 onClick={toggleSidebar}
                 className="h-8 w-8 flex items-center justify-center hover:bg-sidebar-accent rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0"
-                aria-label="Toggle navigation"
+                aria-label={t.layoutToggleNav}
               >
                 <PanelLeft className="h-4 w-4 text-muted-foreground" />
               </button>
@@ -164,7 +165,7 @@ function DashboardLayoutContent({
                     <button
                       onClick={toggleLang}
                       className="h-6 px-2 rounded-md border border-border text-[11px] font-semibold text-muted-foreground hover:text-primary hover:border-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      title={lang === "en" ? "切换中文" : "Switch to English"}
+                      title={lang === "en" ? t.layoutSwitchLangToZh : t.layoutSwitchLangToEn}
                     >
                       {lang === "en" ? "中" : "EN"}
                     </button>
@@ -172,8 +173,8 @@ function DashboardLayoutContent({
                       <button
                         onClick={toggleTheme}
                         className="h-6 w-6 rounded-md border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring grid place-items-center"
-                        title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-                        aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                        title={theme === "dark" ? t.layoutThemeLight : t.layoutThemeDark}
+                        aria-label={theme === "dark" ? t.layoutThemeLight : t.layoutThemeDark}
                       >
                         {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
                       </button>
@@ -186,7 +187,7 @@ function DashboardLayoutContent({
                   <button
                     onClick={toggleLang}
                     className="h-8 w-8 flex items-center justify-center hover:bg-sidebar-accent rounded-lg transition-colors focus:outline-none text-[10px] font-bold text-muted-foreground"
-                    title={lang === "en" ? "切换中文" : "Switch to English"}
+                    title={lang === "en" ? t.layoutSwitchLangToZh : t.layoutSwitchLangToEn}
                   >
                     {lang === "en" ? "中" : "EN"}
                   </button>
@@ -194,8 +195,8 @@ function DashboardLayoutContent({
                     <button
                       onClick={toggleTheme}
                       className="h-8 w-8 flex items-center justify-center hover:bg-sidebar-accent rounded-lg transition-colors focus:outline-none text-muted-foreground"
-                      title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-                      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                      title={theme === "dark" ? t.layoutThemeLight : t.layoutThemeDark}
+                      aria-label={theme === "dark" ? t.layoutThemeLight : t.layoutThemeDark}
                     >
                       {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
                     </button>
@@ -258,7 +259,7 @@ function DashboardLayoutContent({
                     className="cursor-pointer text-destructive focus:text-destructive"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>{lang === "zh" ? "退出登录" : "Sign out"}</span>
+                    <span>{t.signOut}</span>
                   </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem
@@ -286,7 +287,7 @@ function DashboardLayoutContent({
             <div className="flex items-center gap-2">
               <SidebarTrigger className="h-9 w-9 rounded-lg bg-background" />
               <span className="tracking-tight text-foreground text-sm">
-                {activeMenuItem?.label ?? "Menu"}
+                {activeMenuItem?.label ?? t.layoutMenu}
               </span>
             </div>
             <button

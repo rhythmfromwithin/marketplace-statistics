@@ -11,8 +11,16 @@ import {
   TrendingUp,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Streamdown } from "streamdown";
+
+/** Mirrors server `chat.ask` action payloads (subset used in UI). */
+type ChatActionPayload = {
+  type: string;
+  productName?: string;
+  trackedProductId?: number | null;
+  [key: string]: unknown;
+};
 
 type Message = {
   id: string;
@@ -20,7 +28,7 @@ type Message = {
   content: string;
   loading?: boolean;
   error?: boolean;
-  action?: { type: string; productName?: string };
+  action?: ChatActionPayload;
 };
 
 const PROMPT_ICONS = [TrendingDown, TrendingUp, Sparkles, Bot];
@@ -40,18 +48,26 @@ export default function PriceChat() {
     onSuccess: async (data) => {
       setMessages((prev) =>
         prev.map((m) =>
-          m.loading ? { ...m, content: data.content, loading: false, action: data.action } : m
+          m.loading
+            ? {
+                ...m,
+                content: data.content,
+                loading: false,
+                action: (data.action ?? undefined) as ChatActionPayload | undefined,
+              }
+            : m
         )
       );
 
       if (data.action?.type === "product_tracked" && data.action.trackedProductId) {
-        const productName = data.action.productName || "Product";
+        const act = data.action as ChatActionPayload;
+        const productName = typeof act.productName === "string" ? act.productName : t.productDefaultName;
         setMessages((prev) => [
           ...prev,
           {
             id: `sys-${Date.now()}`,
             role: "system",
-            content: `✓ Added **${productName}** to tracking. [View Products →](/products)`,
+            content: t.trackedAddedSystem(productName),
           },
         ]);
 
@@ -64,7 +80,7 @@ export default function PriceChat() {
     },
     onError: (err) => {
       const isNetworkError = err.message.includes("fetch") || err.message.includes("network");
-      const errorType = isNetworkError ? "Network issue" : "Server error";
+      const errorType = isNetworkError ? t.chatErrorNetwork : t.chatErrorServer;
       const errorMsg = `${errorType}: ${err.message}`;
 
       setMessages((prev) =>
@@ -109,7 +125,10 @@ export default function PriceChat() {
     };
 
     const history = messages
-      .filter((m) => !m.loading && m.role !== "system")
+      .filter(
+        (m): m is Message & { role: "user" | "assistant" } =>
+          !m.loading && (m.role === "user" || m.role === "assistant")
+      )
       .map((m) => ({ role: m.role, content: m.content }));
 
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
@@ -145,14 +164,16 @@ export default function PriceChat() {
   };
 
   const hasMessages = messages.length > 0;
-  const topTracked = (trackedProducts ?? []).slice(0, 3);
-  const hasDrops = (dashboardRows ?? []).some((r) => r.direction === "down");
-  const quickActions = [
-    "Track this Amazon URL:",
-    "Compare lowest landed prices today",
-    hasDrops ? "Which products dropped the most today?" : "Any price movement today?",
-    ...topTracked.map((p) => `Show trend for ${p.name}`),
-  ];
+  const quickActions = useMemo(() => {
+    const top = (trackedProducts ?? []).slice(0, 3);
+    const drops = (dashboardRows ?? []).some((r) => r.direction === "down");
+    return [
+      t.chatTrackUrlChip,
+      t.chatCompareLandedChip,
+      drops ? t.chatDropsChip : t.chatMovementChip,
+      ...top.map((p) => t.chatShowTrendFor(p.name)),
+    ];
+  }, [t, trackedProducts, dashboardRows]);
 
   return (
     <>
@@ -180,9 +201,9 @@ export default function PriceChat() {
             type="button"
             onClick={() => setIsOpen(true)}
             className="mb-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-            aria-label="Open agent quick actions"
+            aria-label={t.chatOpenQuickActionsAria}
           >
-            Ask AI about prices and trends
+            {t.chatProactiveCta}
           </button>
         )}
         {/* Chat panel — expands above the input bar */}
@@ -214,12 +235,12 @@ export default function PriceChat() {
                     <Sparkles className="h-3.5 w-3.5 text-white" />
                   </div>
                   <span className="text-sm font-semibold" style={{ color: "#1c222b" }}>
-                    Price Intel AI
+                    {t.chatPanelTitle}
                   </span>
                   <span className="text-xs px-1.5 py-0.5 rounded-full font-medium"
                     style={{ background: "#f6f8ff", color: "#0166fe" }}
                   >
-                    {t.chatLiveData ?? "Live data"}
+                    {t.chatLiveData}
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -236,8 +257,8 @@ export default function PriceChat() {
                     onClick={() => setIsOpen(false)}
                     className="h-7 w-7 rounded-lg flex items-center justify-center transition-colors hover:bg-gray-100"
                     style={{ color: "#9ba0a8" }}
-                    aria-label={t.close ?? "Close"}
-                    title={t.close ?? "Close"}
+                    aria-label={t.close}
+                    title={t.close}
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -319,7 +340,7 @@ export default function PriceChat() {
                           }
                         >
                           {msg.loading ? (
-                            <div className="flex items-center gap-1.5 py-1" role="status" aria-live="polite" aria-label="Thinking">
+                            <div className="flex items-center gap-1.5 py-1" role="status" aria-live="polite" aria-label={t.chatThinkingAria}>
                               <span
                                 className="h-1.5 w-1.5 rounded-full animate-bounce"
                                 style={{ background: "#0166fe", animationDelay: "0ms" }}
@@ -347,7 +368,7 @@ export default function PriceChat() {
                               style={{ color: "#b91c1c" }}
                               onClick={retryLastMessage}
                             >
-                              Retry
+                              {t.chatRetry}
                             </button>
                           )}
                         </div>
@@ -397,7 +418,7 @@ export default function PriceChat() {
             onFocus={() => setIsOpen(true)}
             placeholder={t.chatPlaceholder}
             className="flex-1 resize-none bg-transparent outline-none text-sm leading-relaxed"
-            aria-label="Agent input"
+            aria-label={t.chatAgentInputAria}
             style={{
               color: "#1c222b",
               maxHeight: "120px",

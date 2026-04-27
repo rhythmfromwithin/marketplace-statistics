@@ -57,9 +57,9 @@ export default function Products() {
       setOpen(false);
       setForm({ productUrl: "", category: "", isOwn: false });
       if (result.alreadyExists) {
-        toast.message(lang === "zh" ? "该商品已存在，已定位到现有记录" : "Product already exists. Reusing existing entry.");
+        toast.message(t.toastProductExists);
       } else {
-        toast.success(lang === "zh" ? "商品已添加并完成首次价格抓取" : "Product added and initial price fetched.");
+        toast.success(t.toastProductAdded);
       }
     },
     onError: (err) => toast.error(`${t.failedPrefix}${err.message}`),
@@ -69,14 +69,14 @@ export default function Products() {
     onSuccess: () => {
       utils.products.list.invalidate();
       utils.prices.dashboard.invalidate();
-      toast.success(lang === "zh" ? "商品已移除" : "Product removed");
+      toast.success(t.toastProductRemoved);
     },
-    onError: () => toast.error(lang === "zh" ? "移除失败" : "Failed to remove product"),
+    onError: () => toast.error(t.toastProductRemoveFailed),
   });
 
   const handleAdd = () => {
     if (!form.productUrl.trim()) {
-      toast.error(lang === "zh" ? "请先粘贴 Amazon 商品链接" : "Please paste an Amazon product link.");
+      toast.error(t.toastPasteAmazonUrl);
       return;
     }
     addMutation.mutate({
@@ -116,22 +116,14 @@ export default function Products() {
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>{t.addProductTitle}</DialogTitle>
-              <DialogDescription>
-                {lang === "zh"
-                  ? "粘贴 Amazon 商品链接，系统会自动识别 ASIN、抓取商品信息并加入监控。"
-                  : "Paste an Amazon product link and the system will auto-detect ASIN, fetch details, and start tracking."}
-              </DialogDescription>
+              <DialogDescription>{t.productsAmazonUrlHelp}</DialogDescription>
             </DialogHeader>
             <div className="flex flex-col gap-4 py-2">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="url">{t.productUrl}</Label>
                 <Input
                   id="url"
-                  placeholder={
-                    lang === "zh"
-                      ? "https://www.amazon.com/dp/B0XXXXXXXX"
-                      : "https://www.amazon.com/dp/B0XXXXXXXX"
-                  }
+                  placeholder={t.productsAmazonUrlPlaceholder}
                   value={form.productUrl}
                   onChange={(e) => setForm((f) => ({ ...f, productUrl: e.target.value }))}
                   className="font-mono text-sm"
@@ -203,7 +195,7 @@ export default function Products() {
                   )}
                 </div>
                 <span className="text-xs text-muted-foreground">
-                  {entries.length} {lang === "zh" ? "个平台" : `platform${entries.length > 1 ? "s" : ""}`}
+                  {t.productsPlatformCount(entries.length)}
                 </span>
               </div>
               <div className="divide-y divide-border/50">
@@ -224,7 +216,7 @@ export default function Products() {
                         <ExternalLink className="w-3.5 h-3.5" />
                       </a>
                     )}
-                    <span className="text-xs text-muted-foreground hidden sm:block">{formatDate(product.createdAt)}</span>
+                    <span className="text-xs text-muted-foreground hidden sm:block">{formatDate(product.createdAt, lang)}</span>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive">

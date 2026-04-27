@@ -1,5 +1,5 @@
 import { trpc } from "@/lib/trpc";
-import { formatPrice, formatDate, PLATFORM_LABELS } from "@/lib/utils";
+import { formatPrice, formatDate } from "@/lib/utils";
 import type { Platform } from "@/lib/utils";
 import { PlatformBadge } from "@/components/PriceBadges";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -52,13 +52,13 @@ export default function PriceHistory() {
     if (!history || history.length === 0) return [];
     const byDate = new Map<string, Record<string, number>>();
     for (const snap of history) {
-      const dateStr = formatDate(snap.captured_at);
+      const dateStr = formatDate(snap.captured_at, lang);
       const existing = byDate.get(dateStr) ?? {};
       existing[snap.platform] = snap[priceType];
       byDate.set(dateStr, existing);
     }
     return Array.from(byDate.entries()).map(([date, prices]) => ({ date, ...prices }));
-  }, [history, priceType]);
+  }, [history, priceType, lang]);
 
   const platforms = useMemo(() => {
     if (!history) return [];
@@ -145,8 +145,12 @@ export default function PriceHistory() {
               <PlatformBadge platform={stat.platform as Platform} size="sm" />
               <p className="text-xl font-semibold tabular text-foreground mt-1">{formatPrice(stat.latest)}</p>
               <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>↓ {formatPrice(stat.min)}</span>
-                <span>↑ {formatPrice(stat.max)}</span>
+                <span>
+                  {t.priceStatMin} {formatPrice(stat.min)}
+                </span>
+                <span>
+                  {t.priceStatMax} {formatPrice(stat.max)}
+                </span>
               </div>
               <span className={`text-xs font-medium ${stat.change >= 0 ? "text-price-up" : "text-price-down"}`}>
                 {stat.change >= 0 ? "+" : ""}{stat.change.toFixed(1)}% {t.overPeriod}
@@ -170,7 +174,7 @@ export default function PriceHistory() {
             <div>
               <p className="text-sm font-medium text-foreground">{selectedProduct?.name}</p>
               <p className="text-xs text-muted-foreground">
-                {priceType === "landed_price" ? t.landedPrice : t.listPrice} — {lang === "zh" ? `最近 ${days} 天` : `last ${days} days`}
+                {priceType === "landed_price" ? t.landedPrice : t.listPrice} — {t.chartSubtitleLastDays(days)}
               </p>
             </div>
           </div>
@@ -200,13 +204,17 @@ export default function PriceHistory() {
                   color: "#1c222b",
                   boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
                 }}
-                formatter={(value: number, name: string) => [
-                  formatPrice(value),
-                  PLATFORM_LABELS[name as Platform] ?? name,
-                ]}
+                formatter={(value, name) => {
+                  const num = typeof value === "number" ? value : Number(value);
+                  const key = String(name) as Platform;
+                  return [formatPrice(num), t.platforms[key] ?? key] as [string, string];
+                }}
               />
               <Legend
-                formatter={(value) => PLATFORM_LABELS[value as Platform] ?? value}
+                formatter={(value) => {
+                  const key = String(value) as Platform;
+                  return t.platforms[key] ?? key;
+                }}
                 wrapperStyle={{ fontSize: "12px", paddingTop: "12px", color: "#676c78" }}
               />
               {platforms.map((platform) => (

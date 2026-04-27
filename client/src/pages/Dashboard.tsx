@@ -12,7 +12,7 @@ import { useState, useMemo } from "react";
 import { useLang } from "@/contexts/LanguageContext";
 
 export default function Dashboard() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const utils = trpc.useUtils();
   const { isAuthenticated } = useAuth();
   const [search, setSearch] = useState("");
@@ -28,7 +28,7 @@ export default function Dashboard() {
     onSuccess: (result) => {
       refetch();
       if (result.triggered.length > 0) {
-        toast.warning(`${result.triggered.length} ${t.nav.alerts.toLowerCase()}!`);
+        toast.warning(t.alertsTriggeredToast(result.triggered.length));
       } else {
         toast.success(t.refresh);
       }
@@ -36,7 +36,7 @@ export default function Dashboard() {
     onError: (err) => {
       toast.error(t.failedPrefix + t.refresh.toLowerCase(), {
         action: {
-          label: "Retry",
+          label: t.retry,
           onClick: () => {
             if (pollingName) {
               const group = grouped.find(g => g.name === pollingName);
@@ -57,10 +57,10 @@ export default function Dashboard() {
         utils.products.list.invalidate(),
         utils.prices.dashboard.invalidate(),
       ]);
-      toast.success("Logged in");
+      toast.success(t.loggedInToast);
     },
     onError: (error) => {
-      toast.error(`Login failed: ${error.message}`);
+      toast.error(`${t.loginFailedPrefix}${error.message}`);
     },
   });
 
@@ -68,7 +68,7 @@ export default function Dashboard() {
     setPollingName(name);
     setPollingProgress({ current: 0, total: ids.length });
 
-    toast.info(`Polling ${ids.length} product${ids.length > 1 ? 's' : ''}...`);
+    toast.info(t.pollingToast(ids.length));
 
     for (let i = 0; i < ids.length; i++) {
       setPollingProgress({ current: i + 1, total: ids.length });
@@ -162,7 +162,7 @@ export default function Dashboard() {
 
       {/* Stats row */}
       {isLoading ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3" role="status" aria-live="polite" aria-label="Loading dashboard statistics">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3" role="status" aria-live="polite" aria-label={t.loadingStatsAria}>
           {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
         </div>
       ) : stats ? (
@@ -176,28 +176,28 @@ export default function Dashboard() {
 
       {marketInsight && (
         <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Market insight</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.marketInsightTitle}</p>
           <div className="grid gap-2 md:grid-cols-3 text-sm">
             <div>
-              <p className="text-xs text-muted-foreground">Largest drop</p>
+              <p className="text-xs text-muted-foreground">{t.marketLargestDrop}</p>
               <p className="font-medium">
                 {marketInsight.biggestDrop
                   ? `${marketInsight.biggestDrop.productName} (${marketInsight.biggestDrop.changePct.toFixed(2)}%)`
-                  : "No drop detected"}
+                  : t.marketNoDrop}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Largest rise</p>
+              <p className="text-xs text-muted-foreground">{t.marketLargestRise}</p>
               <p className="font-medium">
                 {marketInsight.biggestRise
                   ? `${marketInsight.biggestRise.productName} (+${marketInsight.biggestRise.changePct.toFixed(2)}%)`
-                  : "No rise detected"}
+                  : t.marketNoRise}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Data freshness</p>
+              <p className="text-xs text-muted-foreground">{t.marketDataFreshness}</p>
               <p className="font-medium tabular-nums">
-                {marketInsight.latestCapture ? formatRelativeTime(marketInsight.latestCapture) : "No data"}
+                {marketInsight.latestCapture ? formatRelativeTime(marketInsight.latestCapture, lang) : t.marketNoData}
               </p>
             </div>
           </div>
@@ -256,7 +256,7 @@ export default function Dashboard() {
                     className="gap-1.5 text-xs h-7 px-2.5 shrink-0"
                   >
                     <RefreshCw className={`w-3 h-3 ${pollingName === product.name ? "animate-spin" : ""}`} />
-                    {pollingName === product.name ? "…" : "获取价格"}
+                    {pollingName === product.name ? "…" : t.fetchPrice}
                   </Button>
                 </div>
               </div>
@@ -267,10 +267,8 @@ export default function Dashboard() {
         {!isAuthenticated && (
           <div className="absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-background via-background/95 to-transparent flex items-end justify-center pb-10">
             <div className="rounded-xl border border-border bg-card px-5 py-4 text-center shadow-sm">
-              <p className="text-sm font-medium text-foreground">Login to unlock full data & actions</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                You are viewing a preview of 20 products.
-              </p>
+              <p className="text-sm font-medium text-foreground">{t.guestUnlockTitle}</p>
+              <p className="text-xs text-muted-foreground mt-1">{t.guestUnlockSubtitle}</p>
               <Button className="mt-3" size="sm" onClick={() => mockLoginMutation.mutate()} disabled={mockLoginMutation.isPending}>
                 {t.signIn}
               </Button>
@@ -338,8 +336,8 @@ function ProductPriceCard({
           onClick={() => onPoll(group.entries.map(e => e.trackedProductId))}
           disabled={isPolling || disablePoll}
           className="gap-1.5 text-xs h-7 px-2.5 text-muted-foreground hover:text-foreground shrink-0"
-          aria-label={isPolling ? "Polling..." : t.poll}
-          title={isPolling ? "Polling..." : t.poll}
+          aria-label={isPolling ? t.pollingInProgress : t.poll}
+          title={isPolling ? t.pollingInProgress : t.poll}
         >
           <RefreshCw className={`w-3 h-3 ${isPolling ? "animate-spin" : ""}`} />
           {isPolling ? "…" : t.poll}
@@ -360,7 +358,7 @@ function ProductPriceCard({
 }
 
 function PlatformPriceRow({ entry, isLowest }: { entry: PriceRow; isLowest: boolean }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   return (
     <div className={`flex items-center gap-4 px-4 py-3 hover:bg-accent/30 transition-colors ${isLowest ? "bg-price-up/5" : ""}`}>
       <div className="w-24 shrink-0">
@@ -403,7 +401,7 @@ function PlatformPriceRow({ entry, isLowest }: { entry: PriceRow; isLowest: bool
         {entry.seller_id && (
           <span className="text-[10px] text-muted-foreground/70 font-mono truncate max-w-[120px]">{entry.seller_id}</span>
         )}
-        <span className="text-[10px] text-muted-foreground/50">{formatRelativeTime(entry.captured_at)}</span>
+        <span className="text-[10px] text-muted-foreground/50">{formatRelativeTime(entry.captured_at, lang)}</span>
       </div>
     </div>
   );

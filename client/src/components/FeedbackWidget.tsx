@@ -5,23 +5,30 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { MessageCircleQuestion } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useLang } from "@/contexts/LanguageContext";
 
 type FeedbackCategory = "bug" | "feature" | "general";
 
+const CATEGORY_ORDER: FeedbackCategory[] = ["general", "feature", "bug"];
+
 export default function FeedbackWidget() {
+  const { t } = useLang();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [category, setCategory] = useState<FeedbackCategory>("general");
 
+  const categoryLabel = (c: FeedbackCategory) =>
+    c === "general" ? t.feedbackCatGeneral : c === "feature" ? t.feedbackCatFeature : t.feedbackCatBug;
+
   const submitMutation = trpc.feedback.submit.useMutation({
     onSuccess: () => {
-      toast.success("Feedback submitted successfully.");
+      toast.success(t.feedbackSuccessToast);
       setMessage("");
       setCategory("general");
       setOpen(false);
     },
     onError: (error) => {
-      toast.error(`Submit failed: ${error.message}`);
+      toast.error(`${t.feedbackFailedPrefix}${error.message}`);
     },
   });
 
@@ -32,22 +39,20 @@ export default function FeedbackWidget() {
           <button
             type="button"
             className="h-11 w-11 rounded-full border border-border bg-card shadow-sm grid place-items-center text-primary hover:text-primary/90 transition-colors"
-            aria-label="Open feedback form"
-            title="Feedback"
+            aria-label={t.feedbackOpenAria}
+            title={t.feedbackTitle}
           >
             <MessageCircleQuestion className="h-5 w-5" />
           </button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[460px]">
           <DialogHeader>
-            <DialogTitle>Send feedback</DialogTitle>
-            <DialogDescription>
-              Tell us bugs, feature requests, or any suggestions.
-            </DialogDescription>
+            <DialogTitle>{t.feedbackTitle}</DialogTitle>
+            <DialogDescription>{t.feedbackDescription}</DialogDescription>
           </DialogHeader>
 
           <div className="flex flex-wrap gap-2">
-            {(["general", "feature", "bug"] as const).map((item) => (
+            {CATEGORY_ORDER.map((item) => (
               <button
                 key={item}
                 type="button"
@@ -58,7 +63,7 @@ export default function FeedbackWidget() {
                     : "border-border text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {item}
+                {categoryLabel(item)}
               </button>
             ))}
           </div>
@@ -66,7 +71,7 @@ export default function FeedbackWidget() {
           <Textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Share your feedback..."
+            placeholder={t.feedbackPlaceholder}
             className="min-h-[120px]"
           />
 
@@ -76,7 +81,7 @@ export default function FeedbackWidget() {
               onClick={() => submitMutation.mutate({ category, message })}
               disabled={message.trim().length < 5 || submitMutation.isPending}
             >
-              {submitMutation.isPending ? "Submitting..." : "Submit feedback"}
+              {submitMutation.isPending ? t.feedbackSubmitting : t.feedbackSubmit}
             </Button>
           </div>
         </DialogContent>

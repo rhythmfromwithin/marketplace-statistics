@@ -1,6 +1,7 @@
 import { TrendingDown, TrendingUp, Minus } from "lucide-react";
-import { cn, formatPct, PLATFORM_BG_COLORS, PLATFORM_LABELS, AVAILABILITY_LABELS, AVAILABILITY_COLORS } from "@/lib/utils";
+import { cn, formatPct, PLATFORM_BG_COLORS, AVAILABILITY_COLORS } from "@/lib/utils";
 import type { Platform, Availability, DeltaDirection } from "@/lib/utils";
+import { useLang } from "@/contexts/LanguageContext";
 
 // ─── Platform Badge ───────────────────────────────────────────────────────────
 interface PlatformBadgeProps {
@@ -9,6 +10,8 @@ interface PlatformBadgeProps {
 }
 
 export function PlatformBadge({ platform, size = "md" }: PlatformBadgeProps) {
+  const { t } = useLang();
+  const label = t.platforms[platform as keyof typeof t.platforms] ?? platform;
   return (
     <span
       className={cn(
@@ -17,7 +20,7 @@ export function PlatformBadge({ platform, size = "md" }: PlatformBadgeProps) {
         size === "sm" ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-0.5 text-xs"
       )}
     >
-      {PLATFORM_LABELS[platform]}
+      {label}
     </span>
   );
 }
@@ -68,7 +71,16 @@ interface AvailabilityBadgeProps {
 }
 
 export function AvailabilityBadge({ availability }: AvailabilityBadgeProps) {
+  const { t } = useLang();
   const avail = availability as Availability;
+  const label =
+    avail === "in_stock"
+      ? t.inStock
+      : avail === "out_of_stock"
+        ? t.outOfStock
+        : avail === "limited"
+          ? t.limited
+          : t.unknown;
   return (
     <span className={cn("inline-flex items-center gap-1 text-xs", AVAILABILITY_COLORS[avail] ?? "text-muted-foreground")}>
       <span className={cn(
@@ -77,7 +89,7 @@ export function AvailabilityBadge({ availability }: AvailabilityBadgeProps) {
         avail === "limited" ? "bg-yellow-400" :
         "bg-destructive"
       )} />
-      {AVAILABILITY_LABELS[avail] ?? availability}
+      {label}
     </span>
   );
 }

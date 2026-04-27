@@ -1,5 +1,6 @@
 import { trpc } from "@/lib/trpc";
 import { formatPrice } from "@/lib/utils";
+import { useLang } from "@/contexts/LanguageContext";
 
 type SellerGroup = {
   sellerId: string;
@@ -9,6 +10,7 @@ type SellerGroup = {
 };
 
 export default function CompetitorShops() {
+  const { t } = useLang();
   const { data: rows, isLoading } = trpc.prices.dashboard.useQuery();
 
   const sellerMap = new Map<string, SellerGroup>();
@@ -37,17 +39,15 @@ export default function CompetitorShops() {
   return (
     <div className="flex flex-col gap-4 max-w-[1200px]">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Competitor Shops</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
-          Sellers discovered from tracked product snapshots.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">{t.nav.competitors}</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">{t.competitorsSubtitle}</p>
       </div>
 
       {isLoading ? (
-        <div className="text-sm text-muted-foreground">Loading competitor stores...</div>
+        <div className="text-sm text-muted-foreground">{t.competitorsLoading}</div>
       ) : sellers.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
-          No competitor shops yet. Add products or store URLs in AI Agent.
+          {t.competitorsEmpty}
         </div>
       ) : (
         <div className="grid gap-3">
@@ -56,11 +56,13 @@ export default function CompetitorShops() {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-medium text-foreground">{seller.sellerId}</p>
-                  <p className="text-xs text-muted-foreground">{seller.products.length} tracked products</p>
+                  <p className="text-xs text-muted-foreground">{t.competitorsTrackedCount(seller.products.length)}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold">{formatPrice(seller.avgLandedPrice)}</p>
-                  <p className="text-xs text-muted-foreground">Avg landed · {seller.latestPlatform}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.competitorsAvgLanded} · {seller.latestPlatform}
+                  </p>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground mt-3 truncate">{seller.products.join(" · ")}</p>

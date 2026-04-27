@@ -41,7 +41,7 @@ export default function Alerts() {
     onSuccess: () => {
       utils.alerts.rules.invalidate();
       utils.alerts.unreadCount.invalidate();
-      toast.success(lang === "zh" ? "预警规则已创建" : "Alert rule created");
+      toast.success(t.ruleCreated);
       setOpen(false);
       setForm({ trackedProductId: "", thresholdPct: "5", direction: "any" });
     },
@@ -51,7 +51,7 @@ export default function Alerts() {
   const deleteMutation = trpc.alerts.deleteRule.useMutation({
     onSuccess: () => {
       utils.alerts.rules.invalidate();
-      toast.success(lang === "zh" ? "规则已删除" : "Alert rule deleted");
+      toast.success(t.ruleDeleted);
     },
   });
 
@@ -70,7 +70,7 @@ export default function Alerts() {
     onSuccess: () => {
       utils.alerts.events.invalidate();
       utils.alerts.unreadCount.invalidate();
-      toast.success(lang === "zh" ? "全部已标为已读" : "All alerts marked as read");
+      toast.success(t.allMarkedRead);
     },
   });
 
@@ -78,12 +78,12 @@ export default function Alerts() {
 
   const handleCreate = () => {
     if (!form.trackedProductId) {
-      toast.error(lang === "zh" ? "请选择商品" : "Please select a product");
+      toast.error(t.pleaseSelectProduct);
       return;
     }
     const pct = parseFloat(form.thresholdPct);
     if (isNaN(pct) || pct <= 0) {
-      toast.error(lang === "zh" ? "阈值必须为正数" : "Threshold must be a positive number");
+      toast.error(t.thresholdMustBePositive);
       return;
     }
     createMutation.mutate({
@@ -94,14 +94,15 @@ export default function Alerts() {
   };
 
   const directionOptions = [
-    { value: "any", label: lang === "zh" ? "任意方向" : "Any direction" },
-    { value: "up", label: lang === "zh" ? "仅涨价" : "Price increase only" },
-    { value: "down", label: lang === "zh" ? "仅降价" : "Price decrease only" },
+    { value: "any", label: t.directionAny },
+    { value: "up", label: t.directionUp },
+    { value: "down", label: t.directionDown },
   ];
 
-  const directionLabel = (d: string) => {
-    const map: Record<string, string> = { any: lang === "zh" ? "任意" : "Any", up: lang === "zh" ? "涨价" : "Up", down: lang === "zh" ? "降价" : "Down" };
-    return map[d] ?? d;
+  const directionShort = (d: string) => {
+    if (d === "up") return t.directionShortUp;
+    if (d === "down") return t.directionShortDown;
+    return t.directionShortAny;
   };
 
   return (
@@ -132,7 +133,7 @@ export default function Alerts() {
                   onValueChange={(v) => setForm((f) => ({ ...f, trackedProductId: v }))}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={t.selectProduct} />
+                    <SelectValue placeholder={t.selectProductPlaceholder} />
                   </SelectTrigger>
                   <SelectContent>
                     {products?.map((p) => (
@@ -248,7 +249,7 @@ export default function Alerts() {
                   </div>
                   <DeltaBadge changePct={event.changePct} direction={event.direction} />
                   <span className="text-xs text-muted-foreground shrink-0 hidden sm:block">
-                    {formatDateTime(event.triggeredAt)}
+                    {formatDateTime(event.triggeredAt, lang)}
                   </span>
                 </div>
               ))}
@@ -277,9 +278,7 @@ export default function Alerts() {
                       <PlatformBadge platform={rule.platform as Platform} size="sm" />
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {lang === "zh" ? "阈值" : "Threshold"}: <span className="font-mono font-medium text-foreground">{rule.thresholdPct}%</span>
-                      {" · "}
-                      {lang === "zh" ? "方向" : "Direction"}: <span className="font-medium text-foreground">{directionLabel(rule.direction)}</span>
+                      {t.alertRuleSummary(Number(rule.thresholdPct), directionShort(rule.direction))}
                     </p>
                   </div>
                   <Switch

@@ -13,7 +13,7 @@ import type { Platform } from "@/lib/utils";
 import { useLang } from "@/contexts/LanguageContext";
 
 export default function Recommendations() {
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const utils = trpc.useUtils();
   const { data: marginRules, isLoading: rulesLoading } = trpc.marginRules.get.useQuery();
   const { data: recommendations, isLoading: recsLoading } = trpc.recommendations.getAll.useQuery();
@@ -203,7 +203,7 @@ export default function Recommendations() {
         ) : (
           <div className="flex flex-col gap-4">
             {recommendations.map((rec) => (
-              <RecommendationCard key={rec.product.id} rec={rec} lang={lang} />
+              <RecommendationCard key={rec.product.id} rec={rec} />
             ))}
           </div>
         )}
@@ -223,7 +223,7 @@ type RecData = {
   estimatedMarginPct: number;
 };
 
-function RecommendationCard({ rec, lang }: { rec: RecData; lang: string }) {
+function RecommendationCard({ rec }: { rec: RecData }) {
   const { t } = useLang();
   const isGoodMargin = rec.estimatedMarginPct >= 15;
 
