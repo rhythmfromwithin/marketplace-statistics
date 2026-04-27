@@ -237,12 +237,12 @@ Amazon's third-party sales share has grown steadily over the past five years:
 <tr><td>2025</td><td>60%+</td></tr>
 </tbody></table>
 <div class="chart-container" style="">
-    <canvas id="3p-share-chart" role="img" aria-label="Third-Party Sales Share 2021-2025"></canvas>
+    <canvas id="tp-share-chart" role="img" aria-label="Third-Party Sales Share 2021-2025"></canvas>
     <p class="chart-caption">Source: Amazon annual reports and Marketplace Pulse analysis</p>
 </div>
 <script>
 (function() {
-    var ctx = document.getElementById('3p-share-chart').getContext('2d');
+    var ctx = document.getElementById('tp-share-chart').getContext('2d');
     new Chart(ctx, {"type": "line", "data": {"labels": ["2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Third-Party Sales Share 2021-2025", "data": [57, 58, 60, 60, 60], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true, "borderWidth": 2}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Third-Party Sales Share 2021-2025", "font": {"size": 16, "weight": "bold"}}, "datalabels": {"display": false}}}});
 })();
 </script>
@@ -308,12 +308,12 @@ The $575B GMV is not evenly distributed. Revenue is highly concentrated:
 <tr><td>$100K+ annually (global avg)</td><td>19% of active sellers</td></tr>
 </tbody></table>
 <div class="chart-container" style="height:272px;">
-    <canvas id="3p-revenue-dist-chart" role="img" aria-label="Revenue Distribution Among Third-Party Sellers"></canvas>
+    <canvas id="tp-revenue-dist-chart" role="img" aria-label="Revenue Distribution Among Third-Party Sellers"></canvas>
     <p class="chart-caption">Source: Jungle Scout Million-Dollar Seller Report</p>
 </div>
 <script>
 (function() {
-    var ctx = document.getElementById('3p-revenue-dist-chart').getContext('2d');
+    var ctx = document.getElementById('tp-revenue-dist-chart').getContext('2d');
     new Chart(ctx, {"type": "bar", "data": {"labels": ["$100M+ annually", "$1M+ annually", "$100K+ (US sellers)", "$100K+ (global avg)"], "datasets": [{"label": "Revenue Distribution Among Third-Party Sellers", "data": [235, 100000, 43, 19], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Revenue Distribution Among Third-Party Sellers", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { if(value>=1000000) return (value/1000000).toFixed(1)+"M"; if(value>=1000) return (value/1000).toFixed(0)+"K"; return value; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>
@@ -335,12 +335,12 @@ Active sellers by marketplace:
 <tr><td>Australia</td><td>~80,000</td></tr>
 </tbody></table>
 <div class="chart-container" style="height:416px;">
-    <canvas id="3p-geo-chart" role="img" aria-label="Active Sellers by Marketplace (2025)"></canvas>
+    <canvas id="tp-geo-chart" role="img" aria-label="Active Sellers by Marketplace (2025)"></canvas>
     <p class="chart-caption">Source: Marketplace Pulse regional tracking</p>
 </div>
 <script>
 (function() {
-    var ctx = document.getElementById('3p-geo-chart').getContext('2d');
+    var ctx = document.getElementById('tp-geo-chart').getContext('2d');
     new Chart(ctx, {"type": "bar", "data": {"labels": ["United States", "United Kingdom", "Germany", "India", "Japan", "Canada", "Australia"], "datasets": [{"label": "Active Sellers by Marketplace (2025)", "data": [1100000, 290000, 260000, 150000, 120000, 100000, 80000], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Active Sellers by Marketplace (2025)", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { if(value>=1000000) return (value/1000000).toFixed(1)+"M"; if(value>=1000) return (value/1000).toFixed(0)+"K"; return value; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>

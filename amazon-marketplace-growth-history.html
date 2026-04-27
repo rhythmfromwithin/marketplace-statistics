@@ -347,12 +347,12 @@ As the seller base has evolved, the third-party sales share has grown steadily:
 <tr><td>2025</td><td>60%+</td></tr>
 </tbody></table>
 <div class="chart-container" style="">
-    <canvas id="3p-share-trajectory-chart" role="img" aria-label="Third-Party Sales Share 2021-2025"></canvas>
+    <canvas id="tp-share-trajectory-chart" role="img" aria-label="Third-Party Sales Share 2021-2025"></canvas>
     <p class="chart-caption">Source: Amazon annual reports and Marketplace Pulse analysis</p>
 </div>
 <script>
 (function() {
-    var ctx = document.getElementById('3p-share-trajectory-chart').getContext('2d');
+    var ctx = document.getElementById('tp-share-trajectory-chart').getContext('2d');
     new Chart(ctx, {"type": "line", "data": {"labels": ["2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Third-Party Sales Share 2021-2025", "data": [57, 58, 60, 60, 60], "borderColor": "#FF9900", "backgroundColor": "rgba(255, 153, 0, 0.1)", "tension": 0.3, "fill": true, "borderWidth": 2}]}, "options": {"responsive": true, "maintainAspectRatio": true, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "Third-Party Sales Share 2021-2025", "font": {"size": 16, "weight": "bold"}}, "datalabels": {"display": false}}}});
 })();
 </script>

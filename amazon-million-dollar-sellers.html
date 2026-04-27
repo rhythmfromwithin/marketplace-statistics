@@ -265,12 +265,12 @@ The most dramatic growth has occurred at the very top of the revenue distributio
 <tr><td>2025</td><td>235</td></tr>
 </tbody></table>
 <div class="chart-container" style="height:200px;">
-    <canvas id="100m-sellers-chart" role="img" aria-label="$100M+ Sellers 2021 vs 2025"></canvas>
+    <canvas id="hundred-m-sellers-chart" role="img" aria-label="$100M+ Sellers 2021 vs 2025"></canvas>
     <p class="chart-caption">Source: Jungle Scout Million-Dollar Seller Report</p>
 </div>
 <script>
 (function() {
-    var ctx = document.getElementById('100m-sellers-chart').getContext('2d');
+    var ctx = document.getElementById('hundred-m-sellers-chart').getContext('2d');
     new Chart(ctx, {"type": "bar", "data": {"labels": ["2021", "2025"], "datasets": [{"label": "$100M+ Sellers 2021 vs 2025", "data": [50, 235], "backgroundColor": "#FF9900", "borderColor": "#FF9900", "borderWidth": 0, "borderRadius": 3}]}, "options": {"indexAxis": "y", "responsive": true, "maintainAspectRatio": false, "layout": {"padding": {"right": 60}}, "plugins": {"legend": {"display": false}, "title": {"display": true, "text": "$100M+ Sellers 2021 vs 2025", "font": {"size": 15, "weight": "bold"}, "color": "#232F3E", "padding": {"bottom": 16}}, "datalabels": {"anchor": "end", "align": "end", "formatter": function(value) { if(value>=1000000) return (value/1000000).toFixed(1)+"M"; if(value>=1000) return (value/1000).toFixed(0)+"K"; return value; }, "color": "#232F3E", "font": {"weight": "600", "size": 13}}}, "scales": {"x": {"display": false, "beginAtZero": true}, "y": {"grid": {"display": false}, "ticks": {"font": {"size": 13}}}}}});
 })();
 </script>
